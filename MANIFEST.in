@@ -1,0 +1,2 @@
+include versioneer.py
+include src/docserver/_version.py

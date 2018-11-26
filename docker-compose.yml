@@ -1,0 +1,6 @@
+version: '2'
+services:
+    docserver:
+        image: docserver:test
+        ports:
+            - 8000:80
