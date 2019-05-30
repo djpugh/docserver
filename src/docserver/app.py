@@ -1,14 +1,41 @@
-from flask import render_template
-from flask import Blueprint
+import os
 
-from docserver.models import Package
+from fastapi import FastAPI
+from pkg_resources import resource_filename
+from starlette.requests import Request
+from starlette.templating import Jinja2Templates
+from starlette.staticfiles import StaticFiles
 
-app = Blueprint('docserver', 'docserver', url_prefix='')
+from docserver import DOCS_DIR, db, __version__
+from docserver.api import base_api, docs_api
+
+if 'untagged' in __version__:
+    major_version = 0
+else:
+    major_version = __version__.split('.')[0]
+
+app = FastAPI(title='Documentation Server',
+              description='Documentation Server allowing upload of static html documentation',
+              version=__version__,
+              openapi_url=f"/api/v{major_version}/openapi.json",
+              docs_url='/api/docs',
+              redoc_url='/api/redoc')
+
+templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserver.templates', 'index.html')))
 
 
 @app.route("/")
 @app.route("/packages/")
-def list_docs():
-    packages = Package.query.order_by(Package.name).all()
+async def list_docs(request: Request, *args, **kwargs):
+    print(args, kwargs)
+    session = db.SessionLocal()
+    packages = session.query(db.models.Package).order_by(db.models.Package.name).all()
     print(packages)
-    return render_template('index.html', packages=packages)
+    return templates.TemplateResponse('index.html', {'request': request, 'packages': packages})
+
+
+app.include_router(base_api)
+app.include_router(docs_api, prefix='/api', tags=['api'])
+if not os.path.exists(DOCS_DIR):
+    os.mkdir(DOCS_DIR)
+app.mount('/packages', StaticFiles(directory=DOCS_DIR, html=True))
