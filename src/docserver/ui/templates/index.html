@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for package in packages %}
+    <div class="col-sm-6 col-12 col-md-4 col-lg-3">
+        <div class="card" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title">{{ package.name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ package.language.name }}</h6>
+            <p class="card-text">{{ package.description }}</p>
+              <a class="btn btn-primary" href="/packages/{{ package.name }}/latest/">Docs</a>
+              <a class="btn btn-secondary" href="{{ package.repository }}" class="card-link">Repo</a>
+          </div>
+          <div class="card-footer text-muted text-center">
+              <em>latest version:</em> {{ package.version }}
+          </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock content %}

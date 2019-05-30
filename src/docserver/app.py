@@ -7,7 +7,9 @@ from starlette.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
 
 from docserver import DOCS_DIR, db, __version__
+from docserver.db import models
 from docserver.api import base_api, docs_api
+from docserver.core import docs_information
 
 if 'untagged' in __version__:
     major_version = 0
@@ -21,17 +23,21 @@ app = FastAPI(title='Documentation Server',
               docs_url='/api/docs',
               redoc_url='/api/redoc')
 
-templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserver.templates', 'index.html')))
+templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserver.ui.templates', 'index.html')))
 
 
 @app.route("/")
 @app.route("/packages/")
 async def list_docs(request: Request, *args, **kwargs):
-    print(args, kwargs)
     session = db.SessionLocal()
-    packages = session.query(db.models.Package).order_by(db.models.Package.name).all()
-    print(packages)
-    return templates.TemplateResponse('index.html', {'request': request, 'packages': packages})
+    packages = session.query(models.Package).order_by(models.Package.name).all()
+    for package in packages:
+        latest_version = docs_information.get_versions(package.name)[1]
+        package.version = latest_version
+        if package.description is None:
+            package.description = ''
+    return templates.TemplateResponse('index.html', {'request': request, 'packages': packages,
+                                                     'server_title': 'Docserver'})
 
 
 app.include_router(base_api)
@@ -39,3 +45,5 @@ app.include_router(docs_api, prefix='/api', tags=['api'])
 if not os.path.exists(DOCS_DIR):
     os.mkdir(DOCS_DIR)
 app.mount('/packages', StaticFiles(directory=DOCS_DIR, html=True))
+app.mount('/static', StaticFiles(directory=os.path.dirname(resource_filename('docserver.ui.static', 'index.html'))))
+app.mount('/help', StaticFiles(directory=os.path.dirname(resource_filename('docserver.ui.docs', 'index.html'))))

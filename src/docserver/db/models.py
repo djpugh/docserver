@@ -18,6 +18,7 @@ class Package(db.Model):
     name = Column(String(200), unique=True, nullable=False)
     language_id = Column(Integer, ForeignKey('language.id'), nullable=False)
     repository = Column(String(300), unique=True, nullable=False)
+    description = Column(String(800), nullable=True)
 
     def __repr__(self):
         return f'<Package {self.name} ({self.language})>'

@@ -1,8 +1,0 @@
-<!doctype html>
-<title>Docserver</title>
-<h1>Hello!</h1>
-<ul>
-{% for package in packages %}
-    <li><a href="/packages/{{ package.name }}/latest/">{{ package.name }}</a> {{package.customer}} ({{package.language}})</li>
-{% endfor %}
-</ul>

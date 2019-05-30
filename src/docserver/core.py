@@ -47,7 +47,8 @@ class DocsInformation:
                 session.add(language)
                 session.commit()
             print(f'Language {language}')
-            package = Package(name=metadata.package, repository=metadata.repository, language_id=language.id)
+            package = Package(name=metadata.package, repository=metadata.repository, language_id=language.id,
+                              description=metadata.short_description)
             session.add(package)
             session.commit()
         print(f'Package {package}')

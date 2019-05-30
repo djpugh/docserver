@@ -18,6 +18,7 @@ class PackageModel(BaseModel):
     version: str
     repository: str
     language: str
+    short_description: str = None
 
 
 router = APIRouter()
@@ -55,7 +56,8 @@ async def register_package_upload(metadata: PackageModel, request: Request):
 @router.put('/upload/{upload_id}', status_code=201)
 def upload_package(upload_id: str, request: Request, documentation: UploadFile = File(...)):
     package_metadata = s.loads(upload_id)
-    if sorted(list(package_metadata.keys())) == ['language', 'package', 'repository', 'version']:
+    print(package_metadata)
+    if sorted(list(package_metadata.keys())) == ['language', 'package', 'repository', 'short_description', 'version']:
         if os.path.splitext(documentation.filename)[-1] == '.zip':
             with TemporaryDirectory() as td:
                 filename = os.path.join(td, f'{uuid.uuid4()}.zip')
@@ -68,4 +70,4 @@ def upload_package(upload_id: str, request: Request, documentation: UploadFile =
         else:
             raise HTTPException(status_code=401, detail=f'Incorrect filetype (must be zip archive) {documentation.filename}')
     else:
-        raise HTTPException(status_code=401, detail='Incorrect request for upload_id')
+        raise HTTPException(status_code=401, detail=f'Incorrect request for upload_id {package_metadata}')
