@@ -1,3 +1,3 @@
-from docserver.db import create_all
+from docserver.db.models import create_all
 
 create_all()

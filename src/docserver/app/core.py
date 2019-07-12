@@ -6,10 +6,15 @@ from starlette.requests import Request
 from starlette.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
 
-from docserver import DOCS_DIR, db, __version__
-from docserver.db import models
-from docserver.api import base_api, docs_api
-from docserver.core import docs_information
+from docserver import __version__
+from docserver.app.api import base_api, docs_api
+from docserver.app.config import app_config
+from docserver.app.methods import ApplicationMethods
+from docserver.ui.help import build_help
+from docserver.ui.templates.nav import nav
+
+
+application_methods = ApplicationMethods()
 
 if 'untagged' in __version__:
     major_version = 0
@@ -29,21 +34,19 @@ templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserv
 @app.route("/")
 @app.route("/packages/")
 async def list_docs(request: Request, *args, **kwargs):
-    session = db.SessionLocal()
-    packages = session.query(models.Package).order_by(models.Package.name).all()
-    for package in packages:
-        latest_version = docs_information.get_versions(package.name)[1]
-        package.version = latest_version
-        if package.description is None:
-            package.description = ''
+    packages = application_methods.available_docs
+    print([u.html_tags for u in packages])
     return templates.TemplateResponse('index.html', {'request': request, 'packages': packages,
-                                                     'server_title': 'Docserver'})
+                                                     'server_title': 'Docserver', 'nav': nav()})
 
 
 app.include_router(base_api)
 app.include_router(docs_api, prefix='/api', tags=['api'])
-if not os.path.exists(DOCS_DIR):
-    os.mkdir(DOCS_DIR)
-app.mount('/packages', StaticFiles(directory=DOCS_DIR, html=True))
+if not os.path.exists(app_config.docs_dir):
+    os.mkdir(app_config.docs_dir)
+app.mount(app_config.package_url_slug, StaticFiles(directory=app_config.docs_dir, html=True))
 app.mount('/static', StaticFiles(directory=os.path.dirname(resource_filename('docserver.ui.static', 'index.html'))))
-app.mount('/help', StaticFiles(directory=os.path.dirname(resource_filename('docserver.ui.docs', 'index.html'))))
+build_help()
+app.mount('/help', StaticFiles(directory=os.path.join(os.path.dirname(resource_filename('docserver.ui.help',
+                                                                                        'index.html')), 'html'),
+                               html=True))
