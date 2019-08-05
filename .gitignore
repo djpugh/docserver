@@ -25,3 +25,4 @@ reports/*
 *.c
 data/*
 .idea/*
+src/docserver/ui/help/html/*

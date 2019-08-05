@@ -16,33 +16,7 @@
         {% endblock headscripts %}
     </head>
     <body>
-    <nav class="navbar navbar-expand navbar-dark bg-dark">
-        <a class="navbar-brand" href="/"><span class="oi oi-book navbar-logo" title="Docserver" aria-hidden="true"></span></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbar">
-
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav mr-auto">
-                        {% block navbar %}
-                        {% endblock navbar %}
-                    </ul>
-                    <ul class="nav navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/help">Docs</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/api/docs">API</a>
-                        </li>
-                    </ul>
-                    <form class="form-inline my-2 my-md-0">
-                      <input class="form-control" type="text" placeholder="Search">
-                    </form>
-          </div>
-        </nav>
+        {{ nav | safe }}
         <div class='container'>
             {% block content %}
             {% endblock content %}
