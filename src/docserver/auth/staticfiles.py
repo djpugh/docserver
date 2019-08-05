@@ -6,7 +6,7 @@ from starlette.responses import Response, PlainTextResponse
 from starlette.staticfiles import StaticFiles
 from starlette.types import Scope
 
-from docserver.auth.permissions.compare import get_permissions
+from docserver.auth.permissions.compare import get_permissions_from_request
 from docserver.db.models import Package
 
 
@@ -52,7 +52,7 @@ class PermissionedStaticFiles(StaticFiles):
         """
         Returns an HTTP response, given the incoming path, method and request headers.
         """
-        provided_permissions = get_permissions(scope)
+        provided_permissions = get_permissions_from_request(scope)
         if not self.permissions_check.is_authorised(provided_permissions, path):
             return PlainTextResponse("Unauthorised", status_code=405)
         return await super().get_response(path, scope)
