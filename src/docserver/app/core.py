@@ -45,6 +45,7 @@ async def list_docs(request: Request, *args, **kwargs):
     return templates.TemplateResponse('index.html', {'request': request, 'packages': packages,
                                                      'server_title': 'Docserver', 'nav': nav()})
 
+# TODO we need to set these programatically and warn when using TestAuthBackend
 app.add_middleware(AuthenticationMiddleware, backend=TestAuthBackend())
 
 app.include_router(base_api)
