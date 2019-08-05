@@ -1,6 +1,7 @@
 import os
 from sphinx.application import Sphinx
 
+
 def build_help():
     app = Sphinx(os.path.dirname(__file__),
                  os.path.dirname(__file__),
