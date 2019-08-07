@@ -1,6 +1,17 @@
 version: '2'
 services:
+    postgres:
+      image: postgres
+      restart: always
+      environment:
+        POSTGRES_PASSWORD: demo
     docserver:
         image: docserver:test
         ports:
             - 8000:80
+        environment:
+          DOCSERVER_DATABASE_URI: "postgresql+psycopg2://postgres:demo@postgres"
+          DOCSERVER_SAFE_KEY: '827c2c51-8413-4199-9606-6eab02d6f302'
+          DOCSERVER_SALT: '420979da-f8d2-4cb3-980b-b35bf3191d56'
+        depends_on:
+          - postgres

@@ -5,11 +5,12 @@ RUN mkdir -p /data/www/docs
 COPY docker/index_redirect.html /data/www/docs/index.html
 COPY docker/prestart.sh /app/prestart.sh
 
-ENV APP_MODULE=docserver.app:app
+ENV APP_MODULE=docserver.app.core:app
 
 COPY requirements.txt /app/requirements.txt
 
 RUN pip install -r /app/requirements.txt
+RUN pip install py_mini_racer psycopg2
 
 CMD ["/start.sh"]
 

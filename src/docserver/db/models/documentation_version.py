@@ -46,7 +46,7 @@ class DocumentationVersion(Model):
         cls.logger.debug(f'Creating version {params} for package {db_package}')
         result = cls.read_unique(db, params=params)
         if result:
-            if not result.is_authorised('write', provided_permissions=provided_permissions):
+            if not db_package.is_authorised('write', provided_permissions=provided_permissions):
                 raise PermissionError('Unauthorised')
             cls.logger.debug(f'Found existing version for package {db_package}')
             cls.save_docs(package, zipfile)

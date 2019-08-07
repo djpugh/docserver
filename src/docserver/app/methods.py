@@ -7,7 +7,7 @@ import uuid
 
 import pkg_resources
 try:
-    import py_mini_racer
+    from py_mini_racer import py_mini_racer
 except ImportError:
     py_mini_racer = False
 
@@ -21,7 +21,7 @@ from docserver.db.models import Package, DocumentationVersion, Permission
 if py_mini_racer:
     lunr_js_file = pkg_resources.resource_filename('docserver.ui.static.js', 'lunr.js')
     with open(lunr_js_file) as f:
-        lunr_js = lunr_js_file.read()
+        lunr_js = f.read()
 
 HTML_LATEST_REDIRECT = """
 <!DOCTYPE HTML>
@@ -87,7 +87,7 @@ class ApplicationMethods:
             ctx.eval(lunr_js)
             ctx.eval(search_index_js)
             search_index = ctx.eval("""JSON.stringify(idx)""")
-            search_index_js = f"""{docs_js}\nvar idx = lunr.Index.load(JSON.parse({search_index}))"""
+            search_index_js = f"""{docs_js}\nvar idx = lunr.Index.load(JSON.parse('{search_index}'))"""
         return search_index_js
 
     @staticmethod
@@ -140,7 +140,7 @@ class ApplicationMethods:
                     if not db_package.is_authorised('write', provided_permissions):
                         raise PermissionError
                     logger.debug(f'Creating version information for {db_package}')
-                    document_version = DocumentationVersion.update_or_create(db, package, filename, db_package)
+                    document_version = DocumentationVersion.update_or_create(db, package, filename, db_package, provided_permissions=provided_permissions)
                     result = document_version.url
                     logger.debug(f'Updating latest docs for {package}')
                     self._check_redirect(package)
