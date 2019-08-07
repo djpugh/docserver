@@ -25,11 +25,11 @@ class DBPermissionsCheck(PermissionsCheck):
 
     def is_authorised(self, provided_permissions, path):
         logger.debug(f'Checking {path}')
-        name = os.path.split(path)[0]
+        name = os.path.normpath(path).split(os.path.sep)[0]
         logger.debug(f'Module name: {name}')
         logger.debug(f'Provided permissions: {provided_permissions}')
-        packages = Package.read_unique(self.session_maker(), params={'name': name})
-        if packages.is_authorised('read', provided_permissions):
+        package = Package.read_unique(self.session_maker(), params={'name': name})
+        if package and package.is_authorised('read', provided_permissions):
             return True
         else:
             return False
