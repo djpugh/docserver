@@ -8,6 +8,4 @@ jinja2
 python-multipart
 requests
 sphinx
-
-
-py_mini_racer[prebuild_search]
+beautifulsoup4

@@ -11,6 +11,7 @@ to see the options available.
 """
 from setuptools import setup
 from setuptools import find_packages
+from pkg_resources import parse_version, parse_requirements
 
 try:
     import versioneer
@@ -23,11 +24,26 @@ except AttributeError:
 __author__ = 'David Pugh'
 __email__ = 'djpugh@gmail.com'
 
-description = 'Document server using flask and nginx'
+description = 'Document server using fastapi, starlett and uvicorn'
+
+if parse_version(__version__) < parse_version('0.2.0'):
+    development_status = 'Development Status :: 2 - Pre-Alpha'
+elif parse_version(__version__).is_prerelease:
+    development_status = 'Development Status :: 4 - Beta'
+elif parse_version(__version__) >= parse_version('0.2.0'):
+    development_status = 'Development Status :: 5 - Production/Stable'
+elif parse_version(__version__) >= parse_version('1.0.0'):
+    development_status = 'Development Status :: 6 - Mature'
+else:
+    development_status = 'Development Status :: 1 - Planning'
+
 
 with open('README.rst') as f:
     readme = f.read()
     f.close()
+
+with open('requirements.txt') as f:
+    install_requires = [u.name for u in parse_requirements(f.read())]
 
 # We are going to take the approach that the requirements.txt specifies
 # exact (pinned versions) to use but install_requires should only
@@ -48,16 +64,7 @@ kwargs = dict(name='docserver',
               packages=find_packages('src'),
               package_dir={'': 'src'},
               requires=[],
-              install_requires=['fastapi',
-                                'aiofiles',
-                                'itsdangerous',
-                                'sqlalchemy',
-                                'uvicorn',
-                                'werkzeug',
-                                'jinja2',
-                                'python-multipart',
-                                'requests',
-                                'sphinx'],
+              install_requires=install_requires,
               extras_require={'prebuild_search': ['py_mini_racer']},
               provides=['docserver'],
               test_suite='tests',
@@ -65,6 +72,13 @@ kwargs = dict(name='docserver',
               long_description=readme,
               package_data={'': ['*.rst',
                                  '*.html',
+                                 '*.css',
+                                 '*.css.map',
+                                 '*.js',
+                                 '*.eot',
+                                 '*.svg',
+                                 '*.ttf',
+                                 '*.woff',
                                  'docs/man/*',
                                  'docs/epub/*.epub',
                                  'docs/pdf/*',
