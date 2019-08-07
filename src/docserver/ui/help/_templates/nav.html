@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <a class="navbar-brand" href="/"><span class="oi oi-book navbar-logo" title="Docserver" aria-hidden="true"></span></a>
+    <a class="navbar-brand" href="/"><span class="oi oi-book navbar-logo mr-2" title="Docserver" aria-hidden="true"></span> Docserver</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -9,6 +9,7 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav mr-auto">
+
                 </ul>
                 <ul class="nav navbar-nav">
                     <li class="nav-item">
@@ -21,8 +22,16 @@
                         <a class="nav-link" href="/api/docs">API</a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-md-0">
-                  <input class="form-control" type="text" placeholder="Search">
+                <form class="form-inline my-2 my-md-0" action="/search">
+                   <div class="input-group">
+                       <input id="search" class="form-control" name="q" type="text" placeholder="Search">
+                       <!--Search button-->
+                       <div class="input-group-append">
+                           <button type="submit" class="btn btn-secondary">
+                               <span class="oi oi-magnifying-glass" title="Help" aria-hidden="true"></span>
+                           </button>
+                       </div>
+                   </div>
                 </form>
             </div>
     </div>

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div id="fallback" class="alert alert-warning">
+  <script type="text/javascript">$('#fallback').hide();</script>
+  <p>
+    Please activate JavaScript to enable the search
+    functionality.
+  </p>
+  </div>
+  <div class="row  mt-3">
+      <div class="col-xl-12">
+          <!--<form class="form my-2 my-md-0">-->
+              <div class="input-group">
+                   <div class="input-group-prepend">
+                       <div class="input-group-text">
+                           <span class=" oi oi-magnifying-glass" title="Help" aria-hidden="true"></span>
+                       </div>
+                   </div>
+                   <input id="main-search-box" class="form-control input-lg" name="q" type="text" placeholder="Search">
+              </div>
+          <!--</form>-->
+      </div>
+  </div>
+  <div id="search-results" class="mt-4">
+    <ul id="results"></ul>
+  </div>
+{% endblock content %}

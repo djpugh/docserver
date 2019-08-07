@@ -1,2 +1,3 @@
 * [ ] Search
-* [ ] Auth
+* [ ] AAD
+* [ ] Handle websupport output/structures

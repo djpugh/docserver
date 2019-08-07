@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 class AppConfigClass:
 
     docs_dir = os.getenv('DOCS_DIR', '/data/www/docs')
+    search_index_dir = os.getenv('SEARCH_INDEX_DIR', '/data/www/search_indices')
     releases_only = os.getenv('DOCSERVER_ACCEPT_ALL', '0').lower() not in ['1', 'true']
     key = os.getenv('DOCSERVER_SAFE_KEY', str(uuid.uuid4()))
     salt = os.getenv('DOCSERVER_SALT', str(uuid.uuid4()))

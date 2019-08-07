@@ -1,1 +1,11 @@
 nav.navbar{margin-bottom:10px;}
+
+a.page_name {
+text-decoration: none;
+}
+
+div.excerpt{
+  max-height: 3.6em;
+  line-height: 1.8em;
+  overflow: hidden;
+}

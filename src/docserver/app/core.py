@@ -4,6 +4,7 @@ import os
 from fastapi import FastAPI
 from pkg_resources import resource_filename
 from starlette.requests import Request
+from starlette.responses import Response
 from starlette.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
 from starlette.middleware.authentication import AuthenticationMiddleware
@@ -44,6 +45,23 @@ async def list_docs(request: Request, *args, **kwargs):
     packages = application_methods.get_available_docs(request=request)
     return templates.TemplateResponse('index.html', {'request': request, 'packages': packages,
                                                      'server_title': 'Docserver', 'nav': nav()})
+
+# TODO we need to set these programatically and warn when using TestAuthBackend
+
+
+@app.route("/searchindex.js")
+async def search_index(request: Request, *args, **kwargs):
+    packages = application_methods.get_available_docs(request=request)
+    search_index_js = application_methods.get_search_index_js(packages)
+    return Response(search_index_js, media_type='text/javascript')
+
+
+@app.route("/search/")
+async def search(request: Request, *args, **kwargs):
+    packages = application_methods.get_available_docs(request=request)
+    return templates.TemplateResponse('search.html', {'request': request, 'packages': packages,
+                                                      'server_title': 'Docserver', 'nav': nav()})
+
 
 app.add_middleware(AuthenticationMiddleware, backend=TestAuthBackend())
 
