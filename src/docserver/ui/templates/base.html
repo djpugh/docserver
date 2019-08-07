@@ -12,6 +12,8 @@
         {% endblock page_styles %}
         <link rel="icon" type="img/ipng" href="/static/img/favicon.png" />
         <meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1" >
+        <script type="text/javascript" src="/static/js/lunr.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         {% block headscripts %}
         {% endblock headscripts %}
     </head>
@@ -26,9 +28,10 @@
             {% endblock footer %}
         </footer>
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="/static/js/bootstrap.min.js"></script>
+        <script src="/searchindex.js"></script>
+        <script src="/static/js/search.js"></script>
         {% block scripts %}
         {% endblock scripts %}
     </body>

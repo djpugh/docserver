@@ -1,8 +1,15 @@
+import json
 import logging
 import os
 import shutil
 from tempfile import TemporaryDirectory
 import uuid
+
+import pkg_resources
+try:
+    import py_mini_racer
+except ImportError:
+    py_mini_racer = False
 
 from docserver.app.config import app_config
 from docserver.app import schemas
@@ -10,6 +17,11 @@ from docserver.auth.permissions.compare import get_permissions
 from docserver.db.config import db_config
 from docserver.db.models import Package, DocumentationVersion, Permission
 
+
+if py_mini_racer:
+    lunr_js_file = pkg_resources.resource_filename('docserver.ui.static.js', 'lunr.js')
+    with open(lunr_js_file) as f:
+        lunr_js = lunr_js_file.read()
 
 HTML_LATEST_REDIRECT = """
 <!DOCTYPE HTML>
@@ -47,6 +59,36 @@ class ApplicationMethods:
         results = sorted(filtered_packages, key=lambda x: x.name)
         logger.debug(f'Available docs {results}')
         return results
+
+    @staticmethod
+    def get_search_index_js(packages):
+        search_index = {}
+        for package in packages:
+            search_index.update(package.search_index)
+        docs_js = f"""var store = {json.dumps(search_index)}"""
+        search_index_js = f"""
+                          {docs_js}
+                          """ \
+                          """
+                          var idx = lunr(function () {
+                                          this.ref('link')
+                                          this.field('body')
+                                          this.field('tags')
+                                          this.field('description')
+                                          this.field('name')
+                                          this.field('version')
+                                          this.field('repository')
+                                          Object.keys(store).forEach(function(key) {
+                                                this.add(store[key])
+                                          }, this)
+                                         })"""
+        if py_mini_racer:
+            ctx = py_mini_racer.MiniRacer()
+            ctx.eval(lunr_js)
+            ctx.eval(search_index_js)
+            search_index = ctx.eval("""JSON.stringify(idx)""")
+            search_index_js = f"""{docs_js}\nvar idx = lunr.Index.load(JSON.parse({search_index}))"""
+        return search_index_js
 
     @staticmethod
     @get_permissions
@@ -98,7 +140,7 @@ class ApplicationMethods:
                     if not db_package.is_authorised('write', provided_permissions):
                         raise PermissionError
                     logger.debug(f'Creating version information for {db_package}')
-                    document_version = DocumentationVersion.get_or_create(db, package, filename, db_package)
+                    document_version = DocumentationVersion.update_or_create(db, package, filename, db_package)
                     result = document_version.url
                     logger.debug(f'Updating latest docs for {package}')
                     self._check_redirect(package)

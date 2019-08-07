@@ -143,3 +143,10 @@ class Package(Model):
                 setattr(params, key, value)
             result = cls.create(db, params)
         return result
+
+    @property
+    def search_index(self):
+        search_index = {}
+        for version in self.versions:
+            search_index.update(version.search_index)
+        return search_index
