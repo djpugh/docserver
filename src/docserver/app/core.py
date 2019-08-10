@@ -42,6 +42,22 @@ app = FastAPI(title='Documentation Server',
 
 templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserver.ui.templates', 'index.html')))
 
+auth_backend = None
+
+if app_config.auth_enabled:
+    # Lets load in the auth_backend
+    for ep in iter_entry_points(AUTH_ENTRYPOINT):
+        if ep.name.lower() == app_config.auth_backend.lower():
+            auth_backend = ep.load()
+            break
+    if not auth_backend:
+        raise ValueError('No authentication auth_backend selected, this is required for the authentication middleware and will process the request and authenticate it')
+    if TestAuthBackend in auth_backend.__mro__:
+        warn('TestAuthBackend is not suitable for production environments')
+    app_config.login_url
+    app.add_middleware(AuthenticationMiddleware, backend=auth_backend)
+    app.add_middleware(SessionMiddleware, secret_key=app_config.secret)
+
 
 @app.route("/")
 @app.route("/packages/")
@@ -72,20 +88,15 @@ async def logout(*args):
     if app_config.auth_enabled and app_config.logout_url:
         return RedirectResponse(app_config.logout_url)
     else:
-        return RedirectResponse('/')
+        return RedirectResponse('/login')
 
-if app_config.auth_enabled:
-    # Lets load in the backend
-    backend = None
-    for ep in iter_entry_points(AUTH_ENTRYPOINT):
-        if ep.name.lower() == app_config.auth_backend.lower():
-            backend = ep.load()
-            break
-    if not backend:
-        raise ValueError('No authentication backend selected, this is required for the authentication middleware and will process the request and authenticate it')
-    if TestAuthBackend in backend.__mro__:
-        warn('TestAuthBackend is not suitable for production environments')
-    app.add_middleware(AuthenticationMiddleware, backend=TestAuthBackend())
+@app.route('/login')
+async def login(*args):
+    if app_config.auth_enabled and app_config.login_url:
+        return auth_backend.login(request)
+    else:
+        return RedirectResponse('/')
+    
 
 app.include_router(base_api)
 app.include_router(docs_api, prefix='/api', tags=['api'])

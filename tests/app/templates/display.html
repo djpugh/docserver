@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Acquire Token Result </title>
+</head>
+<body>
+<p1><b>Acquire Token Result</b> </p1>
+{{ auth_result.id_token_claims.roles }}
+{{ auth_result.id_token_claims.email }}
+<table>
+{% for key, value in auth_result.items() %}
+   <tr>
+        <th> {{ key }} </th>
+        <td> {{ value }} </td>
+   </tr>
+{% endfor %}
+</table>
+
+</body>
+</html>
+
+{'aud': '866c7b0e-dc6c-4168-aedb-2c9f760aa1b8',
+ 'iss': 'https://login.microsoftonline.com/2864f69d-77c3-4fbe-bbc0-97502052391a/v2.0',
+ 'iat': 1565183685,
+ 'nbf': 1565183685,
+ 'exp': 1565187585,
+ 'aio': 'AWQAm/8MAAAAx+uGvikI6PPTTN68/Py8f2UtRuy2U0FWafCQ+1d2XO6n+jPvsj73FyMbSkp8LnNr535N3qCcmstEcVLn0bXhws7x3L87x/XGDplvP68PYhxVFP4IDsXrnezZP3IsOh7u',
+ 'name': 'Pugh, David',
+ 'oid': '44d5866f-46a6-4a0d-9e51-d7a1b5f6b64e',
+ 'preferred_username': 'david.pugh@angloamerican.com',
+ 'sub': '9II4PcJZLClc8B-6hQJ1MMnI8Zqv5dGIT4UCn7Uyrgc',
+ 'tid': '2864f69d-77c3-4fbe-bbc0-97502052391a',
+ 'uti': 'bozcXk_5OkKxIPRHlRAaAA',
+ 'ver': '2.0'}
