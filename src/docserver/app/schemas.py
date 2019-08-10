@@ -6,7 +6,7 @@ from typing import List
 from itsdangerous import URLSafeSerializer
 from pkg_resources import parse_version
 from pkg_resources.extern.packaging.version import LegacyVersion
-from pydantic import BaseModel, validator, ValidationError
+from pydantic import BaseModel, validator, ValidationError, UrlStr
 from werkzeug.utils import secure_filename
 
 from docserver.app.config import app_config
@@ -46,7 +46,7 @@ class PermissionCollection(BaseModel):
 
 class Package(BaseModel):
     name: str
-    repository: str
+    repository: UrlStr
     tags: List[str]
     description: str = None
     permissions: PermissionCollection = PermissionCollection()

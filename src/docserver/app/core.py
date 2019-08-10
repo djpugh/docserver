@@ -1,10 +1,11 @@
 import logging
 import os
+from warnings import warn
 
 from fastapi import FastAPI
-from pkg_resources import resource_filename
+from pkg_resources import resource_filename, iter_entry_points
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import Response, RedirectResponse
 from starlette.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
 from starlette.middleware.authentication import AuthenticationMiddleware
@@ -18,6 +19,9 @@ from docserver.auth.staticfiles import PermissionedStaticFiles, DBPermissionsChe
 from docserver.db.config import db_config
 from docserver.ui.help import build_help
 from docserver.ui.templates.nav import nav
+
+
+AUTH_ENTRYPOINT = 'docserver.auth.backends'
 
 
 logging.basicConfig(level='DEBUG')
@@ -63,7 +67,25 @@ async def search(request: Request, *args, **kwargs):
                                                       'server_title': 'Docserver', 'nav': nav()})
 
 
-app.add_middleware(AuthenticationMiddleware, backend=TestAuthBackend())
+@app.route('/logout')
+async def logout(*args):
+    if app_config.auth_enabled and app_config.logout_url:
+        return RedirectResponse(app_config.logout_url)
+    else:
+        return RedirectResponse('/')
+
+if app_config.auth_enabled:
+    # Lets load in the backend
+    backend = None
+    for ep in iter_entry_points(AUTH_ENTRYPOINT):
+        if ep.name.lower() == app_config.auth_backend.lower():
+            backend = ep.load()
+            break
+    if not backend:
+        raise ValueError('No authentication backend selected, this is required for the authentication middleware and will process the request and authenticate it')
+    if TestAuthBackend in backend.__mro__:
+        warn('TestAuthBackend is not suitable for production environments')
+    app.add_middleware(AuthenticationMiddleware, backend=TestAuthBackend())
 
 app.include_router(base_api)
 app.include_router(docs_api, prefix='/api', tags=['api'])
