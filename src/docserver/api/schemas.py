@@ -3,16 +3,14 @@ import logging
 import os
 from typing import List
 
-from itsdangerous import URLSafeSerializer
 from pkg_resources import parse_version
 from pkg_resources.extern.packaging.version import LegacyVersion
 from pydantic import BaseModel, validator, ValidationError, UrlStr
 from werkzeug.utils import secure_filename
 
-from docserver.app.config import app_config
+from docserver.config import config
 
 
-s = URLSafeSerializer(app_config.key, salt=app_config.salt)
 logger = logging.getLogger(__name__)
 
 
@@ -24,9 +22,9 @@ class Version(BaseModel):
 
 
 class PermissionCollection(BaseModel):
-    read_permission: str = app_config.default_read_permission
-    write_permission: str = app_config.default_write_permission
-    delete_permission: str = app_config.default_delete_permission
+    read_permission: str = config.permissions.default_read_permission
+    write_permission: str = config.permissions.default_write_permission
+    delete_permission: str = config.permissions.default_delete_permission
 
     class Config:
         orm_mode = True
@@ -77,7 +75,7 @@ class CreatePackage(Package):
     def validate_local_version(cls, version):
         print(version)
         parsed_version = parse_version(version)
-        if app_config.releases_only and parsed_version.local is not None:
+        if config.upload.releases_only and parsed_version.local is not None:
             raise ValidationError('Parsed version {parsed_version} is not a clean semantic version')
         return str(parsed_version)
 
@@ -86,15 +84,15 @@ class CreatePackage(Package):
                             secure_filename(self.version))
 
     def get_dir(self):
-        return os.path.join(app_config.docs_dir, secure_filename(self.name))
+        return os.path.join(config.docs_dir, secure_filename(self.name))
 
     def serialize(self):
         params = self.dict()
-        return s.dumps(params)
+        return config.upload.serializer.dumps(params)
 
     @classmethod
     def from_serialized(cls, upload_id):
-        params = s.loads(upload_id)
+        params = config.upload.serializer.loads(upload_id)
         logger.debug(f'Loading package from {params}')
         x = cls(**params)
         logger.debug(f'Loaded package {x} from {params}')

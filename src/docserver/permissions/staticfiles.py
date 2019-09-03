@@ -6,8 +6,8 @@ from starlette.responses import Response, PlainTextResponse
 from starlette.staticfiles import StaticFiles
 from starlette.types import Scope
 
-from docserver.auth.permissions.compare import get_permissions_from_request
 from docserver.db.models import Package
+from docserver.permissions.get import get_permissions_from_request
 
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class DBPermissionsCheck(PermissionsCheck):
         name = os.path.normpath(path).split(os.path.sep)[0]
         logger.debug(f'Module name: {name}')
         logger.debug(f'Provided permissions: {provided_permissions}')
-        package = Package.read_unique(self.session_maker(), params={'name': name})
+        package = Package.read_unique(params={'name': name}, db=self.session_maker())
         if package and package.is_authorised('read', provided_permissions):
             return True
         else:
