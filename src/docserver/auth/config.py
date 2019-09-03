@@ -9,7 +9,6 @@ from pydantic import BaseModel, Schema, SecretStr, validator
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from docserver.auth.providers.test import TestProvider
 
 AUTH_ENTRYPOINT = 'docserver.auth.providers'
 
@@ -37,11 +36,15 @@ class AuthConfig(BaseModel):
 
     @property
     def provider(self):
-        return self.provider_ep.load()[0]
+        if not hasattr(self, '_provider'):
+            super(BaseModel, self).__setattr__('_provider', self.provider_ep.load()[0]())
+        return self._provider
 
     @property
     def provider_class(self):
-        return self.provider_ep.load()[1]
+        if not hasattr(self, '_provider_class'):
+            super(BaseModel, self).__setattr__('_provider_class', self.provider_ep.load()[1])
+        return self._provider_class
 
     @property
     def serializer(self):
@@ -49,6 +52,8 @@ class AuthConfig(BaseModel):
 
     def set_middleware(self, app):
         if self.enabled:
+            from docserver.auth.providers.test import TestProvider
+
             if TestProvider in self.provider_class.__mro__:
                 warn('TestAuthBackend is not suitable for production environments')
             app.add_middleware(AuthenticationMiddleware, backend=self.provider_class)
