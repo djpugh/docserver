@@ -68,8 +68,9 @@ kwargs = dict(name='docserver',
               extras_require={'prebuild_search': ['py_mini_racer']},
               provides=['docserver'],
               test_suite='tests',
-              entry_points={'docserver.auth.backends':
-                  [f'test=docserver.auth.backends.basic:TestAuthBackend',]},
+              entry_points={'docserver.auth.providers':
+                  [f'test=docserver.auth.providers.basic:entrypoint',
+                   f'aad=docserver.auth.providers.aad:entrypoint']},
               description=description,
               long_description=readme,
               package_data={'': ['*.rst',

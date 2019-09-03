@@ -6,7 +6,8 @@ from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.sql.schema import PrimaryKeyConstraint, UniqueConstraint
 
-from docserver.app import schemas
+from docserver.api import schemas
+from docserver.config import config
 
 
 class CustomBase:
@@ -22,7 +23,9 @@ class CustomBase:
         return logging.getLogger(cls.__module__)
 
     @classmethod
-    def create(cls, db: Session, params: dict, **kwargs):
+    def create(cls, params: dict, db: Session = None, **kwargs):
+        if db is None:
+            db = config.db.local_session()
         cls.logger.info(f'Creating object {cls.__name__}')
         cls.logger.debug(f'Creating object {cls.__name__} from {params}')
         db_object = cls(**params)
@@ -32,19 +35,25 @@ class CustomBase:
         return db_object
 
     @classmethod
-    def read(cls, db: Session, skip: int = 0, limit: int = 100, params: dict = None, **kwargs):
+    def read(cls, db: Session = None, skip: int = 0, limit: int = 100, params: dict = None, **kwargs):
+        if db is None:
+            db = config.db.local_session()
         cls.logger.info(f'Reading objects {cls.__name__}')
         cls.logger.debug(f'Reading objects {cls.__name__} from {params}')
-        return cls._read_query(db, params, **kwargs).offset(skip).limit(limit).all()
+        return cls._read_query(params, db=db, **kwargs).offset(skip).limit(limit).all()
 
     @classmethod
-    def read_unique(cls, db: Session, params: dict = None, **kwargs):
+    def read_unique(cls, db: Session = None, params: dict = None, **kwargs):
+        if db is None:
+            db = config.db.local_session()
         cls.logger.info(f'Reading unique object {cls.__name__}')
         cls.logger.debug(f'Reading unique object {cls.__name__} from {params}')
-        return cls._read_query(db, params, **kwargs).first()
+        return cls._read_query(params, db=db, **kwargs).first()
 
     @classmethod
-    def _read_query(cls, db: Session, params: dict = None, **kwargs):
+    def _read_query(cls, params: dict = None, db: Session = None, **kwargs):
+        if db is None:
+            db = config.db.local_session()
         if params is None:
             compare_params = dict()
         else:
@@ -62,7 +71,9 @@ class CustomBase:
         compare_params = {column: params[column] for column in unique_columns if column in params.keys()}
         return compare_params
 
-    def update(self, db: Session, params: dict, **kwargs):
+    def update(self, params: dict, db: Session = None, **kwargs):
+        if db is None:
+            db = config.db.local_session()
         self.logger.info(f'Updating object {self.__class__.__name__}')
         self.logger.debug(f'Updating object {self.__class__.__name__} with {params}')
         params.update(kwargs)
@@ -77,15 +88,17 @@ class CustomBase:
         return self
 
     @classmethod
-    def get_or_create(cls, db: Session, params: Union[dict, schemas.BaseModel], **kwargs):
+    def get_or_create(cls, params: Union[dict, schemas.BaseModel], db: Session = None, **kwargs):
+        if db is None:
+            db = config.db.local_session()
         cls.logger.info(f'Get or create object {cls.__name__}')
-        result = cls.read_unique(db, params=params, **kwargs)
+        result = cls.read_unique(db=db, params=params, **kwargs)
         if result:
             cls.logger.debug(f'{cls.__name__} found with {params}')
             return result
         else:
             cls.logger.debug(f'{cls.__name__} not found with {params}')
-            return cls.create(db, params, **kwargs)
+            return cls.create(params, db=db, **kwargs)
 
 
 Model = declarative_base(cls=CustomBase)
