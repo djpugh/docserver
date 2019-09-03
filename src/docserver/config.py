@@ -27,7 +27,7 @@ class UploadConfig(BaseModel):
 
     @property
     def serializer(self):
-        return URLSafeSerializer(self.secret, salt=self.salt)
+        return URLSafeSerializer(self.secret.get_secret_value(), salt=self.salt.get_secret_value())
 
 
 class AppConfig(BaseModel):

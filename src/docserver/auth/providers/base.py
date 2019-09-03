@@ -1,19 +1,24 @@
+import logging
+
 from starlette.requests import Request
-from starlette.authentication import AuthenticationBackend, AuthenticationError
+from starlette.authentication import AuthenticationBackend, AuthCredentials, UnauthenticatedUser
 
 from docserver.auth.state import AuthState
+from docserver.config import config
+
+
+logger = logging.getLogger(__name__)
 
 
 class BaseAuthenticationProvider(AuthenticationBackend):
 
-    def __init__(self, config, *args, **kwargs):
-        self.config = config
+    def __init__(self, *args, **kwargs):
         self.auth_state_klass = kwargs.get('auth_state_klass', AuthState)
 
-    def process_login_request(self, request):
+    def process_login_callback(self, request):
         redirect = request.query_params.get('redirect', '/')
         auth_state = self.auth_state_klass(login_redirect=redirect)
-        request.session['auth'] = auth_state.store(self.config.serializer)
+        auth_state.save_to_session(config.auth.serializer, request.session)
         return auth_state
 
     def check_state(self, request):
@@ -23,9 +28,17 @@ class BaseAuthenticationProvider(AuthenticationBackend):
         raise NotImplementedError
 
     async def authenticate(self, request: Request, *args, **kwargs):
-        state = AuthState.load_from_session(self.config.serializer, request.session)
-        if state.is_authenticated():
-            # We are authenticated so get the parameters
+        return self.is_authenticated(request)
+
+    def is_authenticated(self, request):
+        print('Authenticating')
+        try:
+            print(request)
+            print('REQ URL', request.url)
+            state = AuthState.load_from_session(config.auth.serializer, request.session, url=request.url)
+            print('state', state)
+            print('Auth Complete')
             return state.credentials, state.authenticated_user
-        else:
-            raise AuthenticationError('Not Authenticated')
+        except Exception:
+            logger.exception('Error authenticating')
+        return None

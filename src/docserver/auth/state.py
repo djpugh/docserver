@@ -1,11 +1,13 @@
 from enum import Enum
+import json
 import logging
-from typing import List
+from typing import List, Union
 import uuid
 
 from pydantic import BaseModel, UrlStr
-from starlette.authentication import SimpleUser, AuthCredentials
+from starlette.authentication import AuthCredentials, SimpleUser, UnauthenticatedUser
 
+from docserver.auth.abac import get_permissions
 
 logger = logging.getLogger(__name__)
 
@@ -27,13 +29,13 @@ class User(BaseModel):
 
     @property
     def permissions(self):
-        return []
+        return get_permissions(self)
 
 
 class AuthState(BaseModel):
 
     session_state: str = str(uuid.uuid4())
-    redirect: UrlStr = '/'
+    redirect: Union[None, str] = None
     state: AuthenticationOptions = AuthenticationOptions.unauthenticated
     user: User = None
 
@@ -44,12 +46,18 @@ class AuthState(BaseModel):
 
     def store(self, serializer):
         # JSON and client secret to encode
+        print(self)
         return serializer.dumps(self.json())
 
     @classmethod
-    def load(cls, serializer, encoded_state=None):
+    def load(cls, serializer, encoded_state=None, url=None):
         if encoded_state:
-            return cls(**serializer.loads(encoded_state))
+            state = json.loads(serializer.loads(encoded_state))
+
+            if url and (not state['redirect'] or state['redirect'].endswith('/login')) and not str(url).endswith('/login'):
+                logger.critical(f'Setting redirect to {url}')
+                state['redirect'] = str(url)
+            return cls(**state)
         else:
             return cls()
 
@@ -61,16 +69,27 @@ class AuthState(BaseModel):
         session[SESSION_STORE_KEY] = state.store(serializer)
 
     @classmethod
-    def load_from_session(cls, serializer, session):
-        return cls.load(serializer, session.get(SESSION_STORE_KEY, None))
+    def load_from_session(cls, serializer, session, url=None):
+        return cls.load(serializer, session.get(SESSION_STORE_KEY, None), url=url)
+
+    def save_to_session(self, serializer, session):
+        session[SESSION_STORE_KEY] = self.store(serializer)
+        return session
 
     def is_authenticated(self):
+        print(self.state)
         return self.user is not None and self.state == AuthenticationOptions.authenticated
 
     @property
     def authenticated_user(self):
-        return SimpleUser(self.user.email)
+        if self.is_authenticated():
+            return SimpleUser(self.user.email)
+        else:
+            return UnauthenticatedUser()
 
     @property
     def credentials(self):
-        return AuthCredentials(self.user.permissions)
+        if self.user:
+            return AuthCredentials(self.user.permissions)
+        else:
+            return AuthCredentials()
