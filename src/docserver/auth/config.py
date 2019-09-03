@@ -8,6 +8,8 @@ from pkg_resources import iter_entry_points
 from pydantic import BaseModel, Schema, SecretStr, validator
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.requests import Request
+from starlette.responses import RedirectResponse
 
 
 AUTH_ENTRYPOINT = 'docserver.auth.providers'
@@ -20,7 +22,8 @@ class AuthConfig(BaseModel):
     enabled: bool = Schema(os.getenv('DOCSERVER_AUTH_ENABLED', '0'))
     provider_ep: Any = Schema(os.getenv('DOCSERVER_AUTH_PROVIDER', 'aad').lower())
     # How to make work in multi-threaded
-    secret: SecretStr = Schema(SecretStr(os.getenv('DOCSERVER_SECRET', str(uuid.uuid4()))))
+    secret: SecretStr = Schema(SecretStr(os.getenv('DOCSERVER_AUTH_SECRET', str(uuid.uuid4()))))
+    salt: SecretStr = Schema(SecretStr(os.getenv('DOCSERVER_AUTH_SALT', str(uuid.uuid4()))))
 
     @validator('enabled', pre=True, always=True)
     def validate_enabled(cls, value):
@@ -41,20 +44,24 @@ class AuthConfig(BaseModel):
         return self._provider
 
     @property
-    def provider_class(self):
-        if not hasattr(self, '_provider_class'):
-            super(BaseModel, self).__setattr__('_provider_class', self.provider_ep.load()[1])
-        return self._provider_class
+    def provider_object(self):
+        if not hasattr(self, '_provider_object'):
+            super(BaseModel, self).__setattr__('_provider_object', self.provider_ep.load()[1]())
+        return self._provider_object
 
     @property
     def serializer(self):
-        return URLSafeSerializer(self.session_secret, salt=self.session_salt)
+        return URLSafeSerializer(self.secret.get_secret_value(), salt=self.salt.get_secret_value())
 
     def set_middleware(self, app):
         if self.enabled:
             from docserver.auth.providers.test import TestProvider
 
-            if TestProvider in self.provider_class.__mro__:
+            if isinstance(self.provider_object, TestProvider):
                 warn('TestAuthBackend is not suitable for production environments')
-            app.add_middleware(AuthenticationMiddleware, backend=self.provider_class)
+
+            def on_auth_error(request: Request, exc: Exception):
+                return RedirectResponse('/login')
+
+            app.add_middleware(AuthenticationMiddleware, backend=self.provider_object, on_error=on_auth_error)
             app.add_middleware(SessionMiddleware, secret_key=self.provider.session_secret)

@@ -26,3 +26,4 @@ reports/*
 data/*
 .idea/*
 src/docserver/ui/help/html/*
+env
