@@ -47,7 +47,7 @@ class BaseAuthenticationProvider(AuthenticationBackend):
         logger.debug(f'Authenticating {request}')
         try:
             state = self.auth_state_klass.load_from_session(config.auth.serializer, request.session, url=request.url)
-            logger.debug(f'Authentication state {state} - Authenticated = {state.is_authenticated()}')
+            logger.debug(f'Authentication state {state} - Authenticated = {state.is_authenticated()}, redirect url = {state.redirect}')
             return state.credentials, state.authenticated_user
         except Exception:
             logger.exception('Error authenticating')

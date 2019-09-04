@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get('/token', response_model=str)
+@router.get('/token', response_model=schemas.TokenResponse)
 async def token(request: Request):
     """
     Get an auth token

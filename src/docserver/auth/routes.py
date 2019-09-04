@@ -1,9 +1,11 @@
+from functools import partial
 import logging
 
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
-from starlette.routing import Route
+from starlette.routing import request_response, Route
 
+from docserver.auth.decorators import auth_required
 from docserver.config import config
 
 
@@ -39,3 +41,32 @@ async def login_callback(request: Request, *args):
 routes = [Route('/logout', endpoint=logout, methods=['GET']),
           Route('/login', endpoint=login, methods=['GET']),
           Route('/login/redirect', endpoint=login_callback)]
+
+
+def wrapper_factory(endpoint):
+
+    @auth_required
+    async def req_wrapper(request: Request, *args, **kwargs):
+        if not config.auth.enabled or config.auth.provider_object.check_state(request):
+            print(endpoint)
+            return await endpoint(request, *args, **kwargs)
+        else:
+            return RedirectResponse('/splash')
+
+    return req_wrapper
+
+
+def app_routes_add_auth(app):
+    if config.auth.enabled:
+        routes = app.router.routes
+        for i, route in enumerate(routes):
+            print(route.name)
+            print(route, route.endpoint, route.app)
+            if route.name in ['openapi', 'swagger_ui_html', 'swagger_ui_redirect', 'redoc_html']:
+                route.endpoint = wrapper_factory(endpoint=route.endpoint)
+                route.app = request_response(route.endpoint)
+            print(route, route.endpoint, route.app)
+            app.router.routes[i] = route
+
+        for i, route in enumerate(routes):
+            print(route.name, route.endpoint)
