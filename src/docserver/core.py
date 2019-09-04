@@ -15,6 +15,7 @@ from docserver.permissions.staticfiles import PermissionedStaticFiles, DBPermiss
 from docserver.ui.help import build_help
 from docserver.ui.index import routes as index_routes
 from docserver.ui.search import routes as search_routes
+from docserver.ui.splash import routes as splash_routes
 
 AUTH_ENTRYPOINT = 'docserver.auth.backends'
 
@@ -28,7 +29,7 @@ app = FastAPI(title='Documentation Server',
               openapi_url=f"/api/v{api_version}/openapi.json",
               docs_url='/api/docs',
               redoc_url='/api/redoc',
-              routes=index_routes+search_routes+auth_routes)
+              routes=index_routes+search_routes+auth_routes+splash_routes)
 
 config.auth.set_middleware(app)
 

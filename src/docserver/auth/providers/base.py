@@ -22,22 +22,29 @@ class BaseAuthenticationProvider(AuthenticationBackend):
         return auth_state
 
     def check_state(self, request):
-        return AuthState.is_authenticated(request.session)
+        state = self.auth_state_klass.load_from_session(config.auth.serializer, request.session)
+        return state.is_authenticated()
 
     def login(self, request):
         raise NotImplementedError
 
+    @property
+    def login_html(self):
+        raise NotImplementedError
+
+    def logout(self, request):
+        self.auth_state_klass.logout(config.auth.serializer, request.session)
+
     async def authenticate(self, request: Request, *args, **kwargs):
-        return self.is_authenticated(request)
+        state = self.is_authenticated(request)
+        logger.debug(f'Provided authentication state {state}')
+        return state
 
     def is_authenticated(self, request):
-        print('Authenticating')
+        logger.debug(f'Authenticating {request}')
         try:
-            print(request)
-            print('REQ URL', request.url)
-            state = AuthState.load_from_session(config.auth.serializer, request.session, url=request.url)
-            print('state', state)
-            print('Auth Complete')
+            state = self.auth_state_klass.load_from_session(config.auth.serializer, request.session, url=request.url)
+            logger.debug(f'Authentication state {state} - Authenticated = {state.is_authenticated()}')
             return state.credentials, state.authenticated_user
         except Exception:
             logger.exception('Error authenticating')

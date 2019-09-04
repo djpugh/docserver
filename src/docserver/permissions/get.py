@@ -21,6 +21,8 @@ def get_permissions_from_request(request: typing.Union[Request, Scope]):
             else:
                 permissions = request['auth'].scopes
             for permission in permissions:
+                if permission == 'authenticated':
+                    continue
                 scope, operation = permission.split('/')
                 mapped_permissions[operation].append(scope)
         except AttributeError:

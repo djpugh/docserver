@@ -26,6 +26,7 @@ class User(BaseModel):
     name: str
     email: str
     roles: List[str]
+    groups: List[str]
 
     @property
     def permissions(self):
@@ -77,7 +78,6 @@ class AuthState(BaseModel):
         return session
 
     def is_authenticated(self):
-        print(self.state)
         return self.user is not None and self.state == AuthenticationOptions.authenticated
 
     @property
@@ -89,7 +89,7 @@ class AuthState(BaseModel):
 
     @property
     def credentials(self):
-        if self.user:
-            return AuthCredentials(self.user.permissions)
+        if self.user and self.is_authenticated():
+            return AuthCredentials(['authenticated'] + self.user.permissions)
         else:
             return AuthCredentials()
