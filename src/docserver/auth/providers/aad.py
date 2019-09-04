@@ -1,14 +1,8 @@
-import atexit
-from asyncio import get_running_loop, run_coroutine_threadsafe
-import json
 import logging
 import os
 from pathlib import Path
 from typing import List
-import uuid
 
-from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
-from fastapi.openapi.models import OAuthFlowAuthorizationCode as OAuthFlowAuthorizationCodeModel
 import msal
 from pydantic import UrlStr, Schema, SecretStr, validator
 from starlette.responses import RedirectResponse
@@ -38,7 +32,7 @@ class AADConfig(ProviderConfig):
                                                      'https://login.microsoftonline.com/organizations')))
     scope: List[str] = ["https://graph.microsoft.com/.default"]
     client_secret: SecretStr = Schema(SecretStr(os.environ.get('DOCSERVER_AAD_CLIENT_SECRET')))
-    redirect_url: UrlStr = Schema(UrlStr(f"{os.environ.get('DOCSERVER_HOST_NAME')}/login/redirect"))
+    redirect_url: UrlStr = Schema(UrlStr(f"{config.host_name}/login/redirect"))
     token_url: UrlStr = None
     cache_file: Path = Schema(os.environ.get('DOCSERVER_AAD_CACHE_PATH', None))
     # login_url: UrlStr

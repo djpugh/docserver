@@ -8,7 +8,7 @@ from starlette.staticfiles import StaticFiles
 from docserver import __version__
 from docserver.api import api_version
 from docserver.api.base import router as base_api
-from docserver.api.base import router as docs_api
+from docserver.api.docs import router as docs_api
 from docserver.auth.routes import routes as auth_routes
 from docserver.config import config
 from docserver.permissions.staticfiles import PermissionedStaticFiles, DBPermissionsCheck

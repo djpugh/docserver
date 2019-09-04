@@ -19,7 +19,7 @@ templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserv
 async def index(request: Request, *args, **kwargs):
     packages = methods.get_available_docs(provided_permissions=get_permissions_from_request(request))
     return templates.TemplateResponse('index.html', {'request': request, 'packages': packages,
-                                                     'server_title': config.server_name, 'nav': nav()})
+                                                     'app_name': config.app_name, 'nav': nav()})
 
 
 routes = [Route("/", endpoint=index, methods=['GET']),

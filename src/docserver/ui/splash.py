@@ -15,7 +15,7 @@ async def splash(request: Request, *args, **kwargs):
     if not config.auth.enabled or config.auth.provider_object.check_state(request):
         # This is authenticated so go straight to the homepage
         return RedirectResponse('/')
-    return templates.TemplateResponse('splash.html', {'request': request, 'server_title': config.server_name,
+    return templates.TemplateResponse('splash.html', {'request': request, 'app_name': config.app_name,
                                                       'login': config.auth.provider_object.login_html})
 
 
