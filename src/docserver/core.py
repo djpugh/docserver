@@ -3,6 +3,8 @@ import os
 
 from fastapi import FastAPI
 from pkg_resources import resource_filename
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
 
 from docserver import __version__
@@ -34,6 +36,13 @@ app = FastAPI(title='Documentation Server',
               redoc_url='/api/redoc',
               routes=index_routes+search_routes+auth_routes+splash_routes)
 
+
+@app.exception_handler(PermissionError)
+async def unicorn_exception_handler(request: Request, exc: PermissionError):
+    return JSONResponse(
+        status_code=401,
+        content={"message": f"Incorrect Permissions"},
+    )
 
 config.auth.set_middleware(app)
 if config.auth.enabled:
