@@ -1,10 +1,13 @@
+from json import JSONDecodeError
 import logging
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
+from fastapi.security.http import HTTPBearer
 import msal
 from pydantic import UrlStr, Schema, SecretStr, validator
+import requests
 from starlette.authentication import AuthenticationError
 from starlette.responses import RedirectResponse
 
@@ -16,13 +19,29 @@ from docserver.config import config
 logger = logging.getLogger(__name__)
 
 
+MS_GRAPH_API_USER = "https://graph.microsoft.com/v1.0/me"
+
+
 class AADAuth(AuthState):
 
-    def set_user_from_response(self, jwt):
-        name = jwt['id_token_claims']['name']
-        email = jwt['id_token_claims']['preferred_username']
-        roles = jwt['id_token_claims'].get('app_roles', [])
-        user = User(name=name, email=email, roles=roles)
+    def set_user_from_response(self, graph_user):
+        # {'@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#users/$entity',
+        #  'businessPhones': [],
+        #  'displayName': '...',
+        #  'givenName': '...',
+        #  'jobTitle': '...',
+        #  'mail': '...',
+        #  'mobilePhone': None,
+        #  'officeLocation': '...',
+        #  'preferredLanguage': None,
+        #  'surname': '...',
+        #  'userPrincipalName': '...',
+        #  'id': '...'}
+        name = ' '.join([graph_user['givenName'], graph_user['surname']])
+        email = graph_user['mail'].lower()
+        username = graph_user['userPrincipalName']
+        # roles = graph_user['id_token_claims'].get('app_roles', [])
+        user = User(name=name, email=email, username=username, roles=[])
         self.user = user
         self.state = AuthenticationOptions.authenticated
 
@@ -93,6 +112,30 @@ class AADAuthProvider(BaseAuthenticationProvider):
         else:
             raise AuthenticationError('Not authenticated')
 
+    def validate_token(self, token):
+        # Here we are going to try authenticating to the scope (graph) with a token and getting the user response
+        try:
+            return 'mail' in self.get_user(token)
+        except JSONDecodeError:
+            return False
+
+    def authenticate_token(self, token, auth_state=None):
+        # Here we are going to try authenticating to the scope (graph) with a token and getting the user response
+        if not auth_state:
+            auth_state = self.auth_state_klass()
+        try:
+            user = self.get_user(token)
+            auth_state.set_user_from_response(user)
+        except (JSONDecodeError, KeyError):
+            pass
+        return auth_state
+
+    @staticmethod
+    def get_user(token):
+        s = requests.sessions.Session()
+        s.headers['Authorization'] = f'Bearer {token}'
+        return s.get(MS_GRAPH_API_USER).json()
+
     def process_login_callback(self, request):
         logger.debug(f'Starting login callback - {request.url}')
         code = request.query_params.get('code', None)
@@ -104,7 +147,9 @@ class AADAuthProvider(BaseAuthenticationProvider):
         result = self.msal_application.acquire_token_by_authorization_code(code, scopes=config.auth.provider.scope,
                                                                            redirect_uri=config.auth.provider.redirect_url)
         # Get the user permissions here
-        auth_state.set_user_from_response(result)
+
+        user = self.get_user(result['access_token'])
+        auth_state.set_user_from_response(user)
         auth_state.save_to_session(config.auth.serializer, request.session)
         logger.debug(f'State {auth_state} - Authenticated = {self.is_authenticated(request)}')
         redirect = str(auth_state.redirect)
@@ -116,6 +161,16 @@ class AADAuthProvider(BaseAuthenticationProvider):
     @property
     def login_html(self):
         return '<a class="btn btn-lg btn-primary btn-block col-8 offset-md-2" href="/login">Sign in with Azure Active Directory</a>'
+
+    @property
+    def api_auth_scheme_klass(self):
+        return HTTPBearer
+
+    def process_api_form(self, request, form):
+        if form.token and self.validate_token(form.token):
+            return form.token
+        else:
+            return self.get_token(request)
 
 
 entrypoint = (AADConfig, AADAuthProvider)
