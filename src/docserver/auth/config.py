@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Any
 import uuid
@@ -11,7 +12,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
-
+logger = logging.getLogger(__name__)
 AUTH_ENTRYPOINT = 'docserver.auth.providers'
 
 
@@ -61,7 +62,8 @@ class AuthConfig(BaseModel):
                 warn('TestAuthBackend is not suitable for production environments')
 
             def on_auth_error(request: Request, exc: Exception):
-                return RedirectResponse('/login')
+                logger.exception(f'Error {exc} for request {request}')
+                return RedirectResponse('/splash')
 
             app.add_middleware(AuthenticationMiddleware, backend=self.provider_object, on_error=on_auth_error)
-            app.add_middleware(SessionMiddleware, secret_key=self.provider.session_secret)
+            app.add_middleware(SessionMiddleware, secret_key=self.provider.session_secret, max_age=self.provider.session_age)

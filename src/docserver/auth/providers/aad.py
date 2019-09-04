@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 
 class AADAuth(AuthState):
-    pass
 
     def set_user_from_response(self, jwt):
         name = jwt['id_token_claims']['name']
@@ -57,36 +56,41 @@ class AADAuthProvider(BaseAuthenticationProvider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(auth_state_klass=AADAuth)
-        cache = msal.SerializableTokenCache()
-        if os.path.exists(config.auth.provider.cache_file):
-            cache.deserialize(open(config.auth.provider.cache_file, "r").read())
-        atexit.register(lambda:
-                        open(config.auth.provider.cache_file, "w").write(cache.serialize())
-                        # The following line persists only when state changed
-                        if cache.has_state_changed else None)
+        # cache = msal.SerializableTokenCache()
+        # if os.path.exists(config.auth.provider.cache_file):
+        #     cache.deserialize(open(config.auth.provider.cache_file, "r").read())
+        # atexit.register(lambda:
+        #                 open(config.auth.provider.cache_file, "w").write(cache.serialize())
+        #                 # The following line persists only when state changed
+        #                 if cache.has_state_changed else None)
 
         self.msal_application = msal.ConfidentialClientApplication(
             config.auth.provider.client_id.get_secret_value(),
             authority=config.auth.provider.authority,
-            client_credential=config.auth.provider.client_secret.get_secret_value(),
-            token_cache=cache)
+            client_credential=config.auth.provider.client_secret.get_secret_value())
+            # token_cache=cache)
 
     def login(self, request):
-        logger.critical(request)
-        print('Logging in')
-        auth_state = self.auth_state_klass(login_redirect=config.auth.provider.redirect_url)
+        logger.debug(f'Logging in - request url {request.url}')
+        auth_state = self.auth_state_klass.load_from_session(config.auth.serializer, request.session)
         if not auth_state.redirect:
             auth_state.redirect = str('/')
-        print('state', auth_state)
-        auth_state.save_to_session(config.auth.serializer, request.session)
-        print(config.auth.provider.redirect_url)
-        authorization_url = self.msal_application.get_authorization_request_url(config.auth.provider.scope,
-                                                                                state=auth_state.session_state,
-                                                                                redirect_uri=config.auth.provider.redirect_url)
-        return RedirectResponse(authorization_url)
+        if auth_state.is_authenticated():
+            redirect = str(auth_state.redirect)
+            if redirect.endswith('/login'):
+                redirect = '/'
+            logger.info(f'Logged in, redirecting to {redirect}')
+            return RedirectResponse(redirect)
+        else:
+            logger.debug(f'state {auth_state}')
+            auth_state.save_to_session(config.auth.serializer, request.session)
+            authorization_url = self.msal_application.get_authorization_request_url(config.auth.provider.scope,
+                                                                                    state=auth_state.session_state,
+                                                                                    redirect_uri=config.auth.provider.redirect_url)
+            return RedirectResponse(authorization_url)
 
     def process_login_callback(self, request):
-        logger.critical('Starting login callback')
+        logger.debug(f'Starting login callback - {request.url}')
         code = request.query_params.get('code', None)
         state = request.query_params.get('state', None)
         if state is None or code is None:
@@ -98,13 +102,16 @@ class AADAuthProvider(BaseAuthenticationProvider):
         # Get the user permissions here
         auth_state.set_user_from_response(result)
         auth_state.save_to_session(config.auth.serializer, request.session)
-        print(auth_state)
-        print(self.is_authenticated(request))
-        logging.critical('Process Completed')
+        logger.debug(f'State {auth_state} - Authenticated = {self.is_authenticated(request)}')
         redirect = str(auth_state.redirect)
         if not redirect:
             redirect = '/'
+        logger.debug(f'Redirecting to {redirect}')
         return RedirectResponse(redirect)
+
+    @property
+    def login_html(self):
+        return '<a class="btn btn-lg btn-primary btn-block col-8 offset-md-2" href="/login">Sign in with Azure Active Directory</a>'
 
 
 entrypoint = (AADConfig, AADAuthProvider)

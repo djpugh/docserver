@@ -3,13 +3,11 @@ from starlette.authentication import requires as starlette_requires
 from docserver.config import config
 
 
-def requires(*args, **kwargs):
+def auth_required(fn):
     if config.auth.enabled:
-        print('auth enabled')
-        kwargs['redirect'] = kwargs.get('redirect', '/login')
-        return starlette_requires(*args, **kwargs)
+        redirect = 'splash'
+        scopes = 'authenticated'
+        # This needs to be provided in the AuthCredentials object
+        return starlette_requires(scopes, redirect=redirect)(fn)
     else:
-        def wrapper(fn):
-            return fn
-
-        return wrapper
+        return fn

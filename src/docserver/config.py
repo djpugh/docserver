@@ -36,6 +36,7 @@ class AppConfig(BaseModel):
     auth: AuthConfig = Schema(AuthConfig())
     db: DBConfig = Schema(DBConfig())
     permissions: PermissionsConfig = Schema(PermissionsConfig())
+    server_name: str = Schema(os.environ.get('DOCSERVER_SERVER_NAME', 'Docserver'))
 
 
 config = AppConfig()
