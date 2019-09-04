@@ -17,12 +17,13 @@ class AppConfigClass:
     # How to make work in multi-threaded
     key = os.getenv('DOCSERVER_SAFE_KEY', str(uuid.uuid4()))
     salt = os.getenv('DOCSERVER_SALT', str(uuid.uuid4()))
+    logout_url = os.getenv('WEBSITE_AUTH_LOGOUT_PATH', None)
     package_url_slug = '/packages'
-    permissions_enabled = os.getenv('DOCSERVER_AUTH_ENABLED', '1').lower() not in ['1', 'true']
+    auth_enabled = os.getenv('DOCSERVER_AUTH_ENABLED', '1').lower() in ['1', 'true']
     default_write_permission = os.getenv('DOCSERVER_DEFAULT_WRITE_SCOPE', DEFAULTS['write'])
     default_read_permission = os.getenv('DOCSERVER_DEFAULT_READ_SCOPE', DEFAULTS['read'])
     default_delete_permission = os.getenv('DOCSERVER_DEFAULT_DELETE_SCOPE', DEFAULTS['delete'])
-
+    auth_backend = os.getenv('DOCSERVER_AUTH_BACKEND', None)
 
 app_config = AppConfigClass()
-logger.debug(f'Authentication status: {app_config.permissions_enabled}')
+logger.debug(f'Authentication status: {app_config.auth_enabled}')

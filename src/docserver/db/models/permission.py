@@ -4,6 +4,7 @@ import logging
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
+from docserver.app.config import app_config
 from docserver.auth.permissions import DEFAULTS, OPERATIONS
 from docserver.db.models.base import Model
 
@@ -20,7 +21,7 @@ class Permission(Model):
 
     def check(self, provided_scopes):
         is_more_powerful_scope = any([fnmatch.fnmatch(self.scope, u) for u in provided_scopes])
-        return self.scope in provided_scopes or is_more_powerful_scope
+        return (not app_config.auth_enabled) or (self.scope in provided_scopes or is_more_powerful_scope)
 
 
 class PermissionCollection(Model):

@@ -6,6 +6,7 @@ from starlette.requests import Request
 from starlette.types import Scope
 
 from docserver.auth.permissions import OPERATIONS
+from docserver.app.config import app_config
 
 
 logger = logging.getLogger(__name__)
@@ -13,17 +14,18 @@ logger = logging.getLogger(__name__)
 
 def get_permissions_from_request(request: typing.Union[Request, Scope]):
     mapped_permissions = {op: [] for op in OPERATIONS}
-    try:
-        if isinstance(request, Request):
-            permissions = request.auth.scopes
-        else:
-            permissions = request['auth'].scopes
-        for permission in permissions:
-            scope, operation = permission.split('/')
-            mapped_permissions[operation].append(scope)
-    except AttributeError:
-        logger.exception(f'Error extracting permissions from request {request}')
-    logger.debug(f'Identified permissions {permissions}')
+    if app_config.auth_enabled:
+        try:
+            if isinstance(request, Request):
+                permissions = request.auth.scopes
+            else:
+                permissions = request['auth'].scopes
+            for permission in permissions:
+                scope, operation = permission.split('/')
+                mapped_permissions[operation].append(scope)
+        except AttributeError:
+            logger.exception(f'Error extracting permissions from request {request}')
+        logger.debug(f'Identified permissions {permissions}')    
     return mapped_permissions
 
 
