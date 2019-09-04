@@ -1,5 +1,8 @@
 import logging
+from typing import List
 
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security.utils import get_authorization_scheme_param
 from starlette.requests import Request
 from starlette.authentication import AuthenticationBackend, AuthCredentials, UnauthenticatedUser
 
@@ -8,6 +11,31 @@ from docserver.config import config
 
 
 logger = logging.getLogger(__name__)
+
+
+class APIAuthenticationCredentials(HTTPAuthorizationCredentials):
+    permissions: List[str]
+
+
+class APIAuthenticator(HTTPBearer):
+
+    async def __call__(self, request: Request):
+        credentials = await super().__call__(request)
+        if config.auth.enabled:
+            logger.info(f'Authenticating {request}')
+            state = config.auth.provider_object.authenticate_token(credentials.credentials)
+            logger.info(state)
+            if state.is_authenticated():
+                scopes = state.credentials.scopes
+            else:
+                logger.info(f'Not authenticated for {request}')
+                raise PermissionError('Not Authenticated')
+        else:
+            scopes = [config.permissions.default_read_permission]
+        credentials = APIAuthenticationCredentials(scheme=credentials.scheme,
+                                                   credentials=credentials.credentials,
+                                                   permissions=scopes)
+        return credentials
 
 
 class BaseAuthenticationProvider(AuthenticationBackend):
@@ -28,6 +56,22 @@ class BaseAuthenticationProvider(AuthenticationBackend):
     def login(self, request):
         raise NotImplementedError
 
+    def get_token(self, request):
+        raise NotImplementedError
+
+    def validate_token(self, token):
+        raise NotImplementedError
+
+    def authenticate_token(self, token):
+        raise NotImplementedError
+
+    def load_from_headers(self, headers):
+        # We have a token, so this is then
+        auth = headers.get('Authorization', None)
+        if auth:
+            return self.authenticate_token(get_authorization_scheme_param(auth)[1])
+        return None
+
     @property
     def login_html(self):
         raise NotImplementedError
@@ -43,8 +87,12 @@ class BaseAuthenticationProvider(AuthenticationBackend):
     def is_authenticated(self, request):
         logger.debug(f'Authenticating {request}')
         try:
-            state = self.auth_state_klass.load_from_session(config.auth.serializer, request.session, url=request.url)
-            logger.debug(f'Authentication state {state} - Authenticated = {state.is_authenticated()}')
+            state = self.auth_state_klass.load_from_session(config.auth.serializer, request.session, url=request.url,)
+            logger.debug(f'Authentication state {state} - Authenticated = {state.is_authenticated()}, redirect url = {state.redirect}')
+            if not state.is_authenticated():
+                # Lets try to load the state from the headers
+                logger.info('Checking headers for token')
+                state = self.load_from_headers(request.headers)
             return state.credentials, state.authenticated_user
         except Exception:
             logger.exception('Error authenticating')
