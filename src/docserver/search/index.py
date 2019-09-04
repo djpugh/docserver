@@ -61,7 +61,6 @@ def build_index(package: schemas.CreatePackage):
             tags.append(tag)
         else:
             tags.append(tag.name)
-    tag_str = ';'.join(tags)
     for (root, _, files) in os.walk(base_dir):
         for filename in files:
             if filename.endswith('.html'):
@@ -75,7 +74,7 @@ def build_index(package: schemas.CreatePackage):
                     else:
                         title = os.path.split(filename)[-1]
                     doc = dict(body=soup.get_text(' '), link=link, title=title)
-                    doc['tags'] = tag_str
+                    doc['tags'] = tags
                     doc['description'] = package.description
                     doc['name'] = package.name
                     doc['repository'] = package.repository

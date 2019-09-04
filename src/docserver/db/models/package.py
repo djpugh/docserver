@@ -124,7 +124,7 @@ class Package(Model):
 
     @property
     def html_tags(self):
-        return '\n'.join([f'<span class="badge badge-info">{u.name}</span>' for u in self.tags])
+        return '\n'.join([f'<a href=/search?q=tags:{u.name}><span class="badge badge-info">{u.name}</span></a>' for u in self.tags])
 
     @classmethod
     def _update_query_with_permissions_check(cls, query, provided_permissions: dict = None,

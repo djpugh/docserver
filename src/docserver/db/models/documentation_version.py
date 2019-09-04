@@ -66,10 +66,3 @@ class DocumentationVersion(Model):
         if os.path.exists(index_filename):
             with open(index_filename) as f:
                 return json.load(f)
-
-
-def make_path(path):
-    required_dir = os.path.join(app_config.docs_dir, path)
-    if not os.path.exists(required_dir):
-        os.makedirs(required_dir, exist_ok=True)
-    return required_dir
