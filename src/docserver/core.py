@@ -37,7 +37,7 @@ app = FastAPI(title='Documentation Server',
 
 config.auth.set_middleware(app)
 if config.auth.enabled:
-    app_routes_add_auth(app)
+    app_routes_add_auth(app, ['openapi', 'swagger_ui_html', 'swagger_ui_redirect', 'redoc_html'])
     app.include_router(auth_api, prefix='/auth', tags=['auth'])
 app.include_router(base_api)
 app.include_router(docs_api, prefix='/api', tags=['api'])

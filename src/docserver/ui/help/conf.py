@@ -14,7 +14,7 @@
 
 import datetime
 
-from docserver import __version__
+from docserver import __copyright__, __version__
 from docserver.config import config
 
 
@@ -59,7 +59,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = f"{config.app_name}"
-copyright = f'{current_year}, David Pugh'
+copyright = __copyright__
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

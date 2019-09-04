@@ -6,6 +6,7 @@ from starlette.responses import RedirectResponse
 from starlette.routing import Route
 from starlette.templating import Jinja2Templates
 
+from docserver import __copyright__, __version__
 from docserver.config import config
 
 templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserver.ui.templates', 'index.html')))
@@ -16,7 +17,8 @@ async def splash(request: Request, *args, **kwargs):
         # This is authenticated so go straight to the homepage
         return RedirectResponse('/')
     return templates.TemplateResponse('splash.html', {'request': request, 'app_name': config.app_name,
-                                                      'login': config.auth.provider_object.login_html})
+                                                      'login': config.auth.provider_object.login_html,
+                                                      'copyright': __copyright__, 'version': __version__})
 
 
 routes = [Route("/splash", endpoint=splash, methods=['GET'])]

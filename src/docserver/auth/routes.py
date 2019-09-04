@@ -56,17 +56,12 @@ def wrapper_factory(endpoint):
     return req_wrapper
 
 
-def app_routes_add_auth(app):
+def app_routes_add_auth(app, route_list, ignore=False):
     if config.auth.enabled:
         routes = app.router.routes
         for i, route in enumerate(routes):
-            print(route.name)
-            print(route, route.endpoint, route.app)
-            if route.name in ['openapi', 'swagger_ui_html', 'swagger_ui_redirect', 'redoc_html']:
+            # Can use allow list or block list (i.e. ignore = True sets all except the route list to have auth
+            if (route.name in route_list and not ignore) or (route.name not in route_list and ignore):
                 route.endpoint = wrapper_factory(endpoint=route.endpoint)
                 route.app = request_response(route.endpoint)
-            print(route, route.endpoint, route.app)
             app.router.routes[i] = route
-
-        for i, route in enumerate(routes):
-            print(route.name, route.endpoint)
