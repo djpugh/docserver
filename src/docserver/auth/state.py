@@ -25,8 +25,8 @@ class User(BaseModel):
 
     name: str
     email: str
-    roles: List[str]
-    groups: List[str]
+    roles: List[str] = []
+    groups: List[str] = []
 
     @property
     def permissions(self):

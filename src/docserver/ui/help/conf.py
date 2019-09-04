@@ -15,6 +15,7 @@
 import datetime
 
 from docserver import __version__
+from docserver.config import config
 
 
 current_year = datetime.datetime.now().year
@@ -57,7 +58,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = "Help"
+project = f"{config.app_name}"
 copyright = f'{current_year}, David Pugh'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -136,7 +137,7 @@ html_theme_options = {
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = f'docserver {__version__} documentation'
+html_title = f'{config.app_name} {__version__} documentation'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
