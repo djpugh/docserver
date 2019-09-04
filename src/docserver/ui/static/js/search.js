@@ -16,7 +16,7 @@ $(document).ready(function() {
     } else{
         for (var item in result) {
           var ref = result[item].ref;
-          var item_tags = '<span class="badge badge-info ml-1">'+store[ref].tags.split(";").join('</span><span class="badge badge-info ml-1">')+'</span>'
+          var item_tags = '<span class="badge badge-info ml-1">'+store[ref].tags.join('</span><span class="badge badge-info ml-1">')+'</span>'
           if (store[ref].repository.startsWith('http')){
               var repo_tag = '<a href="'+
                              store[ref].repository +
