@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <a class="navbar-brand" href="/"><span class="oi oi-book navbar-logo mr-2" title="Docserver" aria-hidden="true"></span> Docserver</a>
+    <a class="navbar-brand" href="/"><span class="oi oi-book navbar-logo mr-2" title="{{ project }}" aria-hidden="true"></span> {{ project }}</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -22,7 +22,7 @@
                         <a class="nav-link" href="/api/docs">API</a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-md-0" action="/search">
+                <form class="form-inline my-2 my-md-0 mr-2" action="/search">
                    <div class="input-group">
                        <input id="search" class="form-control" name="q" type="text" placeholder="Search">
                        <!--Search button-->
@@ -33,6 +33,14 @@
                        </div>
                    </div>
                 </form>
+                <ul class="nav navbar-nav">
+                    <li id="logout" class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <span class="oi oi-account-logout" title="Help" aria-hidden="true">
+                            </span>
+                        </a>
+                    </li>
+                </ul>
             </div>
     </div>
 </nav>

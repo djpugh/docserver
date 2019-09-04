@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<div class="row">
     {% for package in packages %}
-    <div class="col-sm-6 col-12 col-md-4 col-lg-3">
+    <div class="col-sm-6 col-12 col-md-4 col-lg-3 mx-2">
         <div class="card" style="width: 18rem;">
           <div class="card-body">
             <h5 class="card-title">{{ package.name }}</h5>
@@ -17,4 +19,5 @@
         </div>
     </div>
     {% endfor %}
+</div>
 {% endblock content %}

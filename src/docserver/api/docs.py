@@ -6,12 +6,11 @@ from fastapi import APIRouter, HTTPException, UploadFile, File
 from pydantic import ValidationError
 from starlette.requests import Request
 
-from docserver.app import schemas
-from docserver.app.methods import ApplicationMethods
+from docserver.api import schemas
+import docserver.application_methods as methods
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-application_methods = ApplicationMethods()
 
 # TODO: update logging
 # TODO: implement aad backend
@@ -23,18 +22,18 @@ async def available_documentation(request: Request):
     """
     List available packages
     """
-    results = application_methods.get_available_docs(request=request)
+    results = methods.get_available_docs()
     logger.debug(schemas.ResponsePackage.fields)
     return results
 
 
 @router.get('/{package}/versions', response_model=List[schemas.Version])
-async def available_versions(package: str, request: Request):
+async def available_versions(package_name: str, request: Request):
     """
     List available versions of a package
     """
-    package = schemas.Package(name=package)
-    return application_methods.get_versions(package, request=request)
+    package = schemas.Package(name=package_name)
+    return methods.get_versions(package)
 
 
 # Lets add the ability to upload a package
@@ -46,7 +45,7 @@ async def register_package_upload(package: schemas.CreatePackage, request: Reque
     Register a package upload
     """
     # We are going to return a redirect with an id that is encrypted based on a server secret key
-    application_methods.register_package(package, request=request)
+    methods.register_package(package)
     return f"Location: {request.url}/{package.serialize()}"
 
 
@@ -56,7 +55,7 @@ def upload_package(upload_id: str, request: Request, documentation: UploadFile =
     try:
         package_metadata = schemas.CreatePackage.from_serialized(upload_id)
         if os.path.splitext(documentation.filename)[-1] == '.zip':
-            slug = application_methods.save_documentation(documentation, package_metadata, request=request)
+            slug = methods.save_documentation(documentation, package_metadata)
             result = f"Location {request.url.scheme}://{request.url.hostname}/{slug}"
         else:
             raise HTTPException(status_code=401, detail=f'Incorrect filetype (must be zip archive) {documentation.filename}')
