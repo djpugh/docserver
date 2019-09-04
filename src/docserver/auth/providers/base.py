@@ -28,6 +28,9 @@ class BaseAuthenticationProvider(AuthenticationBackend):
     def login(self, request):
         raise NotImplementedError
 
+    def get_token(self, request):
+        raise NotImplementedError
+
     @property
     def login_html(self):
         raise NotImplementedError

@@ -5,6 +5,7 @@ from typing import List
 
 import msal
 from pydantic import UrlStr, Schema, SecretStr, validator
+from starlette.authentication import AuthenticationError
 from starlette.responses import RedirectResponse
 
 from docserver.auth.providers.base import BaseAuthenticationProvider
@@ -82,6 +83,15 @@ class AADAuthProvider(BaseAuthenticationProvider):
                                                                                     state=auth_state.session_state,
                                                                                     redirect_uri=config.auth.provider.redirect_url)
             return RedirectResponse(authorization_url)
+
+    def get_token(self, request):
+        auth_state = self.auth_state_klass.load_from_session(config.auth.serializer, request.session)
+        if auth_state.is_authenticated():
+            account = self.msal_application.get_accounts(auth_state.user.email)[0]
+            return self.msal_application.acquire_token_silent(scopes=config.auth.provider.scope, account=account,
+                                                              authority=config.auth.provider.authority,)
+        else:
+            raise AuthenticationError('Not authenticated')
 
     def process_login_callback(self, request):
         logger.debug(f'Starting login callback - {request.url}')

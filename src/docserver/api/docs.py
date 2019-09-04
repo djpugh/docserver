@@ -12,10 +12,6 @@ import docserver.application_methods as methods
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# TODO: update logging
-# TODO: implement aad backend
-# TODO: implement oauth backend (?) & github?
-
 
 @router.get('/list', response_model=List[schemas.ResponsePackage])
 async def available_documentation(request: Request):
