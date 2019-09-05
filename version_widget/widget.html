@@ -1,0 +1,20 @@
+
+<javascript>
+    $.ajax({$.ajax({
+    url: "/auth/token",
+    success: function(xhr){
+        package = window.location.pathname.split('/')[2];
+        $.ajax({
+            url: "/api/"+package+"/versions",
+            headers: {
+                authorization: "Bearer "+xhr.responseJSON['access_token']
+            },
+            success: function(xhr) {
+               $.each(xhr.responseJSON, function(version){
+                   $("#version_selector").append($("<option></option>").val(version).html(version));
+               });
+            },
+        });
+    },
+})
+</javascript>
