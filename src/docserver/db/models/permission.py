@@ -19,7 +19,8 @@ class Permission(Model):
     def __repr__(self):
         return f'{self.scope}/{self.operation}'
 
-    def check(self, provided_scopes):
+    def check(self, provided_permissions):
+        provided_scopes = [u.split(f'/{self.operation}')[0] for u in provided_permissions if u.endswith(f'/{self.operation}')]
         is_more_powerful_scope = any([fnmatch.fnmatch(self.scope, u) for u in provided_scopes])
         return (not config.auth.enabled) or (self.scope in provided_scopes or is_more_powerful_scope)
 
@@ -29,8 +30,10 @@ class PermissionCollection(Model):
     id = Column(Integer, primary_key=True)
     packages = relationship("Package", backref="permissions")
 
-    def check(self, operation, provided_scopes):
-        return getattr(self, f'{operation}_permission').check(provided_scopes)
+    def check(self, operation, provided_permissions):
+        if provided_permissions is None:
+            provided_permissions = []
+        return getattr(self, f'{operation}_permission').check(provided_permissions)
 
     @classmethod
     def read(cls, db: Session = None, skip=0, limit=100, params=None, **kwargs):

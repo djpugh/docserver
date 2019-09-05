@@ -15,6 +15,7 @@ from docserver.auth.providers.base import BaseAuthenticationProvider
 from docserver.auth.providers.config import ProviderConfig
 from docserver.auth.state import AuthenticationOptions, AuthState, User
 from docserver.config import config
+from docserver.db import models as db_models
 
 logger = logging.getLogger(__name__)
 
