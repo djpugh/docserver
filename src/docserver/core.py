@@ -12,6 +12,7 @@ from docserver.api import api_version
 from docserver.api.auth import router as auth_api
 from docserver.api.base import router as base_api
 from docserver.api.docs import router as docs_api
+from docserver.api.permissions import router as permissions_api
 from docserver.auth.routes import routes as auth_routes
 from docserver.auth.routes import app_routes_add_auth
 from docserver.config import config
@@ -50,6 +51,7 @@ if config.auth.enabled:
     app.include_router(auth_api, prefix='/auth', tags=['auth'])
 app.include_router(base_api)
 app.include_router(docs_api, prefix='/api', tags=['api'])
+app.include_router(permissions_api, prefix='/permissions', tags=['permissions'])
 if not os.path.exists(config.upload.docs_dir):
     os.mkdir(config.upload.docs_dir)
 # We need to add some role based access heres

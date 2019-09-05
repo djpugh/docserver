@@ -101,8 +101,8 @@ class CreatePackage(Package):
     def __repr__(self):
         return f'CreatePackage ({self.dict()})'
 
-    def check_permissions(self, operation, provided_permissions: dict):
-        self.permissions.check(operation, provided_permissions.get(operation, []))
+    def check_permissions(self, operation, provided_permissions: list):
+        self.permissions.check(provided_permissions)
 
 
 class ResponsePackage(Package):
@@ -116,3 +116,21 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "Bearer"
     expires_in: int
+
+
+class PermissionManagement(BaseModel):
+    username: str
+    permission: str
+
+
+class UserResponse(BaseModel):
+    name: str
+    email: str
+    username: str
+    roles: List[str] = []
+    groups: List[str] = []
+    permissions: List[str] = []
+
+    class Config:
+        orm_mode = True
+
