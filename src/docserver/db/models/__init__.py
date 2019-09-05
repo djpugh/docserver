@@ -3,6 +3,7 @@ from docserver.db.models.permission import Permission, PermissionCollection  # n
 from docserver.db.models.tag import Tag  # noqa F401
 from docserver.db.models.package import Package  # noqa F401
 from docserver.db.models.documentation_version import DocumentationVersion  # noqa F401
+from docserver.db.models.user import User  # noqa F401
 
 
 def create_all(config):
