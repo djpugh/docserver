@@ -1,7 +1,6 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, Table
 from sqlalchemy.orm import relationship, Session
 
-from docserver.auth.providers.basic import BasicAuthProvider
 from docserver.config import config
 from docserver.db.models.base import Model
 from docserver.db.models.permission import Permission
@@ -45,8 +44,3 @@ class User(Model):
         db.add(self)
         db.commit()
         db.refresh(self)
-
-
-if config.auth.enabled and isinstance(config.auth.provider_object, BasicAuthProvider):
-    # This is a User object which handles passwords
-    pass

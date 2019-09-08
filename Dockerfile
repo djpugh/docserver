@@ -5,7 +5,7 @@ RUN mkdir -p /data/www/docs
 COPY docker/index_redirect.html /data/www/docs/index.html
 COPY docker/prestart.sh /app/prestart.sh
 
-ENV APP_MODULE=docserver.app.core:app
+ENV APP_MODULE=docserver.core:app
 
 COPY requirements.txt /app/requirements.txt
 
