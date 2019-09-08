@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-md-3">
+  <h1>Current User</h1>
+</div>
+<div class="row">
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <tbody>
+        <tr>
+          <th scope="row">Username</th>
+          <td>{{user.username}}</td>
+        </tr>
+        <tr>
+          <th scope="row">Name</th>
+          <td>{{user.name}}</td>
+        </tr>
+        <tr>
+          <th scope="row">Email</th>
+          <td>{{user.email}}</td>
+        </tr>
+        <tr>
+          <th scope="row">Roles</th>
+          <td>{{user.roles|join(", ")}}</td>
+        </tr>
+        <tr>
+          <th scope="row">Groups</th>
+          <td>{{user.groups|join(", ")}}</td>
+        </tr>
+        <tr>
+          <th scope="row table-dark">Permissions</th>
+          <td><i>{{user.permissions | join("</i>, <i>") | safe}}</i></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<!-- TODO: add Get token - uses JS -->
+{% endblock content %}
