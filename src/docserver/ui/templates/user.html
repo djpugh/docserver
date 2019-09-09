@@ -6,7 +6,7 @@
 </div>
 <div class="row">
   <div class="table-responsive">
-    <table class="table table-hover">
+    <table class="table">
       <tbody>
         <tr>
           <th scope="row">Username</th>
@@ -28,13 +28,47 @@
           <th scope="row">Groups</th>
           <td>{{user.groups|join(", ")}}</td>
         </tr>
-        <tr>
-          <th scope="row table-dark">Permissions</th>
+        <tr class="table-secondary">
+          <th scope="row">Permissions</th>
           <td><i>{{user.permissions | join("</i>, <i>") | safe}}</i></td>
         </tr>
+        <tr>
+          <th scope="row">Bearer Token</th>
+          <td>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <button type="button" class="btn btn-success" id="loadToken" data-toggle="button">
+                  <span class="oi oi-key" title="Me" aria-hidden="true"></span>
+                </button>
+              </div>
+              <input type="text" id="tokenText" class="form-control" value="*********" aria-label="" aria-describedby="token" readonly>
+              <div class="input-group-append">
+                <span class="input-group-text" id="expires"></span>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+
+
       </tbody>
     </table>
   </div>
 </div>
+<script>
+  $(document).ready(function(){
+    $('#tokenText').val('*********');
+    $('#expires').text("");
+    $("#loadToken").click(function(e){
+
+      if (!e.currentTarget.classList.contains("active")){
+        $.ajax("/api/auth/token").done(function(data){
+          $('#tokenText').val(data['access_token']);
+          $('#expires').text("Expires in: "+data['expires_in'] + " s");})}
+      else{
+        $('#tokenText').val('*********');
+        $('#expires').text("")
+      }})});
+</script>
 <!-- TODO: add Get token - uses JS -->
 {% endblock content %}
