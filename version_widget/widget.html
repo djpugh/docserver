@@ -1,6 +1,15 @@
-
-<javascript>
-    $.ajax({$.ajax({
+<div class="container fixed-bottom">
+    <div class="dropup float-right mb-3">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="versionSelectorButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        version
+      </button>
+      <div class="dropdown-menu" id="versionSelector" aria-labelledby="dropdownMenuButton">
+      </div>
+    </div>
+    </div>
+<script>
+    $('#versionSelectorButton').html(window.location.pathname.split('/')[3]);
+    $.ajax({
     url: "/auth/token",
     success: function(xhr){
         package = window.location.pathname.split('/')[2];
@@ -11,10 +20,10 @@
             },
             success: function(xhr) {
                $.each(xhr.responseJSON, function(version){
-                   $("#version_selector").append($("<option></option>").val(version).html(version));
+                   $("#versionSelector").append("<a href='"+url+"'>"+version+"</a>");
                });
             },
         });
     },
 })
-</javascript>
+</script>
