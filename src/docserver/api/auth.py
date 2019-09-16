@@ -43,7 +43,6 @@ async def validate_token(credentials: APIAuthenticationCredentials = Depends(aut
     raise HTTPException(status_code=403, detail=f'Invalid token')
 
 
-@router.get('/me', response_model=Union[User, APIUser])
+@router.get('/me', response_model=Union[schemas.UserResponse, APIUser])
 async def get_me(credentials: APIAuthenticationCredentials = Depends(auth_scheme)):
-    print(credentials)
     return config.auth.provider_object.authenticate_token(credentials.credentials).user

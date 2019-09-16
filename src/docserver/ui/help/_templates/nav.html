@@ -12,6 +12,17 @@
 
                 </ul>
                 <ul class="nav navbar-nav">
+                    <form class="form-inline my-2 my-md-0 mr-2" action="/search">
+                       <div class="input-group">
+                           <input id="search" class="form-control" name="q" type="text" placeholder="Search">
+                           <!--Search button-->
+                           <div class="input-group-append">
+                               <button type="submit" class="btn btn-secondary">
+                                   <span class="oi oi-magnifying-glass" title="Help" aria-hidden="true"></span>
+                               </button>
+                           </div>
+                       </div>
+                    </form>
                     <li class="nav-item">
                         <a class="nav-link" href="/help">
                             <span class="oi oi-question-mark" title="Help" aria-hidden="true">
@@ -22,21 +33,16 @@
                         <a class="nav-link" href="/api/docs">API</a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-md-0 mr-2" action="/search">
-                   <div class="input-group">
-                       <input id="search" class="form-control" name="q" type="text" placeholder="Search">
-                       <!--Search button-->
-                       <div class="input-group-append">
-                           <button type="submit" class="btn btn-secondary">
-                               <span class="oi oi-magnifying-glass" title="Help" aria-hidden="true"></span>
-                           </button>
-                       </div>
-                   </div>
-                </form>
                 <ul class="nav navbar-nav">
+                    <li id="me" class="nav-item">
+                        <a class="nav-link" href="/me">
+                            <span class="oi oi-person" title="Me" aria-hidden="true">
+                            </span>
+                        </a>
+                    </li>
                     <li id="logout" class="nav-item">
                         <a class="nav-link" href="/logout">
-                            <span class="oi oi-account-logout" title="Help" aria-hidden="true">
+                            <span class="oi oi-account-logout" title="Logout" aria-hidden="true">
                             </span>
                         </a>
                     </li>

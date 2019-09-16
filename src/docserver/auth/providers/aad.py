@@ -15,6 +15,7 @@ from docserver.auth.providers.base import BaseAuthenticationProvider
 from docserver.auth.providers.config import ProviderConfig
 from docserver.auth.state import AuthenticationOptions, AuthState, User
 from docserver.config import config
+from docserver.db import models as db_models
 
 logger = logging.getLogger(__name__)
 
@@ -148,7 +149,8 @@ class AADAuthProvider(BaseAuthenticationProvider):
         result = self.msal_application.acquire_token_by_authorization_code(code, scopes=config.auth.provider.scope,
                                                                            redirect_uri=config.auth.provider.redirect_url)
         # Get the user permissions here
-
+        if not 'access_token' in result:
+            raise ValueError(f'Error connecting to AAD {result}')
         user = self.get_user(result['access_token'])
         auth_state.set_user_from_response(user)
         auth_state.save_to_session(config.auth.serializer, request.session)

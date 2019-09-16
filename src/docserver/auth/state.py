@@ -8,6 +8,7 @@ from pydantic import BaseModel, UrlStr
 from starlette.authentication import AuthCredentials, SimpleUser, UnauthenticatedUser
 
 from docserver.auth.abac import get_permissions
+from docserver.db import models as db_models
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +32,12 @@ class User(BaseModel):
 
     @property
     def permissions(self):
-        return get_permissions(self)
+        mapped_permissions = get_permissions(self)
+        db_user = db_models.User.read_unique(params=dict(username=self.username))
+        if db_user:
+            print(db_user.permissions)
+            mapped_permissions += [str(u) for u in db_user.permissions if str(u) not in mapped_permissions]
+        return mapped_permissions
 
 
 class APIUser(BaseModel):

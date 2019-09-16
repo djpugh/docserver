@@ -12,6 +12,7 @@ from docserver.api import api_version
 from docserver.api.auth import router as auth_api
 from docserver.api.base import router as base_api
 from docserver.api.docs import router as docs_api
+from docserver.api.permissions import router as permissions_api
 from docserver.auth.routes import routes as auth_routes
 from docserver.auth.routes import app_routes_add_auth
 from docserver.config import config
@@ -21,6 +22,7 @@ from docserver.ui.help import build_help
 from docserver.ui.index import routes as index_routes
 from docserver.ui.search import routes as search_routes
 from docserver.ui.splash import routes as splash_routes
+from docserver.ui.user import routes as user_routes
 
 AUTH_ENTRYPOINT = 'docserver.auth.backends'
 
@@ -34,7 +36,7 @@ app = FastAPI(title='Documentation Server',
               openapi_url=f"/api/v{api_version}/openapi.json",
               docs_url='/api/docs',
               redoc_url='/api/redoc',
-              routes=index_routes+search_routes+auth_routes+splash_routes)
+              routes=index_routes+search_routes+auth_routes+splash_routes+user_routes)
 
 
 @app.exception_handler(PermissionError)
@@ -47,9 +49,10 @@ async def unicorn_exception_handler(request: Request, exc: PermissionError):
 config.auth.set_middleware(app)
 if config.auth.enabled:
     app_routes_add_auth(app, ['openapi', 'swagger_ui_html', 'swagger_ui_redirect', 'redoc_html'])
-    app.include_router(auth_api, prefix='/auth', tags=['auth'])
-app.include_router(base_api)
-app.include_router(docs_api, prefix='/api', tags=['api'])
+    app.include_router(auth_api, prefix='/api/auth', tags=['auth'])
+app.include_router(base_api, prefix='/api')
+app.include_router(docs_api, prefix='/api/docs', tags=['docs'])
+app.include_router(permissions_api, prefix='/api/permissions', tags=['permissions'])
 if not os.path.exists(config.upload.docs_dir):
     os.mkdir(config.upload.docs_dir)
 # We need to add some role based access heres

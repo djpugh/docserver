@@ -27,3 +27,4 @@ data/*
 .idea/*
 src/docserver/ui/help/html/*
 env
+.docker/*

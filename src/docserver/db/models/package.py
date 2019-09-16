@@ -143,7 +143,7 @@ class Package(Model):
             return query
 
     def is_authorised(self, operation, provided_permissions=None):
-        return self.permissions.check(operation, provided_permissions.get(operation, []))
+        return self.permissions.check(operation, provided_permissions)
 
     @classmethod
     def update_or_create(cls, params: Union[dict, schemas.BaseModel], db: Session = None, **kwargs):
