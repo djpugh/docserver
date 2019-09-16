@@ -40,12 +40,16 @@ class User(BaseModel):
         return mapped_permissions
 
 
+class APIUser(BaseModel):
+    permissions: List[str] = []
+
+
 class AuthState(BaseModel):
 
     session_state: str = str(uuid.uuid4())
     redirect: Union[None, str] = None
     state: AuthenticationOptions = AuthenticationOptions.unauthenticated
-    user: User = None
+    user: Union[User, APIUser] = None
 
     def check_session_state(self, session_state):
         if session_state != self.session_state:
@@ -90,7 +94,10 @@ class AuthState(BaseModel):
     @property
     def authenticated_user(self):
         if self.is_authenticated():
-            return SimpleUser(self.user.email)
+            if isinstance(self.user, User):
+                return SimpleUser(self.user.email)
+            else:
+                return SimpleUser('APIUser')
         else:
             return UnauthenticatedUser()
 

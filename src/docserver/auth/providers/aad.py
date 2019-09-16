@@ -128,7 +128,8 @@ class AADAuthProvider(BaseAuthenticationProvider):
             user = self.get_user(token)
             auth_state.set_user_from_response(user)
         except (JSONDecodeError, KeyError):
-            pass
+            logger.info('AAD auth failed, falling back to JWT')
+            auth_state = super().authenticate_token(token, auth_state)
         return auth_state
 
     @staticmethod
