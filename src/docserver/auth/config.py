@@ -25,8 +25,8 @@ class AuthConfig(BaseModel):
     # How to make work in multi-threaded
     secret: SecretStr = Schema(SecretStr(os.getenv('DOCSERVER_AUTH_SECRET', str(uuid.uuid4()))))
     salt: SecretStr = Schema(SecretStr(os.getenv('DOCSERVER_AUTH_SALT', str(uuid.uuid4()))))
-    token_secret: SecretStr = Schema(SecretStr(os.getenv('DOCSERVER_AUTH_TOKEN_SECRET', str(uuid.uuid4()))))
-    token_lifetime: int = Schema(int(os.getenv('DOCSERVER_AUTH_TOKEN_LIFETIME', 60*60*24*365)))  # Default is 1 year
+    token_secret: SecretStr = Schema(SecretStr(os.getenv('DOCSERVER_UPLOAD_TOKEN_SECRET', str(uuid.uuid4()))))
+    token_lifetime: int = Schema(int(os.getenv('DOCSERVER_UPLOAD_TOKEN_LIFETIME', 60*60*24*365)))  # Default is 1 year
 
     @validator('enabled', pre=True, always=True)
     def validate_enabled(cls, value):

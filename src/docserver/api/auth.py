@@ -21,14 +21,17 @@ async def get_token(request: Request):
     return config.auth.provider_object.get_token(request)
 
 
-@router.get('/token/api', response_model=schemas.TokenResponse)
+@router.get('/token/upload', response_model=schemas.TokenResponse)
 async def get_token(credentials: APIAuthenticationCredentials = Depends(auth_scheme)):
     """Get an application level token for the API"""
-    permissions = [u for u in credentials.credentials if u.endswith('/write')]
+    creds = credentials.permissions
+    permissions = [u for u in creds if u.endswith('/write')]
     # Add any write credentials for any admin credentials
-    permissions += [u.replace('/admin', '/write') for u in credentials.credentials if u.endswith('/admin')]
+    permissions += [u.replace('/admin', '/write') for u in creds if u.endswith('/admin')]
     if not permissions:
         permissions = None
+    logger.info(f'Credentials {creds}')
+    logger.info(f'API Permissions {permissions}')
     if permissions is None:
         raise PermissionError('Not authorised to create an API token')
     token = config.auth.provider_object.get_api_token(scopes=permissions)
