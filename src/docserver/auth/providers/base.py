@@ -1,12 +1,14 @@
+from datetime import datetime, timedelta
 import logging
 from typing import List
 
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.security.utils import get_authorization_scheme_param
+import jwt
 from starlette.requests import Request
 from starlette.authentication import AuthenticationBackend, AuthCredentials, UnauthenticatedUser
 
-from docserver.auth.state import AuthState
+from docserver.auth.state import AuthState, APIUser, AuthenticationOptions
 from docserver.config import config
 
 
@@ -62,8 +64,25 @@ class BaseAuthenticationProvider(AuthenticationBackend):
     def validate_token(self, token):
         raise NotImplementedError
 
-    def authenticate_token(self, token):
-        raise NotImplementedError
+    def authenticate_token(self, token, auth_state=None):
+        # Here we are going to try authenticating to the scope (graph) with a token and getting the user response
+        if not auth_state:
+            auth_state = self.auth_state_klass()
+        logger.info(f'Getting Auth state: {auth_state}')
+        try:
+            if isinstance(token, str):
+                token = token.encode()
+            token = jwt.decode(token, str(config.auth.token_secret))
+            logger.info(token)
+            scopes = token['scopes']
+        except Exception:
+            logger.exception('Error handling token')
+            raise PermissionError('Unauthorised')
+        auth_state.user = APIUser(permissions=scopes)
+        auth_state.state = AuthenticationOptions.authenticated
+        logger.info(f'JWT Auth state: {auth_state}')
+
+        return auth_state
 
     def load_from_headers(self, headers):
         # We have a token, so this is then
@@ -97,3 +116,10 @@ class BaseAuthenticationProvider(AuthenticationBackend):
         except Exception:
             logger.exception('Error authenticating')
         return None
+
+    def get_api_token(self, scopes=None):
+        if not scopes:
+            scopes = [config.permissions.default_write_permission]
+        expires = datetime.utcnow() + timedelta(seconds=config.auth.token_lifetime)
+        token = jwt.encode({'scopes': scopes, 'exp': expires}, str(config.auth.token_secret))
+        return token
