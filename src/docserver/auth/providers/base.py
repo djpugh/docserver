@@ -86,8 +86,10 @@ class BaseAuthenticationProvider(AuthenticationBackend):
 
     def load_from_headers(self, headers):
         # We have a token, so this is then
+        logger.debug(f'Headers {headers}')
         auth = headers.get('Authorization', None)
         if auth:
+            logger.debug(f'Authenticating with {auth}')
             return self.authenticate_token(get_authorization_scheme_param(auth)[1])
         return None
 

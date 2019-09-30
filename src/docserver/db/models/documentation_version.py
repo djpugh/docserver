@@ -8,6 +8,7 @@ from docserver.api import schemas
 from docserver.config import config
 from docserver.db.models.base import Model
 from docserver.db.models.package import Package
+from docserver.storage.filesystem import save_docs
 
 
 class DocumentationVersion(Model):
@@ -21,7 +22,7 @@ class DocumentationVersion(Model):
         # Need to have write permissions for the package
         if db is None:
             db = config.db.local_session()
-        cls.save_docs(package, zipfile)
+        save_docs(package, zipfile)
         db_documentation_version = super(DocumentationVersion, cls).create(params, db=db)
         db_documentation_version.update_latest(db_package, package)
         return db_documentation_version
@@ -41,7 +42,7 @@ class DocumentationVersion(Model):
             if not db_package.is_authorised('write', provided_permissions=provided_permissions):
                 raise PermissionError('Unauthorised')
             cls.logger.debug(f'Found existing version for package {db_package}')
-            cls.save_docs(package, zipfile)
+            save_docs(package, zipfile)
             cls.logger.debug(f'Updating docs file')
         else:
             cls.logger.debug(f'Creating new version for package {db_package}')

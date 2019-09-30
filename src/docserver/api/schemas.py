@@ -84,7 +84,7 @@ class CreatePackage(Package):
                             secure_filename(self.version))
 
     def get_dir(self):
-        return os.path.join(config.docs_dir, secure_filename(self.name))
+        return os.path.join(config.upload.docs_dir, secure_filename(self.name))
 
     def serialize(self):
         params = self.dict()
@@ -102,7 +102,8 @@ class CreatePackage(Package):
         return f'CreatePackage ({self.dict()})'
 
     def check_permissions(self, operation, provided_permissions: list):
-        self.permissions.check(provided_permissions)
+        # Handle this through API
+        self.permissions.check(operation, provided_permissions)
 
 
 class ResponsePackage(Package):

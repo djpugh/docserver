@@ -108,13 +108,13 @@ class Package(Model):
     def read(cls, params: Union[schemas.Package, dict], db: Session = None, *args, **kwargs):
         if db is None:
             db = config.db.local_session()
-        return super(Package, cls).read(db=db, params=cls.get_read_params_dict(params, db=db), *args, **kwargs)
+        return super(Package, cls).read(db=db, params=cls.get_read_params_dict(params=params, db=db), *args, **kwargs)
 
     @classmethod
     def read_unique(cls, params: Union[schemas.Package, dict], db: Session = None,  *args, **kwargs):
         if db is None:
             db = config.db.local_session()
-        return super(Package, cls).read_unique(db=db, params=cls.get_read_params_dict(params, db=db), *args, **kwargs)
+        return super(Package, cls).read_unique(db=db, params=cls.get_read_params_dict(params=params, db=db), *args, **kwargs)
 
     def update(self, params: schemas.Package, db: Session = None, **kwargs):
         if db is None:
