@@ -25,6 +25,12 @@ class UploadConfig(BaseModel):
     def validate_releases_only(cls, value):
         return str(value).lower() in ['1', 'true']
 
+    @validator('search_index_dir', pre=True, always=True)
+    def validate_search_index_dir_exists(cls, value):
+        if not os.path.exists(value):
+            os.makedirs(value, exist_ok=True)
+        return value
+
     @property
     def serializer(self):
         return URLSafeSerializer(self.secret.get_secret_value(), salt=self.salt.get_secret_value())

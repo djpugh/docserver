@@ -21,6 +21,7 @@ class Permission(Model):
 
     def check(self, provided_permissions):
         provided_scopes = [u.split(f'/{self.operation}')[0] for u in provided_permissions if u.endswith(f'/{self.operation}')]
+        logger.debug(f'Provided scopes {provided_scopes}')
         is_more_powerful_scope = any([fnmatch.fnmatch(self.scope, u) for u in provided_scopes])
         return (not config.auth.enabled) or (self.scope in provided_scopes or is_more_powerful_scope)
 
