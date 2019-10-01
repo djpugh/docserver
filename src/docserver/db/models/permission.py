@@ -21,6 +21,7 @@ class Permission(Model):
 
     def check(self, provided_permissions):
         provided_scopes = [u.split(f'/{self.operation}')[0] for u in provided_permissions if u.endswith(f'/{self.operation}')]
+        logger.debug(f'Provided scopes {provided_scopes}')
         is_more_powerful_scope = any([fnmatch.fnmatch(self.scope, u) for u in provided_scopes])
         return (not config.auth.enabled) or (self.scope in provided_scopes or is_more_powerful_scope)
 
@@ -42,22 +43,22 @@ class PermissionCollection(Model):
         # need to get the permission objects here
         mapped = cls.get_mapped_permissions(params, db=db)
         logger.debug(f'Reading permission collection with {mapped}')
-        return super().read(skip, limit, mapped, db=db, **kwargs)
+        return super().read(skip, limit, params=mapped, db=db, **kwargs)
 
     @classmethod
     def read_unique(cls, params=None, db: Session = None, **kwargs):
         if db is None:
             db = config.db.local_session()
         # need to get the permission objects here
-        mapped = cls.get_mapped_permissions(db, params)
+        mapped = cls.get_mapped_permissions(db=db, params=params)
         logger.debug(f'Reading unique permission collection with {mapped}')
-        return super().read_unique(mapped, db=db, **kwargs)
+        return super().read_unique(params=mapped, db=db, **kwargs)
 
     @classmethod
     def create(cls, params: dict, db: Session = None, **kwargs):
         if db is None:
             db = config.db.local_session()
-        mapped = cls.get_mapped_permissions(params, db=db)
+        mapped = cls.get_mapped_permissions(params=params, db=db)
         logger.debug(f'Creating permission collection with {mapped}')
         return super().create(db=db, params=mapped, **kwargs)
 

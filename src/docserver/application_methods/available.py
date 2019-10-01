@@ -14,7 +14,7 @@ def get_available_docs(provided_permissions=None):
     logger.debug(packages)
     filtered_packages = []
     for package in packages:
-        logger.debug(f'{package}, {package.permissions}')
+        logger.debug(f'{package}, {package.permissions}, {provided_permissions}')
         if package.is_authorised('read', provided_permissions):  # This will return true if auth is disabled
             filtered_packages.append(package)
     for package in filtered_packages:

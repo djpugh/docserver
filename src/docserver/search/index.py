@@ -40,19 +40,19 @@ def get_search_index_js(packages):
 
 
 def get_index_filename(name, version):
-    return os.path.join(config.search_index_dir, f'{name}-{version}.json')
+    return os.path.join(config.upload.search_index_dir, f'{name}-{version}.json')
 
 
 def save_index(package, index):
     # Save this as a JSON
-    make_path(config.search_index_dir)
+    make_path(config.upload.search_index_dir)
     index_filename = get_index_filename(package.name, package.version)
     with open(index_filename, 'w') as f:
         json.dump(index, f)
 
 
 def build_index(package: schemas.CreatePackage):
-    url = f'{config.package_url_slug}/{package.name}/{package.version}'
+    url = f'{config.upload.package_url_slug}/{package.name}/{package.version}'
     index = {}
     base_dir = os.path.join(package.get_dir(), package.version)
     tags = []

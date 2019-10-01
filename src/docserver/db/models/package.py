@@ -108,13 +108,13 @@ class Package(Model):
     def read(cls, params: Union[schemas.Package, dict], db: Session = None, *args, **kwargs):
         if db is None:
             db = config.db.local_session()
-        return super(Package, cls).read(db=db, params=cls.get_read_params_dict(params, db=db), *args, **kwargs)
+        return super(Package, cls).read(db=db, params=cls.get_read_params_dict(params=params, db=db), *args, **kwargs)
 
     @classmethod
     def read_unique(cls, params: Union[schemas.Package, dict], db: Session = None,  *args, **kwargs):
         if db is None:
             db = config.db.local_session()
-        return super(Package, cls).read_unique(db=db, params=cls.get_read_params_dict(params, db=db), *args, **kwargs)
+        return super(Package, cls).read_unique(db=db, params=cls.get_read_params_dict(params=params, db=db), *args, **kwargs)
 
     def update(self, params: schemas.Package, db: Session = None, **kwargs):
         if db is None:
@@ -143,6 +143,8 @@ class Package(Model):
             return query
 
     def is_authorised(self, operation, provided_permissions=None):
+        if isinstance(provided_permissions, dict):
+            provided_permissions = provided_permissions.get(operation, [])
         return self.permissions.check(operation, provided_permissions)
 
     @classmethod
@@ -168,5 +170,7 @@ class Package(Model):
     def search_index(self):
         search_index = {}
         for version in self.versions:
-            search_index.update(version.search_index)
+            version_search_index = version.search_index
+            if version_search_index:
+                search_index.update(version_search_index)
         return search_index
