@@ -8,7 +8,7 @@ from sphinx.application import Sphinx
 @click.option('--dist-dir', default=None)
 def build_help(dist_dir=None):
     if not dist_dir:
-        dist_dir =  os.path.join(os.path.dirname(__file__), 'html')
+        dist_dir = os.path.join(os.path.dirname(__file__), 'html')
     app = Sphinx(os.path.dirname(__file__),
                  os.path.dirname(__file__),
                  dist_dir,
