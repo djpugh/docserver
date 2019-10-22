@@ -1,0 +1,62 @@
+sudo: false
+os:
+  - linux
+language:
+  - python
+  - cpp
+python:
+- 3.6
+
+
+branches:
+  except:
+  - gh-pages
+install:
+- pip install tox
+stages:
+- name: lint
+- name: test
+- name: build
+  if: tag =~ ^\d+\.\d+\.\d+$
+script: skip
+jobs:
+  fast_finish: true
+  include:
+  - stage: lint
+    script: tox -e lint
+    python: 3.6
+    name: Lint
+  - stage: test
+    script: tox -e test-py36
+    python: 3.6
+    name: Unit Tests
+  - stage: build
+    python: 3.6
+    name: Build Package
+    script: tox -e build-package
+    deploy:
+    - provider: pypi
+      user: "$PYPI_USERNAME"
+      password: "$PYPI_PW"
+      distributions: sdist
+      skip-cleanup: true
+      on:
+        tags: true
+    - provider: releases
+      file_glob: true
+      file: dist/*
+      api-key: "$GH_PUSH"
+      skip-cleanup: false
+      on:
+        tags: true
+  - stage: docker
+    script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - tox -e build-docker
+    - docker images
+    - docker tag docserver:$TRAVIS_TAG $DOCKER_USERNAME/docserver:$TRAVIS_TAG
+    - docker push $DOCKER_USERNAME/docserver:$TRAVIS_TAG
+    - docker tag docserver:$TRAVIS_TAG $DOCKER_USERNAME/docserver:latest
+    - docker push $DOCKER_USERNAME/docserver:latest
+    python: 3.6
+    name: Build Docker Image

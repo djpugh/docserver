@@ -60,7 +60,10 @@ app.mount(config.upload.package_url_slug,
           PermissionedStaticFiles(permissions_check=DBPermissionsCheck(config.db.local_session),
                                   directory=config.upload.docs_dir, html=True))
 app.mount('/static', StaticFiles(directory=os.path.dirname(resource_filename('docserver.ui.static', 'index.html'))))
-build_help()
-app.mount('/help', StaticFiles(directory=os.path.join(os.path.dirname(resource_filename('docserver.ui.help',
-                                                                                        'index.html')), 'html'),
-                               html=True))
+if config.help_dir is None:
+    build_help()
+    app.mount('/help', StaticFiles(directory=os.path.join(os.path.dirname(resource_filename('docserver.ui.help',
+                                                                                            'index.html')), 'html'),
+                                   html=True))
+else:
+    app.mount('/help', StaticFiles(directory=config.help_dir, html=True))

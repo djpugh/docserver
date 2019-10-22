@@ -28,3 +28,5 @@ data/*
 src/docserver/ui/help/html/*
 env
 .docker/*
+docker-build
+docker-html-help
