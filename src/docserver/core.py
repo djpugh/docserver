@@ -13,11 +13,10 @@ from docserver.api.auth import router as auth_api
 from docserver.api.base import router as base_api
 from docserver.api.docs import router as docs_api
 from docserver.api.permissions import router as permissions_api
-from docserver.auth.routes import routes as auth_routes
 from docserver.auth.routes import app_routes_add_auth
+from docserver.auth.routes import routes as auth_routes
 from docserver.config import config
-from docserver.permissions.staticfiles import PermissionedStaticFiles, DBPermissionsCheck
-
+from docserver.permissions.staticfiles import DBPermissionsCheck, PermissionedStaticFiles
 from docserver.ui.help import build_help
 from docserver.ui.index import routes as index_routes
 from docserver.ui.search import routes as search_routes

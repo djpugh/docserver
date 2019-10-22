@@ -1,8 +1,6 @@
 import logging
 
 
-from starlette.authentication import SimpleUser, AuthCredentials
-
 from docserver.auth.providers.base import BaseAuthenticationProvider
 from docserver.auth.providers.config import ProviderConfig
 

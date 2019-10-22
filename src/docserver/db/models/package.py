@@ -1,14 +1,14 @@
 from typing import List, Union
 
 from pkg_resources import parse_version
-from sqlalchemy import Column, Integer, String, ForeignKey, or_
+from sqlalchemy import Column, ForeignKey, Integer, or_, String
 from sqlalchemy.orm import relationship, Session
 
 from docserver.api import schemas
 from docserver.config import config
 from docserver.db.models.base import Model
 from docserver.db.models.permission import PermissionCollection
-from docserver.db.models.tag import Tag, association_table
+from docserver.db.models.tag import association_table, Tag
 
 # TODO fix tag updating (by id not by obj) - try except somewhere in this
 

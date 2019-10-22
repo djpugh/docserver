@@ -1,12 +1,12 @@
 import fnmatch
 import logging
 
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship, Session
 
 from docserver.config import config
-from docserver.permissions import DEFAULTS, OPERATIONS
 from docserver.db.models.base import Model
+from docserver.permissions import DEFAULTS, OPERATIONS
 
 logger = logging.getLogger(__name__)
 

@@ -4,7 +4,7 @@ from typing import Union
 import uuid
 
 from itsdangerous import URLSafeSerializer
-from pydantic import BaseModel, UrlStr, DirectoryPath, Schema, SecretStr, validator
+from pydantic import BaseModel, DirectoryPath, Schema, SecretStr, UrlStr, validator
 
 from docserver.auth.config import AuthConfig
 from docserver.db.config import DBConfig

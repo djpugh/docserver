@@ -62,7 +62,6 @@ kwargs = dict(name='docserver',
               version=__version__,
               author=__author__,
               author_email=__email__,
-              classifiers=[],
               packages=find_packages('src'),
               package_dir={'': 'src'},
               requires=[],
@@ -104,7 +103,7 @@ kwargs = dict(name='docserver',
                                  'docs/html/_modules/*.*',
                                  'docs/html/_modules/MTfit/*.*',
                                  'docs/html/_sources/*.*',
-                                 'docs/html/_static/*.*']}
+                                 'docs/html/_static/*.*']},
               project_urls={
                     'Source': 'https://github.com/djugh/docserver/',
                     'Tracker': 'https://github.com/djugh/docserver/issues'}

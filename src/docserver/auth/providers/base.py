@@ -2,13 +2,13 @@ from datetime import datetime, timedelta
 import logging
 from typing import List
 
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.security.utils import get_authorization_scheme_param
 import jwt
+from starlette.authentication import AuthenticationBackend
 from starlette.requests import Request
-from starlette.authentication import AuthenticationBackend, AuthCredentials, UnauthenticatedUser
 
-from docserver.auth.state import AuthState, APIUser, AuthenticationOptions
+from docserver.auth.state import APIUser, AuthenticationOptions, AuthState
 from docserver.config import config
 
 

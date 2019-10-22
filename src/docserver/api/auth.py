@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from starlette.requests import Request
 
 from docserver.api import schemas
-from docserver.auth.state import User, APIUser
-from docserver.auth.providers.base import APIAuthenticator, APIAuthenticationCredentials
+from docserver.auth.providers.base import APIAuthenticationCredentials, APIAuthenticator
+from docserver.auth.state import APIUser
 from docserver.config import config
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ async def get_token(request: Request):
 
 
 @router.get('/token/upload', response_model=schemas.TokenResponse)
-async def get_token(credentials: APIAuthenticationCredentials = Depends(auth_scheme)):
+async def get_upload_token(credentials: APIAuthenticationCredentials = Depends(auth_scheme)):
     """Get an application level token for the API"""
     creds = credentials.permissions
     permissions = [u for u in creds if u.endswith('/write')]

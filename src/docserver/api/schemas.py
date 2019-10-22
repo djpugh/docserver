@@ -5,7 +5,7 @@ from typing import List
 
 from pkg_resources import parse_version
 from pkg_resources.extern.packaging.version import LegacyVersion
-from pydantic import BaseModel, validator, ValidationError, UrlStr
+from pydantic import BaseModel, UrlStr, ValidationError, validator
 from werkzeug.utils import secure_filename
 
 from docserver.config import config
@@ -134,4 +134,3 @@ class UserResponse(BaseModel):
 
     class Config:
         orm_mode = True
-
