@@ -5,7 +5,7 @@ language:
 - python
 - cpp
 python:
-- 3.6
+- 3.7
 environment:
   global:
     secure: oGvOBJwYnUUk89Z1hN/qFamq+t6wqSz6orpwpq9/OgkirROW8R5SWKk8Ql/knDS3sAeWkT3L/nYW7tpJPOYLtbWL/pFrdj6uzZTepP+04bJf+fw3Donmm/pc75pCXP0y2ZkFC73/wftfDF+5n0/KnkRw/bUCn32lrM237C2AsC9K04AmV1ltKLM83twHiciirDvr5f1pIeetHXigzj+TFDtn74s+GIz+5mkrxxq9LhOO9d+li55WKwdSsxkqJcb/v33Xckt7Sj+uelXXMjUJCXa+bdaB9cmRZvrxjrsd3PCmuMj3JUqCG9Ipmr8x239u9grgDJAvUsi0B8lETXzCIY9yTUatqBHGBDPsgznDBP8TRp4b28JmNZVQTjgd1ACVRDEzDi4D6ch0jr8SAnPTSDThTSUpFN2Ww1doyrOcYttc4yjLeH3FL0WbxwOJosKh2qHaS3EBCJkCLee4d7q527tlj/NtWV3qodfoR0lzO8kI9R4aAbiI4EHOWLetopfwM0+rlBtTxiky3i5CqzESR7tlgQQsZt4MCKd15JywTGQgW2UgjB4yUdP7AAFqt1g4kabv+T4pC+v07qJYP0Tto+1hIgoVEA2mevuRZpN6DNQ+UO+T/XQQlasNt1UuzKV2xtXQOJSB036i07SVDAolg8Fd5VTo2UaB7gWVXMicljM=
@@ -27,14 +27,14 @@ jobs:
   include:
   - stage: lint
     script: tox -e lint
-    python: 3.6
+    python: 3.7
     name: Lint
   - stage: test
     script: tox -e test-py36
-    python: 3.6
+    python: 3.7
     name: Unit Tests
   - stage: build
-    python: 3.6
+    python: 3.7
     name: Build Package
     script: tox -e build-package
     deploy:
@@ -54,7 +54,7 @@ jobs:
     - docker push $DOCKER_USERNAME/docserver:$TRAVIS_TAG
     - docker tag docserver:$TRAVIS_TAG $DOCKER_USERNAME/docserver:latest
     - docker push $DOCKER_USERNAME/docserver:latest
-    python: 3.6
+    python: 3.7
     name: Build Docker Image
 env:
   global:
