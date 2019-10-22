@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 SQLALCHEMY_DATABASE_URI = os.getenv('DOCSERVER_DATABASE_URI', 'sqlite:////tmp/docserver.db').replace(os.path.sep, '/')
 
 if SQLALCHEMY_DATABASE_URI.startswith('sqlite'):
-    SQLALCHEMY_DB_KWARGS = dict(connect_args={"check_same_thread": False})
+    SQLALCHEMY_DB_KWARGS = dict(connect_args={"check_same_thread": False, "timeout": 20})
 else:
     SQLALCHEMY_DB_KWARGS = dict()
 
