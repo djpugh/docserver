@@ -42,7 +42,7 @@ jobs:
       file_glob: true
       file: dist/*
       api-key: "$GH_PUSH"
-      skip-cleanup: false
+      skip-cleanup: true
       on:
         tags: true
   - stage: docker
