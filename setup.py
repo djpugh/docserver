@@ -25,15 +25,17 @@ __author__ = 'David Pugh'
 __email__ = 'djpugh@gmail.com'
 
 description = 'Document server using fastapi, starlett and uvicorn'
-
+version = parse_version(__version__)
 if parse_version(__version__) < parse_version('0.2.0'):
     development_status = 'Development Status :: 2 - Pre-Alpha'
 elif parse_version(__version__).is_prerelease:
     development_status = 'Development Status :: 4 - Beta'
-elif parse_version(__version__) >= parse_version('0.2.0'):
+elif parse_version(__version__) >= parse_version('0.5.0'):
     development_status = 'Development Status :: 5 - Production/Stable'
 elif parse_version(__version__) >= parse_version('1.0.0'):
     development_status = 'Development Status :: 6 - Mature'
+elif parse_version(__version__) > parse_version('0.2.0'):
+    development_status = 'Development Status :: 4 - Beta'
 else:
     development_status = 'Development Status :: 1 - Planning'
 
@@ -68,8 +70,19 @@ kwargs = dict(name='docserver',
               extras_require={'prebuild_search': ['py_mini_racer']},
               provides=['docserver'],
               test_suite='tests',
+              url='https://github.com/djugh/docserver/',
+              license="MIT",
               entry_points={'docserver.auth.providers': ['test=docserver.auth.providers.basic:entrypoint',
                                                          'aad=docserver.auth.providers.aad:entrypoint']},
+              classifiers=[
+                    development_status,
+                    "Programming Language :: Python :: 3",
+                    "License :: OSI Approved :: MIT License",
+                    "Topic :: Software Development :: Documentation",
+                    "Internet :: WWW/HTTP :: WSGI :: Application",
+                    "Operating System :: OS Independent",
+                    "Programming Language :: Python :: Implementation :: CPython"
+                ],
               description=description,
               long_description=readme,
               package_data={'': ['*.rst',
@@ -92,6 +105,9 @@ kwargs = dict(name='docserver',
                                  'docs/html/_modules/MTfit/*.*',
                                  'docs/html/_sources/*.*',
                                  'docs/html/_static/*.*']}
+              project_urls={
+                    'Source': 'https://github.com/djugh/docserver/',
+                    'Tracker': 'https://github.com/djugh/docserver/issues'}
               )
 
 if cmdclass is not None:

@@ -5,13 +5,11 @@ from sphinx.application import Sphinx
 
 
 @click.command()
-@click.option('--dist-dir', default=None)
-def build_help(dist_dir):
-    if not dist_dir:
-        dist_dir = os.path.join(os.path.dirname(__file__), 'html')
+@click.parameter('--dist-dir', None)
+def build_help(dist_dir=None):
     app = Sphinx(os.path.dirname(__file__),
                  os.path.dirname(__file__),
-                 os.path.join(dist_dir),
-                 os.path.join(dist_dir, '.doctrees'),
+                 os.path.join(os.path.dirname(__file__), 'html'),
+                 os.path.join(os.path.dirname(__file__), 'html', '.doctrees'),
                  'html')
     app.build([])
