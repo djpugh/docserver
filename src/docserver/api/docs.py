@@ -2,14 +2,14 @@ import logging
 import os
 from typing import List
 
-from fastapi import APIRouter, HTTPException, UploadFile, File,Depends
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import ValidationError
 from starlette.requests import Request
 
+from docserver import application_methods as methods
 from docserver.api import schemas
 from docserver.api.auth import auth_scheme
 from docserver.auth.providers.base import APIAuthenticationCredentials
-import docserver.application_methods as methods
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

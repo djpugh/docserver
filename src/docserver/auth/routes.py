@@ -1,4 +1,3 @@
-from functools import partial
 import logging
 
 from starlette.requests import Request
@@ -12,7 +11,7 @@ from docserver.config import config
 logger = logging.getLogger(__name__)
 
 
-async def logout(request:Request, *args):
+async def logout(request: Request, *args):
     if config.auth.enabled:
         config.auth.provider_object.logout(request)
     return RedirectResponse('/splash')

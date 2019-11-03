@@ -2,11 +2,11 @@ from json import JSONDecodeError
 import logging
 import os
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 from fastapi.security.http import HTTPBearer
 import msal
-from pydantic import UrlStr, Schema, SecretStr, validator
+from pydantic import Schema, SecretStr, UrlStr, validator
 import requests
 from starlette.authentication import AuthenticationError
 from starlette.responses import RedirectResponse
@@ -15,7 +15,6 @@ from docserver.auth.providers.base import BaseAuthenticationProvider
 from docserver.auth.providers.config import ProviderConfig
 from docserver.auth.state import AuthenticationOptions, AuthState, User
 from docserver.config import config
-from docserver.db import models as db_models
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +82,7 @@ class AADAuthProvider(BaseAuthenticationProvider):
             config.auth.provider.client_id.get_secret_value(),
             authority=config.auth.provider.authority,
             client_credential=config.auth.provider.client_secret.get_secret_value())
-            # token_cache=cache)
+        # token_cache=cache)
 
     def login(self, request):
         logger.debug(f'Logging in - request url {request.url}')
@@ -150,7 +149,7 @@ class AADAuthProvider(BaseAuthenticationProvider):
         result = self.msal_application.acquire_token_by_authorization_code(code, scopes=config.auth.provider.scope,
                                                                            redirect_uri=config.auth.provider.redirect_url)
         # Get the user permissions here
-        if not 'access_token' in result:
+        if 'access_token' not in result:
             raise ValueError(f'Error connecting to AAD {result}')
         user = self.get_user(result['access_token'])
         auth_state.set_user_from_response(user)

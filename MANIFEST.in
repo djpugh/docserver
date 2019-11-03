@@ -1,2 +1,3 @@
 include versioneer.py
 include src/docserver/_version.py
+include requirements.txt

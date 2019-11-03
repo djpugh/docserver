@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, Table
+from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship, Session
 
 from docserver.config import config
@@ -40,7 +40,7 @@ class User(Model):
         permission = Permission.read_unique(params=dict(operation=op, scope=scope), db=db)
 
         if permission and permission in self.permissions:
-                self.permissions = [u for u in self.permissions if u.id != permission.id]
+            self.permissions = [u for u in self.permissions if u.id != permission.id]
         db.add(self)
         db.commit()
         db.refresh(self)

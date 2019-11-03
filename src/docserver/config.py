@@ -1,9 +1,10 @@
 import logging
 import os
+from typing import Union
 import uuid
 
 from itsdangerous import URLSafeSerializer
-from pydantic import BaseModel, UrlStr, DirectoryPath, Schema, SecretStr, validator
+from pydantic import BaseModel, DirectoryPath, Schema, SecretStr, UrlStr, validator
 
 from docserver.auth.config import AuthConfig
 from docserver.db.config import DBConfig
@@ -44,6 +45,7 @@ class AppConfig(BaseModel):
     permissions: PermissionsConfig = Schema(PermissionsConfig())
     app_name: str = Schema(os.environ.get('DOCSERVER_SERVER_NAME', 'Docserver'))
     host_name: str = Schema(os.environ.get('DOCSERVER_HOST_NAME', None))
+    help_dir: Union[None, DirectoryPath] = Schema(os.getenv('DOCSERVER_HELP_DIR', None))
 
 
 config = AppConfig()

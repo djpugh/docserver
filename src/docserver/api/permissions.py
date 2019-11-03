@@ -1,7 +1,6 @@
 import logging
 
 from fastapi import APIRouter, Depends
-from starlette.requests import Request
 
 from docserver.api import schemas
 from docserver.api.auth import auth_scheme
@@ -28,4 +27,3 @@ async def remove_permission(body: schemas.PermissionManagement, credentials: API
     """
     return manage.remove_permission(username=body.username, permission=body.permission,
                                     provided_permissions=credentials.permissions)
-

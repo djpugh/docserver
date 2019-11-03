@@ -1,0 +1,63 @@
+sudo: false
+os:
+- linux
+language:
+- python
+- cpp
+python:
+- 3.7
+environment:
+  global:
+    secure: oGvOBJwYnUUk89Z1hN/qFamq+t6wqSz6orpwpq9/OgkirROW8R5SWKk8Ql/knDS3sAeWkT3L/nYW7tpJPOYLtbWL/pFrdj6uzZTepP+04bJf+fw3Donmm/pc75pCXP0y2ZkFC73/wftfDF+5n0/KnkRw/bUCn32lrM237C2AsC9K04AmV1ltKLM83twHiciirDvr5f1pIeetHXigzj+TFDtn74s+GIz+5mkrxxq9LhOO9d+li55WKwdSsxkqJcb/v33Xckt7Sj+uelXXMjUJCXa+bdaB9cmRZvrxjrsd3PCmuMj3JUqCG9Ipmr8x239u9grgDJAvUsi0B8lETXzCIY9yTUatqBHGBDPsgznDBP8TRp4b28JmNZVQTjgd1ACVRDEzDi4D6ch0jr8SAnPTSDThTSUpFN2Ww1doyrOcYttc4yjLeH3FL0WbxwOJosKh2qHaS3EBCJkCLee4d7q527tlj/NtWV3qodfoR0lzO8kI9R4aAbiI4EHOWLetopfwM0+rlBtTxiky3i5CqzESR7tlgQQsZt4MCKd15JywTGQgW2UgjB4yUdP7AAFqt1g4kabv+T4pC+v07qJYP0Tto+1hIgoVEA2mevuRZpN6DNQ+UO+T/XQQlasNt1UuzKV2xtXQOJSB036i07SVDAolg8Fd5VTo2UaB7gWVXMicljM=
+branches:
+  except:
+  - gh-pages
+install:
+- pip install tox
+stages:
+- name: lint
+- name: test
+- name: build
+  if: tag =~ ^\d+\.\d+\.\d+$
+- name: docker
+  if: tag =~ ^\d+\.\d+\.\d+$
+script: skip
+jobs:
+  fast_finish: true
+  include:
+  - stage: lint
+    script: tox -e lint
+    python: 3.7
+    name: Lint
+  - stage: test
+    script: tox -e test-py36
+    python: 3.7
+    name: Unit Tests
+  - stage: build
+    python: 3.7
+    name: Build Package
+    script: tox -e build-package
+    deploy:
+    - provider: releases
+      file_glob: true
+      file: dist/*
+      api-key: "$GH_PUSH"
+      skip-cleanup: true
+      on:
+        tags: true
+  - stage: docker
+    script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - tox -e build-docker
+    - docker images
+    - docker tag docserver:$TRAVIS_TAG $DOCKER_USERNAME/docserver:$TRAVIS_TAG
+    - docker push $DOCKER_USERNAME/docserver:$TRAVIS_TAG
+    - docker tag docserver:$TRAVIS_TAG $DOCKER_USERNAME/docserver:latest
+    - docker push $DOCKER_USERNAME/docserver:latest
+    python: 3.7
+    name: Build Docker Image
+env:
+  global:
+  - secure: m1MiBJJ0WRScK0sJTDiZzR/OiV5u7jwm7NhcRGijTaPKSYmDMiMoNUKdlHXbB7cehjPYH2ZYIbusW4nZAuZBsjU+6NVAy1E8FQatC0y7kyDUXYx6bS6PGc1e3qs6NdKDXXSoihZqb0L61pSi76ZK+aqEuwvj3J34cpzvt07/LC3b6vFur6d5CbjeIwd7d5ns85V1HBHQOyAotqwwbebQJYWy69ma54Wfe/3HNknW2I8CTkT0+Tv1DstyrO+QMrsxod1jpkbwGyASM0Nv9LrkkNfFmYYbNhIRXFg5Y9cAkVQxdzQozgIGIYsW6PS4o5ieRUPPY0/a+zc6W+r2AysJs2Fs3t9SgoTAqpMKd0F5paOBjyRXe7dKaTWZy0WmQGuwR2vDmeDcsjmMSemGX5dWnyFswtrpHVXeZn+u+sMc7XB71xLeal+97ebOhdzg19OQc12vvYZq9Tm6PjpngRItb6d2zZNYozG4XJ+3+MT7xz7hwfvDpjEICJsXtzKTakMoQXeN8dwo+ebI3aNjfBPz0UWQ3lDH/Xh0z8loRmZHY1ALIxy+ON3S/6QTP8GKksG20/VDROrV4hqsKDAr9Jux7pv5bpiH3Fh//ogqDPAERj0v5XaXz261ac8OeIM30h/6dyFIcAGjXDGw943MTBR3r3ke0f/pH1F3Fsz3BcEriso=
+  - secure: lleZD3hECOEKLnVD/bBkmygBx53BjIaK0rIyJwxLgyd8SkmM2hbh5PSlwwCmhZKpo37uj4M1FE6qsJTleBWp2JulgX5qlW3zDAOFeVG92n8PM0PA9ofT1HevqeIMfIH4jMim8b/XkKnt7Dy8Yh+6QakdGoM2AOdFS3HazZ+phvNg6eCx+96RpOfbKqPR4H7KzUFFoh63zsrCJbenlZCE1Zmlj+Hd6rbhQ7P+iVxfM9WTI+ur8ts+pMQLZBkw5IfUUAShACj0W59ydAQssitgLSxmt5Xz1swOBsLxvgOdAtiiH3eFyjFnjzEjYekPBhKfH3XVDIpMOSUPAQvgKuPQ1mE1kzQq6SYVrRFOWuKU/v59UOgXWrPQd0eebmlu/hwlinbAHTmb2lUpmBQ8Xr66xEx80Nrzb4orVYLfwFs2D2EaHAQ5TYlVR6Sxg5IDOaC/6dvdC0EIwnU0dSHQ+B81f/swSmsROyTpETgc+UT8UhJJkgQvdLwYFkEVM0rQmD1pIL0SLsBmMGrKAjlBXt5SecwfzxLKdbKVFjRFJS+ssWpkIFm2xvT8/rI/nRyrjuD7Yez0Wf8D2fNoC/0IL3/zE1U4l1fZjdMlFp7V8YuhOc1sIwNvHBv9Ld6s8lrTvohUZkUrk/ONOfK/XCz5QtRLzfv/tsCR2uRJAJHMOJc907s=
+  - secure: KrHHfOk2W+wfbTtJ7DLWIUqeASq+H8UNZObhCtjjuvnOIujlDG+2zMpUZTC+oayIi8LWkVQ2BsXGIJGn/7CtuZ5bOwMryzg95PXaAW4+nH3bRjRakKaUQpauJO9lmlUEIUoX6SvIc5y6a8Xw7KtFW0LFmnJ8YTSJQkW5A/GqhRwdNZtyNf+CF7t8A4saOW/3URotvWBRCkDpvcQfNOr3+EKEoE5f7YwLxo9NrUSMgMPZUVbt36R9218WlQDlXB9s47wiZ/G7Zg3Bjj1R4yr7fcINSQ96qNbEbH6nGsy1sJass7yhDqLCDz5URGpDLyMvJdgSEBrg1AKIDlGY43fF6syBpDjStf4kP74yRUDXbrpbEEzmfc/R5b98Te3y71EUZVYqnJFTmxxcYjhj1r4iOn7q73Uo3C8UKYHbKuAJ2IG8hmvzLT8XpYqylpfzmvsKlGnf3ILLYWgcDRu5SMde9LigdbV/jAsOGfa0HBFzxU2jghOPZtyUxW8z9Rbz/0uvHu6as6r5RLTszJooElIb8BnaSLYNSDZdjZOza9TNylQo4ufgZqtldu7TasrJwAITRgy2u5gO47YUzCoQK+X0pd4WLzDzJG3SBXsB159AGIfjwc8HD7u+6ELE8zkEcjud3RNWAt6Ucia8ISDMBCkGfZWbe1bVtFdpHXgL9B7lLYU=

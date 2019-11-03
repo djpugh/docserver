@@ -1,9 +1,9 @@
 import logging
 from typing import Union
 
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy.orm import Session
 from sqlalchemy.sql.schema import PrimaryKeyConstraint, UniqueConstraint
 
 from docserver.api import schemas

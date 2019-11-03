@@ -1,17 +1,12 @@
 import os
 
-from fastapi.security import HTTPBearer
 from pkg_resources import resource_filename
 from starlette.requests import Request
-from starlette.responses import Response
 from starlette.routing import Route
 from starlette.templating import Jinja2Templates
 
 from docserver.auth.decorators import auth_required
-from docserver.auth.providers.base import APIAuthenticator
 from docserver.config import config
-from docserver.permissions.get import get_permissions_from_request
-from docserver.search.index import get_search_index_js
 from docserver.ui.templates.nav import nav
 
 

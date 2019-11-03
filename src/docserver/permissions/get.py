@@ -1,11 +1,9 @@
-from functools import wraps
 import logging
 import typing
 
 from starlette.requests import Request
 from starlette.types import Scope
 
-from docserver.permissions import OPERATIONS
 from docserver.config import config
 
 
@@ -22,5 +20,5 @@ def get_permissions_from_request(request: typing.Union[Request, Scope]):
                 permissions = request['auth'].scopes
         except AttributeError:
             logger.exception(f'Error extracting permissions from request {request}')
-        logger.debug(f'Identified permissions {permissions}')    
+        logger.debug(f'Identified permissions {permissions}')
     return permissions

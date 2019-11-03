@@ -1,15 +1,15 @@
 import json
 import os
 
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import Session
 
 from docserver.api import schemas
 from docserver.config import config
 from docserver.db.models.base import Model
 from docserver.db.models.package import Package
-from docserver.storage.filesystem import save_docs
 from docserver.search.index import build_index, save_index
+from docserver.storage.filesystem import save_docs
 
 
 class DocumentationVersion(Model):

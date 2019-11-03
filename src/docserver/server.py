@@ -1,8 +1,8 @@
 import uvicorn
 
-from docserver.db.models import create_all
 from docserver.config import config
 from docserver.core import app
+from docserver.db.models import create_all
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ import logging
 import os
 import typing
 
-from starlette.responses import Response, PlainTextResponse
+from starlette.responses import PlainTextResponse, Response
 from starlette.staticfiles import StaticFiles
 from starlette.types import Scope
 

@@ -13,10 +13,10 @@ from docserver.api.auth import router as auth_api
 from docserver.api.base import router as base_api
 from docserver.api.docs import router as docs_api
 from docserver.api.permissions import router as permissions_api
-from docserver.auth.routes import routes as auth_routes
 from docserver.auth.routes import app_routes_add_auth
+from docserver.auth.routes import routes as auth_routes
 from docserver.config import config
-from docserver.permissions.staticfiles import PermissionedStaticFiles, DBPermissionsCheck
+from docserver.permissions.staticfiles import DBPermissionsCheck, PermissionedStaticFiles
 from docserver.ui.help import build_help
 from docserver.ui.index import routes as index_routes
 from docserver.ui.search import routes as search_routes
@@ -59,7 +59,10 @@ app.mount(config.upload.package_url_slug,
           PermissionedStaticFiles(permissions_check=DBPermissionsCheck(config.db.local_session),
                                   directory=config.upload.docs_dir, html=True))
 app.mount('/static', StaticFiles(directory=os.path.dirname(resource_filename('docserver.ui.static', 'index.html'))))
-build_help()
-app.mount('/help', StaticFiles(directory=os.path.join(os.path.dirname(resource_filename('docserver.ui.help',
-                                                                                        'index.html')), 'html'),
-                               html=True))
+if config.help_dir is None:
+    build_help()
+    app.mount('/help', StaticFiles(directory=os.path.join(os.path.dirname(resource_filename('docserver.ui.help',
+                                                                                            'index.html')), 'html'),
+                                   html=True))
+else:
+    app.mount('/help', StaticFiles(directory=config.help_dir, html=True))

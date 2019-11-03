@@ -4,7 +4,7 @@ import logging
 from typing import List, Union
 import uuid
 
-from pydantic import BaseModel, UrlStr
+from pydantic import BaseModel
 from starlette.authentication import AuthCredentials, SimpleUser, UnauthenticatedUser
 
 from docserver.auth.abac import get_permissions
