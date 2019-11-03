@@ -17,7 +17,6 @@ from docserver.auth.routes import routes as auth_routes
 from docserver.auth.routes import app_routes_add_auth
 from docserver.config import config
 from docserver.permissions.staticfiles import PermissionedStaticFiles, DBPermissionsCheck
-
 from docserver.ui.help import build_help
 from docserver.ui.index import routes as index_routes
 from docserver.ui.search import routes as search_routes
