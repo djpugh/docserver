@@ -50,7 +50,7 @@ class AADConfig(ProviderConfig):
     client_id: SecretStr = Schema(SecretStr(os.environ.get('DOCSERVER_AAD_CLIENT_ID')))
     authority: UrlStr = Schema(UrlStr(os.environ.get('DOCSERVER_AAD_AUTHORITY',
                                                      'https://login.microsoftonline.com/organizations')))
-    scope: List[str] = ["https://graph.microsoft.com/.default"]
+    scope: List[str] = ["User.Read"]
     client_secret: SecretStr = Schema(SecretStr(os.environ.get('DOCSERVER_AAD_CLIENT_SECRET')))
     redirect_url: UrlStr = Schema(UrlStr(f"{config.host_name}/login/redirect"))
     token_url: UrlStr = None
