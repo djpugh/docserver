@@ -1,10 +1,10 @@
 import logging
 import os
+import subprocess
+import sys
 
 from fastapi import FastAPI
 from pkg_resources import resource_filename
-from starlette.requests import Request
-from starlette.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
 
 from docserver import __version__
@@ -17,7 +17,6 @@ from docserver.auth.routes import app_routes_add_auth
 from docserver.auth.routes import routes as auth_routes
 from docserver.config import config
 from docserver.permissions.staticfiles import DBPermissionsCheck, PermissionedStaticFiles
-from docserver.ui.help import build_help
 from docserver.ui.index import routes as index_routes
 from docserver.ui.search import routes as search_routes
 from docserver.ui.splash import routes as splash_routes
@@ -37,14 +36,6 @@ app = FastAPI(title='Documentation Server',
               redoc_url='/api/redoc',
               routes=index_routes+search_routes+auth_routes+splash_routes+user_routes)
 
-
-@app.exception_handler(PermissionError)
-async def unicorn_exception_handler(request: Request, exc: PermissionError):
-    return JSONResponse(
-        status_code=401,
-        content={"message": f"Incorrect Permissions"},
-    )
-
 config.auth.set_middleware(app)
 if config.auth.enabled:
     app_routes_add_auth(app, ['openapi', 'swagger_ui_html', 'swagger_ui_redirect', 'redoc_html'])
@@ -60,9 +51,12 @@ app.mount(config.upload.package_url_slug,
                                   directory=config.upload.docs_dir, html=True))
 app.mount('/static', StaticFiles(directory=os.path.dirname(resource_filename('docserver.ui.static', 'index.html'))))
 if config.help_dir is None:
-    build_help()
+    logging.info('Building Docs')
+    subprocess.check_call([sys.executable, '-m', 'docserver.ui.help'])
+    logging.info('Docs built')
     app.mount('/help', StaticFiles(directory=os.path.join(os.path.dirname(resource_filename('docserver.ui.help',
                                                                                             'index.html')), 'html'),
                                    html=True))
 else:
     app.mount('/help', StaticFiles(directory=config.help_dir, html=True))
+logging.info('Application ready')

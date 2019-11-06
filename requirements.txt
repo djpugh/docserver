@@ -9,5 +9,5 @@ python-multipart
 requests
 sphinx
 beautifulsoup4
-msal
+msal==1.0.0
 psycopg2

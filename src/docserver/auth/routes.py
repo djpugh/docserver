@@ -39,7 +39,8 @@ async def login_callback(request: Request, *args):
 
 routes = [Route('/logout', endpoint=logout, methods=['GET']),
           Route('/login', endpoint=login, methods=['GET']),
-          Route('/login/redirect', endpoint=login_callback)]
+          Route('/login/redirect', endpoint=login_callback),
+          Route('/login/None', endpoint=login_callback)]
 
 
 def wrapper_factory(endpoint):
