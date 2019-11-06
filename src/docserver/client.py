@@ -49,7 +49,6 @@ class Client:
                                  headers={'Authorization': f'Bearer {self.token}'})
         response.raise_for_status()
         upload_url = response.content.decode().split('Location: ')[1][:-1]
-        print(upload_url)
         response = requests.put(upload_url, files={'documentation': ('docs-upload.zip', open(zipfile, 'rb').read())},
                                 headers={'Authorization': f'Bearer {self.token}'})
         response.raise_for_status()

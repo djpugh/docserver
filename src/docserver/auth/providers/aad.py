@@ -100,7 +100,8 @@ class AADAuthProvider(BaseAuthenticationProvider):
             auth_state.save_to_session(config.auth.serializer, request.session)
             authorization_url = self.msal_application.get_authorization_request_url(config.auth.provider.scope,
                                                                                     state=auth_state.session_state,
-                                                                                    redirect_uri=config.auth.provider.redirect_url)
+                                                                                    redirect_uri=config.auth.provider.redirect_url,
+                                                                                    prompt="consent")
             return RedirectResponse(authorization_url)
 
     def get_token(self, request):

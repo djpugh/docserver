@@ -23,4 +23,5 @@ async def index(request: Request, *args, **kwargs):
 
 
 routes = [Route("/", endpoint=index, methods=['GET']),
-          Route("/packages/", endpoint=index, methods=['GET'])]
+          Route("/packages/", endpoint=index, methods=['GET']),
+          Route("/login/None", endpoint=index, methods=['GET'])]
