@@ -1,14 +1,8 @@
-sudo: false
 os:
 - linux
-language:
-- python
-- cpp
+language: python
 python:
 - 3.7
-environment:
-  global:
-    secure: oGvOBJwYnUUk89Z1hN/qFamq+t6wqSz6orpwpq9/OgkirROW8R5SWKk8Ql/knDS3sAeWkT3L/nYW7tpJPOYLtbWL/pFrdj6uzZTepP+04bJf+fw3Donmm/pc75pCXP0y2ZkFC73/wftfDF+5n0/KnkRw/bUCn32lrM237C2AsC9K04AmV1ltKLM83twHiciirDvr5f1pIeetHXigzj+TFDtn74s+GIz+5mkrxxq9LhOO9d+li55WKwdSsxkqJcb/v33Xckt7Sj+uelXXMjUJCXa+bdaB9cmRZvrxjrsd3PCmuMj3JUqCG9Ipmr8x239u9grgDJAvUsi0B8lETXzCIY9yTUatqBHGBDPsgznDBP8TRp4b28JmNZVQTjgd1ACVRDEzDi4D6ch0jr8SAnPTSDThTSUpFN2Ww1doyrOcYttc4yjLeH3FL0WbxwOJosKh2qHaS3EBCJkCLee4d7q527tlj/NtWV3qodfoR0lzO8kI9R4aAbiI4EHOWLetopfwM0+rlBtTxiky3i5CqzESR7tlgQQsZt4MCKd15JywTGQgW2UgjB4yUdP7AAFqt1g4kabv+T4pC+v07qJYP0Tto+1hIgoVEA2mevuRZpN6DNQ+UO+T/XQQlasNt1UuzKV2xtXQOJSB036i07SVDAolg8Fd5VTo2UaB7gWVXMicljM=
 branches:
   except:
   - gh-pages
@@ -38,13 +32,12 @@ jobs:
     name: Build Package
     script: tox -e build-package
     deploy:
-    - provider: releases
-      file_glob: true
+      provider: releases
+      api_key:
+        secure: n94h3v1FMLG9TmNrIx5uNlyssoS9RycZbL8W+eogAZhFzutjtHl0GXfD/TvksajktuhOCTpRaElpz5LJB4v2RbH6Wt73ipazsC3K3868d/hnlK75qzdJa63+pkyyPATA6d+A0vRdBN7zFNthqsaVeCWFhHdjp/3pWL/uaXQQoFBTvCovFaXcq+VfpQRvdy/ZNkO1Jr5Z+DvQqaxN+bss67EJH+3q/7/WgSRH00U8Wb/pN5yd/i6/A7nLWSfJFfAjI5MSkWV3yTLUtoBxzsBGqM9OhHT2tEpojxKRD41noZwyszjSERWxn9CBRH1diT61Z7jSw/pwoYUJ8KRmJ9PjfOegS1DGv/maHTeUvLqtWNouLkWEchzpMeyhqq9awD4nYYWJ3Zv81ebRzETQcoQ40nBvkFMXAzNU1BRVsbHP2p0tfF5GIoZ/2W0SXt9WoOJZfHB/Hy5G+SC9Cq3hZYmaqB0V6Oz2ezZ/tJPcloWndO4J0sMAMt+VEdBqMr58hkzGj2ALInQlqkEVepVqDIAOliCxap3d/LlnvfonS3PrsiJEHboiDlto66C1nQuLsHlwrnffW4Tb/GQ9hZbRq1++ljq2PFu4sG2jjgjqad0FiLLGTRLJubhKaZEDcaFP38zk+m8fQ40HPSyU8k0casWdV1LdvcbxCUHe0zBZrUpPfBs=
       file: dist/*
-      api-key: "$GH_PUSH"
-      skip-cleanup: true
       on:
-        tags: true
+        repo: djpugh/docserver
   - stage: docker
     script:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -60,4 +53,4 @@ env:
   global:
   - secure: m1MiBJJ0WRScK0sJTDiZzR/OiV5u7jwm7NhcRGijTaPKSYmDMiMoNUKdlHXbB7cehjPYH2ZYIbusW4nZAuZBsjU+6NVAy1E8FQatC0y7kyDUXYx6bS6PGc1e3qs6NdKDXXSoihZqb0L61pSi76ZK+aqEuwvj3J34cpzvt07/LC3b6vFur6d5CbjeIwd7d5ns85V1HBHQOyAotqwwbebQJYWy69ma54Wfe/3HNknW2I8CTkT0+Tv1DstyrO+QMrsxod1jpkbwGyASM0Nv9LrkkNfFmYYbNhIRXFg5Y9cAkVQxdzQozgIGIYsW6PS4o5ieRUPPY0/a+zc6W+r2AysJs2Fs3t9SgoTAqpMKd0F5paOBjyRXe7dKaTWZy0WmQGuwR2vDmeDcsjmMSemGX5dWnyFswtrpHVXeZn+u+sMc7XB71xLeal+97ebOhdzg19OQc12vvYZq9Tm6PjpngRItb6d2zZNYozG4XJ+3+MT7xz7hwfvDpjEICJsXtzKTakMoQXeN8dwo+ebI3aNjfBPz0UWQ3lDH/Xh0z8loRmZHY1ALIxy+ON3S/6QTP8GKksG20/VDROrV4hqsKDAr9Jux7pv5bpiH3Fh//ogqDPAERj0v5XaXz261ac8OeIM30h/6dyFIcAGjXDGw943MTBR3r3ke0f/pH1F3Fsz3BcEriso=
   - secure: lleZD3hECOEKLnVD/bBkmygBx53BjIaK0rIyJwxLgyd8SkmM2hbh5PSlwwCmhZKpo37uj4M1FE6qsJTleBWp2JulgX5qlW3zDAOFeVG92n8PM0PA9ofT1HevqeIMfIH4jMim8b/XkKnt7Dy8Yh+6QakdGoM2AOdFS3HazZ+phvNg6eCx+96RpOfbKqPR4H7KzUFFoh63zsrCJbenlZCE1Zmlj+Hd6rbhQ7P+iVxfM9WTI+ur8ts+pMQLZBkw5IfUUAShACj0W59ydAQssitgLSxmt5Xz1swOBsLxvgOdAtiiH3eFyjFnjzEjYekPBhKfH3XVDIpMOSUPAQvgKuPQ1mE1kzQq6SYVrRFOWuKU/v59UOgXWrPQd0eebmlu/hwlinbAHTmb2lUpmBQ8Xr66xEx80Nrzb4orVYLfwFs2D2EaHAQ5TYlVR6Sxg5IDOaC/6dvdC0EIwnU0dSHQ+B81f/swSmsROyTpETgc+UT8UhJJkgQvdLwYFkEVM0rQmD1pIL0SLsBmMGrKAjlBXt5SecwfzxLKdbKVFjRFJS+ssWpkIFm2xvT8/rI/nRyrjuD7Yez0Wf8D2fNoC/0IL3/zE1U4l1fZjdMlFp7V8YuhOc1sIwNvHBv9Ld6s8lrTvohUZkUrk/ONOfK/XCz5QtRLzfv/tsCR2uRJAJHMOJc907s=
-  - secure: IAmF7W95S9c3GgnjqZcLzaTStM28qxcTyJF6Cr1LbLLUW6Qhy4cO9Fmx+WF3rZfm5zvvplRJY7eo7LD6y4doCzJBP9iJFASGTxJSgusAhS8k4IKgxOE9zLhifgE9ucJ3mifHs4hA6uEZF+DlCHfhCudAejqNF6Gc8nQEdc/Q/OivTepmXp3Qji3Wwl9vGdH+RqCjjJ1aaaLPFsaOeJb0iCi3F4zztrINmW2Di7UpMVIQ/pAPpTwVx5lRp8ZZMo0dsGwg+MrMIrOspbVNohob4Fq27wRXEbtlb+adOF7zbukAXg1RwKhzZgDRdj+prEKmBZMKr+oQQOE3/Rs0JKfFTmkECjUPHoniUWBbwTD592QSelQEQPtdmQJk0lm3m7SdUMKbln9THu6zxUtVu/cWT/WefbakAs5Yg9BySI7mVv/NBFibxOzRA9vPlyGRcKYTtL6Uid/Ox4MCTvx5/ARTquf+LgtMo7KTbVtctkeBCu1WfBekcaUYQTB0s9ILdRPdB5mQCCtj1TflPH/FIMu7CApeR+b20k2gINNdh52Q4gfu+FbDxcMoLv0zRQL5wTrR4gdDpXP78nTRTCi0AN5E1mTxwraEUiiieGZ5njghj4Pc1J6agDSBHihk0yEfnszLuT6RPsCOvKLCHsrdbqJ0PaVdxEnunLPgtjAZOjm6fP4=
+
