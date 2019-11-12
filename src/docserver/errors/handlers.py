@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 def register(app, handler=None, exception=None):
     """Default to registering all handlers here"""
     if handler is None:
-        for exception, handler in ALL_HANDLERS:
+        for handler, exception in ALL_HANDLERS:
             app.exception_handler(exception)(handler)
     else:
         return app.exception_handler(exception)(handler)
