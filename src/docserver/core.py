@@ -16,6 +16,7 @@ from docserver.api.permissions import router as permissions_api
 from docserver.auth.routes import app_routes_add_auth
 from docserver.auth.routes import routes as auth_routes
 from docserver.config import config
+from docserver.errors.handlers import register as register_error_handlers
 from docserver.permissions.staticfiles import DBPermissionsCheck, PermissionedStaticFiles
 from docserver.ui.index import routes as index_routes
 from docserver.ui.search import routes as search_routes
@@ -35,6 +36,8 @@ app = FastAPI(title='Documentation Server',
               docs_url='/api/docs',
               redoc_url='/api/redoc',
               routes=index_routes+search_routes+auth_routes+splash_routes+user_routes)
+
+register_error_handlers(app)
 
 config.auth.set_middleware(app)
 if config.auth.enabled:
