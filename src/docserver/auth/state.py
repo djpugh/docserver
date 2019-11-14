@@ -5,7 +5,7 @@ from typing import List, Union
 import uuid
 
 from pydantic import BaseModel
-from starlette.authentication import AuthCredentials, SimpleUser, UnauthenticatedUser
+from starlette.authentication import AuthCredentials, AuthenticationError, SimpleUser, UnauthenticatedUser
 
 from docserver.auth.abac import get_permissions
 from docserver.db import models as db_models
@@ -53,7 +53,7 @@ class AuthState(BaseModel):
 
     def check_session_state(self, session_state):
         if session_state != self.session_state:
-            raise ValueError("Session states do not match")
+            raise AuthenticationError("Session states do not match")
         return True
 
     def store(self, serializer):

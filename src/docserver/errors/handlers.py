@@ -1,8 +1,10 @@
 import logging
+import urllib.parse
 
 from fastapi.exceptions import RequestValidationError
+from starlette.authentication import AuthenticationError
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, RedirectResponse
 from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
 
@@ -26,9 +28,13 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
             exc_str = str(exc)
         except RuntimeError as e:
             exc_str = str(e)
-        body = await request.json()
-        logger.exception(f'Error handling Request Validation Error {exc_str} - request: {request.headers} {body}')
+        logger.exception(f'Error handling Request Validation Error {exc_str} - request: {request.headers}')
         return JSONResponse(status_code=HTTP_422_UNPROCESSABLE_ENTITY, content={"detail": str(exc)})
 
 
-ALL_HANDLERS = [(validation_exception_handler, RequestValidationError)]
+async def authentication_exception_handler(request: Request, exc: AuthenticationError) -> RedirectResponse:
+    return RedirectResponse(f'/splash?error={urllib.parse.quote(exc[0])}')
+
+
+ALL_HANDLERS = [(validation_exception_handler, RequestValidationError),
+                (authentication_exception_handler, AuthenticationError)]
