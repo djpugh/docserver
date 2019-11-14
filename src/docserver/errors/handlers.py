@@ -5,7 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from starlette.authentication import AuthenticationError
 from starlette.requests import Request
 from starlette.responses import JSONResponse, RedirectResponse
-from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY, HTTP_403_FORBIDDEN
+from starlette.status import HTTP_403_FORBIDDEN, HTTP_422_UNPROCESSABLE_ENTITY
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ async def authentication_exception_handler(request: Request, exc: Authentication
 
 
 async def permission_exception_handler(request: Request, exc: PermissionError) -> JSONResponse:
-        return JSONResponse(status_code=HTTP_403_FORBIDDEN, content={"detail": "Unauthorised"})
+    return JSONResponse(status_code=HTTP_403_FORBIDDEN, content={"detail": "Unauthorised"})
 
 
 ALL_HANDLERS = [(validation_exception_handler, RequestValidationError),
