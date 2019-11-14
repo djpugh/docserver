@@ -22,7 +22,11 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     try:
         return JSONResponse(status_code=HTTP_422_UNPROCESSABLE_ENTITY, content={"detail": exc.errors()})
     except RuntimeError:
-        logger.exception(f'Error handling Request Validation Error {exc} - request: {request.headers} {request.body()}')
+        try:
+            exc_str = str(exc)
+        except RuntimeError as e:
+            exc_str = str(e)
+        logger.exception(f'Error handling Request Validation Error {exc_str} - request: {request.headers} {request.body()}')
         return JSONResponse(status_code=HTTP_422_UNPROCESSABLE_ENTITY, content={"detail": str(exc)})
 
 
