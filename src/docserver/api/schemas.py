@@ -65,18 +65,18 @@ class CreatePackage(Package):
 
     @validator('version', always=True, pre=True)
     def validate_semantic_version(cls, version):
-        print(version)
+        logger.debug(f'Provided version {version}')
         parsed_version = parse_version(version)
         if isinstance(parsed_version, LegacyVersion):
-            raise ValidationError('Expect semantic version string (Major.Minor.Patch)')
+            raise ValueError('Expect semantic version string (Major.Minor.Patch)')
         return str(parsed_version)
 
     @validator('version')
     def validate_local_version(cls, version):
-        print(version)
+        logger.debug(f'Provided version {version}')
         parsed_version = parse_version(version)
         if config.upload.releases_only and parsed_version.local is not None:
-            raise ValidationError('Parsed version {parsed_version} is not a clean semantic version')
+            raise ValueError('Parsed version {parsed_version} is not a clean semantic version')
         return str(parsed_version)
 
     def get_path(self):

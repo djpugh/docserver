@@ -22,6 +22,7 @@ def register(app, handler=None, exception=None):
 
 async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
     try:
+        logger.error(f'Error handling Request Validation Error: {exc.errors()} - request: {request.headers}')
         return JSONResponse(status_code=HTTP_422_UNPROCESSABLE_ENTITY, content={"detail": exc.errors()})
     except RuntimeError:
         try:
