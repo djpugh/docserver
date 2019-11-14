@@ -5,7 +5,7 @@ from typing import List
 
 from pkg_resources import parse_version
 from pkg_resources.extern.packaging.version import LegacyVersion
-from pydantic import BaseModel, UrlStr, ValidationError, validator
+from pydantic import BaseModel, UrlStr, validator
 from werkzeug.utils import secure_filename
 
 from docserver.config import config
