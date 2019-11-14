@@ -28,6 +28,7 @@ class APIAuthenticator(HTTPBearer):
             state = config.auth.provider_object.authenticate_token(credentials.credentials)
             logger.info(state)
             if state.is_authenticated():
+                logger.info(f'Authenticated for {request}({request.headers})')
                 scopes = state.credentials.scopes
             else:
                 logger.info(f'Not authenticated for {request}')

@@ -63,7 +63,7 @@ class CreatePackage(Package):
     class Config:
         orm_mode = True
 
-    @validator('version')
+    @validator('version', always=True, pre=True)
     def validate_semantic_version(cls, version):
         print(version)
         parsed_version = parse_version(version)
