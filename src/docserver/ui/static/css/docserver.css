@@ -13,3 +13,13 @@ div.excerpt{
 span.splash-logo{
     font-size:4em;
 }
+
+.footer-menu{
+width:100%;
+text-align: center;
+padding-left: 0;
+padding-right: 0;
+padding-top: .25rem;
+padding-bottom: .25rem;
+
+}

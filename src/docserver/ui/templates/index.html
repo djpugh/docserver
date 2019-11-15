@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 
+{% block headscripts %}
+<script type="text/javascript" src="https://unpkg.com/popper.js"></script>
+{% endblock headscripts %}
 {% block content %}
 
 <div class="row">
     {% for package in packages %}
     <div class="col-sm-6 col-12 col-md-4 col-lg-3 mx-2">
-        <div class="card" style="width: 18rem;">
+        <div class="card dropdown show" style="width: 18rem;">
           <div class="card-body">
             <h5 class="card-title">{{ package.name }}</h5>
             <h6 class="card-subtitle mb-2 text-muted">{{ package.html_tags | safe }}</h6>
@@ -13,11 +16,27 @@
               <a class="btn btn-primary" href="/packages/{{ package.name }}/latest/">Docs</a>
               <a class="btn btn-secondary" href="{{ package.repository }}" class="card-link">Repo</a>
           </div>
-          <div class="card-footer text-muted text-center">
-              <em>latest version:</em> {{ package.latest_version }}
+
+          {% if package.versions | length > 1 %}
+              <a class="card-footer text-muted text-center dropdown show btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <em>latest version:</em> {{ package.latest_version }}
+              </a>
+              <div class="card-footer footer-menu dropdown-menu" aria-labelledby="{{package.name}}">
+              <a class="dropdown-item text-muted" href="/packages/{{ package.name }}/latest/">{{ package.latest_version }}</a>
+              {% for version in package.versions %}
+                {% if version.version != package.latest_version %}
+                    <a class="dropdown-item text-muted" href="/packages/{{ package.name }}/{{ version.version }}">{{ version.version }}</a>
+                {% endif %}
+              {% endfor %}
+          {% else %}
+              <div class="card-footer text-muted text-center dropdown show btn" role="button">
+                <em>latest version:</em> {{ package.latest_version }}
+              </div>
+          {% endif %}
           </div>
         </div>
     </div>
     {% endfor %}
 </div>
 {% endblock content %}
+
