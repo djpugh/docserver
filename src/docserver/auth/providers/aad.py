@@ -25,22 +25,25 @@ MS_GRAPH_API_USER = "https://graph.microsoft.com/v1.0/me"
 class AADAuth(AuthState):
 
     def set_user_from_response(self, graph_user):
-        # {'@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#users/$entity',
-        #  'businessPhones': [],
-        #  'displayName': '...',
-        #  'givenName': '...',
-        #  'jobTitle': '...',
-        #  'mail': '...',
-        #  'mobilePhone': None,
-        #  'officeLocation': '...',
-        #  'preferredLanguage': None,
-        #  'surname': '...',
-        #  'userPrincipalName': '...',
-        #  'id': '...'}
+        """
+        Process response - response format is::
+
+            {'@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#users/$entity',
+             'businessPhones': [],
+             'displayName': '...',
+             'givenName': '...',
+             'jobTitle': '...',
+             'mail': '...',
+             'mobilePhone': None,
+             'officeLocation': '...',
+             'preferredLanguage': None,
+             'surname': '...',
+             'userPrincipalName': '...',
+             'id': '...'}
+        """
         name = ' '.join([graph_user['givenName'], graph_user['surname']])
         email = graph_user['mail'].lower()
         username = graph_user['userPrincipalName']
-        # roles = graph_user['id_token_claims'].get('app_roles', [])
         user = User(name=name, email=email, username=username, roles=[])
         self.user = user
         self.state = AuthenticationOptions.authenticated
@@ -55,8 +58,6 @@ class AADConfig(ProviderConfig):
     redirect_url: UrlStr = Schema(UrlStr(f"{config.host_name}/login/redirect"))
     token_url: UrlStr = None
     cache_file: Path = Schema(os.environ.get('DOCSERVER_AAD_CACHE_PATH', None))
-    # login_url: UrlStr
-    # logout_url: UrlStr
 
     @validator('cache_file', pre=True, always=True)
     def validate_cache_file(cls, value):
@@ -70,19 +71,12 @@ class AADAuthProvider(BaseAuthenticationProvider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(auth_state_klass=AADAuth)
-        # cache = msal.SerializableTokenCache()
-        # if os.path.exists(config.auth.provider.cache_file):
-        #     cache.deserialize(open(config.auth.provider.cache_file, "r").read())
-        # atexit.register(lambda:
-        #                 open(config.auth.provider.cache_file, "w").write(cache.serialize())
-        #                 # The following line persists only when state changed
-        #                 if cache.has_state_changed else None)
+        # implement caching here?
 
         self.msal_application = msal.ConfidentialClientApplication(
             config.auth.provider.client_id.get_secret_value(),
             authority=config.auth.provider.authority,
             client_credential=config.auth.provider.client_secret.get_secret_value())
-        # token_cache=cache)
 
     def login(self, request):
         logger.debug(f'Logging in - request url {request.url}')
