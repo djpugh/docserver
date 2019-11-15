@@ -10,7 +10,7 @@ services:
     docserver:
         image: docserver:latest
         ports:
-            - 8000:80
+            - 8001:80
         environment:
           - DOCSERVER_DATABASE_URI=postgresql+psycopg2://postgres:${DOCSERVER_POSTGRES_PW:-demo}@postgres
           - DOCSERVER_SAFE_KEY=827c2c51-8413-4199-9606-6eab02d6f302

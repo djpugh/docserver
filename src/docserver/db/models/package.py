@@ -21,7 +21,7 @@ class Package(Model):
         secondary=association_table,
         back_populates="packages")
 
-    versions = relationship("DocumentationVersion")
+    versions = relationship("DocumentationVersion", lazy='joined')
     repository = Column(String(300), unique=True, nullable=False)
     description = Column(String(800), nullable=True)
     # Permission mappings

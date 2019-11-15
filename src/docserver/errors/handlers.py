@@ -34,7 +34,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 async def authentication_exception_handler(request: Request, exc: AuthenticationError) -> RedirectResponse:
-    return RedirectResponse(f'/splash?error={urllib.parse.quote(exc[0])}')
+    return RedirectResponse(f'/splash?error={urllib.parse.quote(exc.args[0])}')
 
 
 async def permission_exception_handler(request: Request, exc: PermissionError) -> JSONResponse:
