@@ -48,7 +48,6 @@ def wrapper_factory(endpoint):
     @auth_required
     async def req_wrapper(request: Request, *args, **kwargs):
         if not config.auth.enabled or config.auth.provider_object.check_state(request):
-            print(endpoint)
             return await endpoint(request, *args, **kwargs)
         else:
             return RedirectResponse('/splash')
