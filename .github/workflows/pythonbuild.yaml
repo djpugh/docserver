@@ -44,6 +44,7 @@ jobs:
       run: tox -e test
 
   build:
+    needs: [lint, test]
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
