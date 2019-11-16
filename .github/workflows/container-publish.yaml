@@ -72,10 +72,20 @@ jobs:
           docker images
           docker tag docserver:$TRAVIS_TAG $DOCKER_USERNAME/docserver:latest
           docker push $DOCKER_USERNAME/docserver:latest
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.$DOCKER_USERNAME }}
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(python setup.py --version)
       - name: Publish Tagged
         run: |
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
           docker images
-          docker tag docserver:$TRAVIS_TAG $DOCKER_USERNAME/docserver:$TRAVIS_TAG
-          docker push $DOCKER_USERNAME/docserver:$TRAVIS_TAG
+          docker tag docserver:$TRAVIS_TAG $DOCKER_USERNAME/docserver:$TAG
+          docker push $DOCKER_USERNAME/docserver:$TAG
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.$DOCKER_USERNAME }}
+          TAG: ${{ steps.get_version.outputs.VERSION }}
         if: startsWith(github.ref, 'refs/tags')
