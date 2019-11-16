@@ -70,7 +70,7 @@ jobs:
         run: |
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
           docker images
-          docker tag docserver:$TRAVIS_TAG $DOCKER_USERNAME/docserver:latest
+          docker tag docserver:latest $DOCKER_USERNAME/docserver:latest
           docker push $DOCKER_USERNAME/docserver:latest
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -82,7 +82,7 @@ jobs:
         run: |
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
           docker images
-          docker tag docserver:$TRAVIS_TAG $DOCKER_USERNAME/docserver:$TAG
+          docker tag docserver:latest $DOCKER_USERNAME/docserver:$TAG
           docker push $DOCKER_USERNAME/docserver:$TAG
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
