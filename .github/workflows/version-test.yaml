@@ -17,4 +17,4 @@ jobs:
       - name: Publish Tagged
         run: echo "$ TAG"
         env:
-         TAG: {{ steps.get_version.outputs.VERSION }}
+         TAG: ${{ steps.get_version.outputs.VERSION }}
