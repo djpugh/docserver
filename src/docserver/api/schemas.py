@@ -5,7 +5,7 @@ from typing import List
 
 from pkg_resources import parse_version
 from pkg_resources.extern.packaging.version import LegacyVersion
-from pydantic import BaseModel, UrlStr, ValidationError, validator
+from pydantic import BaseModel, UrlStr, validator
 from werkzeug.utils import secure_filename
 
 from docserver.config import config
@@ -63,20 +63,20 @@ class CreatePackage(Package):
     class Config:
         orm_mode = True
 
-    @validator('version')
+    @validator('version', always=True, pre=True)
     def validate_semantic_version(cls, version):
-        print(version)
+        logger.debug(f'Provided version {version}')
         parsed_version = parse_version(version)
         if isinstance(parsed_version, LegacyVersion):
-            raise ValidationError('Expect semantic version string (Major.Minor.Patch)')
+            raise ValueError('Expect semantic version string (Major.Minor.Patch)')
         return str(parsed_version)
 
     @validator('version')
     def validate_local_version(cls, version):
-        print(version)
+        logger.debug(f'Provided version {version}')
         parsed_version = parse_version(version)
         if config.upload.releases_only and parsed_version.local is not None:
-            raise ValidationError('Parsed version {parsed_version} is not a clean semantic version')
+            raise ValueError('Parsed version {parsed_version} is not a clean semantic version')
         return str(parsed_version)
 
     def get_path(self):
