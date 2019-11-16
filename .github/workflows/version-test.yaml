@@ -14,3 +14,8 @@ jobs:
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::$(python setup.py version)
+      - name: Publish Tagged
+        run: |
+         echo "TAG"
+        env:
+         - TAG = {{ steps.get_version.outputs.VERSION }}
