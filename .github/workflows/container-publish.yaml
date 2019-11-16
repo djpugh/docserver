@@ -1,8 +1,9 @@
 name: Build & Publish
 
-on: push
-  branch:
-    - master
+on:
+  push:
+    branches:
+      - master
 jobs:
   lint:
     runs-on: ubuntu-latest
