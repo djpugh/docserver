@@ -13,7 +13,7 @@ jobs:
           python-version: 3.7
       - name: Get the version
         id: get_version
-        run: echo ::set-output name=VERSION::$(python setup.py version)
+        run: echo ::set-output name=VERSION::$(python setup.py --version)
       - name: Publish Tagged
         run: echo "$TAG"
         env:
