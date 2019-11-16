@@ -24,7 +24,7 @@ jobs:
     python: 3.7
     name: Lint
   - stage: test
-    script: tox -e test-py36
+    script: tox -e test
     python: 3.7
     name: Unit Tests
   - stage: build
