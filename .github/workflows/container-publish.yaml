@@ -74,7 +74,7 @@ jobs:
           docker push $DOCKER_USERNAME/docserver:latest
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKER_USERNAME: ${{ secrets.$DOCKER_USERNAME }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::$(python setup.py --version)
@@ -86,6 +86,6 @@ jobs:
           docker push $DOCKER_USERNAME/docserver:$TAG
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKER_USERNAME: ${{ secrets.$DOCKER_USERNAME }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           TAG: ${{ steps.get_version.outputs.VERSION }}
         if: startsWith(github.ref, 'refs/tags')
