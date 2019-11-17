@@ -44,6 +44,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'release_changelog'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

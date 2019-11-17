@@ -9,3 +9,7 @@ DocServer Help
 
    Usage <usage>
    Uploading docs <uploading>
+
+
+DocServer provides a documentation server to serve versioned static html sites. There is an `api <uploading>`_ for
+uploading new package information. The server also contains authentication and permissions, and some user management.
