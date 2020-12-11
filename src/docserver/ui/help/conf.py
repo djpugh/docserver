@@ -15,6 +15,8 @@
 
 import datetime
 
+# import guzzle_sphinx_theme
+
 from docserver import __copyright__, __version__
 from docserver.config import config
 
@@ -41,11 +43,19 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
+    'sphinx.ext.extlinks',
     'sphinx.ext.todo',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'sphinx_github_changelog',
 ]
 
+extlinks = {
+    "issue": ("https://github.com/djpugh/azure_devops_artifacts_helpers/issues/%s", "#"),
+    "pull": ("https://github.com/djpugh/azure_devops_artifacts_helpers/pull/%s", "PR #"),
+    "user": ("https://github.com/%s", "@"),
+    "pypi": ("https://pypi.org/project/%s", ""),
+}
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -120,25 +130,51 @@ autoclass_content = 'both'
 # a list of builtin themes.
 
 # import sphinx_rtd_theme
-html_theme = 'alabaster'
+# html_theme = 'alabaster'
 # html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {
-    "fixed_sidebar": 'true',
-    "logoname": 'false',
-    'page_width': '95%',
-    "show_powered_by": "false"
+# html_theme_options = {
+#     "fixed_sidebar": 'true',
+#     "logoname": 'false',
+#     'page_width': '95%',
+#     "show_powered_by": "false"
 
-}
+# }
 
+
+html_title = f'{config.app_name} Help'
+html_theme = 'pyramid'
+# Set link name generated in the top bar.
+# html_theme_path = guzzle_sphinx_theme.html_theme_path()
+# Material theme options (see theme.conf for more information)
+# html_theme_options = {
+
+#     # Set the name of the project to appear in the navigation.
+#     'project_nav_name': html_title,
+
+#     # Specify a base_url used to generate sitemap.xml. If not
+#     # specified, then no sitemap will be built.
+#     'base_url': 'https://djpugh.github.io/fastapi_aad_auth',
+
+#     # Set the repo location to get a badge with stats
+#     'repo_url': 'https://github.com/djpugh/fastapi_aad_auth/',
+#     'repo_name': 'fastapi_aad_auth',
+
+#     # Visible levels of the global TOC; -1 means unlimited
+#     'globaltoc_depth': -1,
+#     # If False, expand all TOC entries
+#     'globaltoc_collapse': False,
+#     # If True, show hidden TOC entries
+#     'globaltoc_includehidden': False,
+    
+# }
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = f'{config.app_name} {__version__} documentation'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None

@@ -11,3 +11,4 @@ sphinx
 beautifulsoup4
 msal==1.0.0
 psycopg2-binary
+sphinx_github_changelog
