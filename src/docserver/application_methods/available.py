@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_available_docs(provided_permissions=None):
-    logger.debug(f'Getting available docs')
+    logger.debug('Getting available docs')
     packages = db_models.Package.read(limit=None, params={})
     # Filter on read permissions
     logger.debug(packages)
