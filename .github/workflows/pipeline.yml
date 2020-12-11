@@ -140,7 +140,7 @@ jobs:
 
   build:
     if: (github.event_name == 'pull_request' && contains(github.base_ref, 'main')) || (github.event_name == 'push' && (startsWith(github.ref, 'refs/tags') || endsWith(github.ref, 'main'))) || (github.event_name == 'release')
-    name: Build Package
+    name: Build Container
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
