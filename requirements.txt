@@ -1,4 +1,9 @@
+<<<<<<< Updated upstream
 fastapi==0.62.0
+=======
+fastapi==0.42.0
+fastapi_aad_auth>=0.1.6
+>>>>>>> Stashed changes
 aiofiles
 itsdangerous
 sqlalchemy
