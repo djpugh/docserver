@@ -41,19 +41,19 @@ jobs:
       - name: Lint with Bandit
         run: tox -e security
 
-  types:
-    name: Check Types
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install tox
-      - name: Check Types
-        run: tox -e types
+  # types:
+  #   name: Check Types
+  #   runs-on: windows-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v2
+  #     - name: Install dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install tox
+  #     - name: Check Types
+  #       run: tox -e types
 
   test:
     name: Test Python ${{ matrix.py }} - ${{ matrix.os }}
@@ -203,7 +203,7 @@ jobs:
     needs: 
       - lint
       - security
-      - types
+      # - types
       - test
       - build
       - license-scan
@@ -227,7 +227,7 @@ jobs:
     needs: 
       - lint
       - security
-      - types
+      # - types
       - test
       - build
       - sonarcloud
