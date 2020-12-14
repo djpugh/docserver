@@ -46,7 +46,7 @@ class DocumentationVersion(Model):
             cls.logger.debug(f'Found existing version for package {db_package}')
             save_docs(package, zipfile)
             save_index(package, build_index(package))
-            cls.logger.debug(f'Updating docs file')
+            cls.logger.debug('Updating docs file')
         else:
             cls.logger.debug(f'Creating new version for package {db_package}')
             result = cls.create(package, params, zipfile, db_package, db=db)

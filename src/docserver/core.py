@@ -1,6 +1,6 @@
 import logging
 import os
-import subprocess
+import subprocess  # nosec subprocess used for fixed initialisation command
 import sys
 
 from fastapi import FastAPI
@@ -55,7 +55,7 @@ app.mount(config.upload.package_url_slug,
 app.mount('/static', StaticFiles(directory=os.path.dirname(resource_filename('docserver.ui.static', 'index.html'))))
 if config.help_dir is None:
     logging.info('Building Docs')
-    subprocess.check_call([sys.executable, '-m', 'docserver.ui.help'])
+    subprocess.check_call([sys.executable, '-m', 'docserver.ui.help'])  # nosec
     logging.info('Docs built')
     app.mount('/help', StaticFiles(directory=os.path.join(os.path.dirname(resource_filename('docserver.ui.help',
                                                                                             'index.html')), 'html'),
