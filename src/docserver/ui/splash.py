@@ -4,10 +4,10 @@ from pkg_resources import resource_filename
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 from starlette.routing import Route
-from starlette.templating import Jinja2Templates
 
 from docserver import __copyright__, __version__
 from docserver.config import config
+from docserver.ui.jinja import Jinja2Templates
 
 templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserver.ui.templates', 'index.html')))
 

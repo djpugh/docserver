@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import subprocess  # nosec subprocess used for fixed initialisation command
@@ -5,6 +6,7 @@ import sys
 
 from fastapi import FastAPI
 from pkg_resources import resource_filename
+from ruamel import yaml
 from starlette.staticfiles import StaticFiles
 
 from docserver import __version__
@@ -13,8 +15,7 @@ from docserver.api.auth import router as auth_api
 from docserver.api.base import router as base_api
 from docserver.api.docs import router as docs_api
 from docserver.api.permissions import router as permissions_api
-from docserver.auth.routes import app_routes_add_auth
-from docserver.auth.routes import routes as auth_routes
+from docserver.auth import authenticator
 from docserver.config import config
 from docserver.errors.handlers import register as register_error_handlers
 from docserver.permissions.staticfiles import DBPermissionsCheck, PermissionedStaticFiles
@@ -27,7 +28,7 @@ AUTH_ENTRYPOINT = 'docserver.auth.backends'
 
 
 logging.basicConfig(level='DEBUG')
-
+logging.info(f'Config:\n{yaml.round_trip_dump(json.loads(config.json()))}')
 
 app = FastAPI(title='Documentation Server',
               description='Documentation Server allowing upload of static html documentation',
@@ -35,17 +36,16 @@ app = FastAPI(title='Documentation Server',
               openapi_url=f"/api/v{api_version}/openapi.json",
               docs_url='/api/docs',
               redoc_url='/api/redoc',
-              routes=index_routes+search_routes+auth_routes+splash_routes+user_routes)
+              routes=index_routes+search_routes+splash_routes+user_routes)
 
 register_error_handlers(app)
-
-config.auth.set_middleware(app)
-if config.auth.enabled:
-    app_routes_add_auth(app, ['openapi', 'swagger_ui_html', 'swagger_ui_redirect', 'redoc_html'])
-    app.include_router(auth_api, prefix='/api/auth', tags=['auth'])
 app.include_router(base_api, prefix='/api')
 app.include_router(docs_api, prefix='/api/docs', tags=['docs'])
 app.include_router(permissions_api, prefix='/api/permissions', tags=['permissions'])
+
+if config.auth.enabled:
+    authenticator.configure_app(app)
+    app.include_router(auth_api, prefix='/api/auth', tags=['auth'])
 if not os.path.exists(config.upload.docs_dir):
     os.mkdir(config.upload.docs_dir)
 # We need to add some role based access heres

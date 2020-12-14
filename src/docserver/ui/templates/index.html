@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block headscripts %}
-<script type="text/javascript" src="https://unpkg.com/popper.js"></script>
+        {{ super() }}
+        <script type="text/javascript" src="https://unpkg.com/popper.js"></script>
 {% endblock headscripts %}
-{% block content %}
-
+{% block Container %}
 <div class="row">
     {% for package in packages %}
     <div class="col-sm-6 col-12 col-md-4 col-lg-3 mx-2">
@@ -38,5 +38,5 @@
     </div>
     {% endfor %}
 </div>
-{% endblock content %}
+{% endblock Container %}
 

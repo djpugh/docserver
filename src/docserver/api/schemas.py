@@ -5,7 +5,7 @@ from typing import List
 
 from pkg_resources import parse_version
 from pkg_resources.extern.packaging.version import LegacyVersion
-from pydantic import BaseModel, UrlStr, validator
+from pydantic import AnyUrl, BaseModel, validator
 from werkzeug.utils import secure_filename
 
 from docserver.config import config
@@ -44,7 +44,7 @@ class PermissionCollection(BaseModel):
 
 class Package(BaseModel):
     name: str
-    repository: UrlStr
+    repository: AnyUrl
     tags: List[str]
     description: str = None
     permissions: PermissionCollection = PermissionCollection()

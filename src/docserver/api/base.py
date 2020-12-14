@@ -3,7 +3,7 @@ from fastapi.security import HTTPAuthorizationCredentials
 import pkg_resources
 
 from docserver import __version__
-from docserver.api.auth import auth_scheme
+from docserver.auth import authenticator, AuthenticationState
 API_VERSION = pkg_resources.parse_version(__version__).base_version.split('.')[0]
 
 
@@ -19,7 +19,7 @@ async def health_check():
 
 
 @router.get('/version')
-async def get_version(token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
+async def get_version(state: AuthenticationState = Depends(authenticator.auth_backend.requires_auth(allow_session=True))):
     """
     Get the docserver version
     """

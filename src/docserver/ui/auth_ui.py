@@ -1,0 +1,42 @@
+from fastapi_aad_auth.ui import UI as _UI
+
+from docserver import __copyright__, __version__
+from docserver.config import config
+from docserver.ui.jinja import Jinja2Templates
+
+templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserver.ui.templates', 'index.html')))
+
+
+async def splash(request: Request, *args, **kwargs):
+    if not config.auth.enabled or config.auth.provider_object.check_state(request):
+        # This is authenticated so go straight to the homepage
+        return RedirectResponse('/')
+    return templates.TemplateResponse('splash.html', {'request': request, 'app_name': config.app_name,
+                                                      'login': config.auth.provider_object.login_html,
+                                                      'copyright': __copyright__, 'version': __version__})
+
+
+class AuthUI(_UI):
+
+    def __init__(self, config: 'config.Config', authenticator: 'auth.Authenticator', base_context: Dict[str, Any] = None):
+        """Initialise the UI based on the provided configuration.
+
+        Keyword Args:
+            config (fastapi_aad_auth.config.Config): Authentication configuration (includes ui and routing, as well as AAD Application and Tenant IDs)
+            authenticator (fastapi_aad_auth.auth.Authenticator): The authenticator object
+            base_context (Dict[str, Any]): Add the authentication to the router
+        """
+        super().__init__(config, authenticator, base_context)
+        self.login_template_path = Path(self.config.login_ui.template_file)
+        self.user_template_path = Path(self.config.login_ui.user_template_file)
+        self.login_templates = Jinja2Templates(directory=str(self.login_template_path.parent))
+        self.user_templates = Jinja2Templates(directory=str(self.user_template_path.parent))
+
+    def _login(self):
+        if not config.auth.enabled or config.auth.provider_object.check_state(request):
+            # This is authenticated so go straight to the homepage
+            return RedirectResponse('/')
+        return super()._login(app_name=self.config.app_name, 
+                              copyright=__copyright__,
+                              version=__version__,
+                              logo='<span class="oi oi-book splash-logo mb-4" title="Docserver" aria-hidden="true"></span>')
