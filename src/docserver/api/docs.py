@@ -8,7 +8,7 @@ from starlette.requests import Request
 
 from docserver import application_methods as methods
 from docserver.api import schemas
-from docserver.auth import authenticator, AuthenticationState
+from docserver.auth import AuthenticationState, authenticator
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

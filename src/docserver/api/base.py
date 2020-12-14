@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends
-from fastapi.security import HTTPAuthorizationCredentials
 import pkg_resources
 
 from docserver import __version__
-from docserver.auth import authenticator, AuthenticationState
+from docserver.auth import AuthenticationState, authenticator
 API_VERSION = pkg_resources.parse_version(__version__).base_version.split('.')[0]
 
 

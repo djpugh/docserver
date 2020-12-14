@@ -1,12 +1,12 @@
+"""Application Configuration."""
 from functools import wraps
 import json
 import logging
 import os
-from typing import Union
+from typing import Optional, Union
 import uuid
 
-from fastapi_aad_auth import __version__ as fastapi_aad_auth_version, Config as _AuthConfig # noqa: F401
-from fastapi_aad_auth.config import LoginUIConfig
+from fastapi_aad_auth import __version__ as fastapi_aad_auth_version, Config as _AuthConfig  # noqa: F401
 from fastapi_aad_auth.utilities import bool_from_env, expand_doc
 from itsdangerous import URLSafeSerializer
 from pkg_resources import parse_version
@@ -15,14 +15,13 @@ from pydantic import BaseSettings, DirectoryPath, Field, SecretStr, validator
 from docserver.db.config import DBConfig
 from docserver.permissions.config import PermissionsConfig
 
-
 logger = logging.getLogger(__name__)
 
 
 @expand_doc
 class UploadConfig(BaseSettings):
     """Configuration for uploading documentation.
-    
+
     Includes where to upload, and how to store upload requests.
     """
     secret: SecretStr = Field(str(uuid.uuid4()), env='DOCSERVER_UPLOAD_SECRET')
@@ -31,15 +30,11 @@ class UploadConfig(BaseSettings):
     search_index_dir: DirectoryPath = Field('/data/www/search_indices', env='DOCSERVER_SEARCH_INDEX_DIR')
     releases_only: bool = Field(True, env='DOCSERVER_ACCEPT_ALL')
     package_url_slug: str = Field('/packages', env='DOCSERVER_PACKAGE_URL_SLUG')
-    
+
     class Config:  # noqa D106
         env_file = '.env'
 
-    _validate_enabled = validator('releases_only', allow_reuse=True)(bool_from_env)
-
-    @validator('releases_only', pre=True, always=True)
-    def validate_releases_only(cls, value):
-        return str(value).lower() in ['1', 'true']
+    _validate_releases_only = validator('releases_only', allow_reuse=True)(bool_from_env)
 
     @validator('search_index_dir', pre=True, always=True)
     def validate_search_index_dir_exists(cls, value):
@@ -55,17 +50,11 @@ class UploadConfig(BaseSettings):
 class AuthConfig(_AuthConfig):
 
     @validator('login_ui', always=True, pre=True)
-    def _validate_templates(cls, value):
-        # if 'template_file' not in value:
-        #     value['template_file'] = resource_string('docserver.ui', 'splash.html')
-        # if 'error_template_file' not in value:
-        #     value['error_template_file'] = resource_string('docserver.ui', 'error.html')
-        # if 'user_template_file' not in value:
-        #     value['user_template_file'] = resource_string('docserver.ui', 'user.html')
+    def _validate_login_ui(cls, value):
         if 'ui_klass' not in value:
-            value['ui_klass'] = 'docserver.ui.auth_ui:AuthUI')
+            value['ui_klass'] = 'docserver.ui.auth_ui:AuthUI'
         return value
-    
+
     @validator('routing', always=True, pre=True)
     def _fastapi_0_2_0(cls, value):
         # We want to use the fastapi_aad v0.2.0 approach
@@ -100,7 +89,7 @@ class AppConfig(BaseSettings):
     permissions: PermissionsConfig = Field(None, description="Permissions configuration")
     app_name: str = Field('Docserver', description='Application name', env='DOCSERVER_APP_NAME')
     auth: AuthConfig = Field(None, description='Authentication Configuration')
-    host_name: str = Field(None, description='Host name', env='DOCSERVER_HOST_NAME')
+    host_name: Optional[str] = Field(None, description='Host name', env='DOCSERVER_HOST_NAME')
     help_dir: Union[None, DirectoryPath] = Field(None, description='Directory containing built help information', env='DOCSERVER_HELP_DIR')
 
     class Config:  # noqa D106
@@ -148,5 +137,6 @@ class AppConfig(BaseSettings):
         if 'auth' not in exclude:
             result['auth'] = json.loads(self.auth.json())
         return json.dumps(result)
+
 
 config = AppConfig()

@@ -1,19 +1,16 @@
-from fastapi_aad_auth.ui import UI as _UI
+import os
+from pathlib import Path
+from typing import Any, Dict
 
-from docserver import __copyright__, __version__
-from docserver.config import config
+from fastapi_aad_auth.ui import UI as _UI
+from pkg_resources import resource_filename
+from starlette.requests import Request
+from starlette.responses import RedirectResponse
+
+from docserver import __copyright__, __version__, auth, config
 from docserver.ui.jinja import Jinja2Templates
 
 templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserver.ui.templates', 'index.html')))
-
-
-async def splash(request: Request, *args, **kwargs):
-    if not config.auth.enabled or config.auth.provider_object.check_state(request):
-        # This is authenticated so go straight to the homepage
-        return RedirectResponse('/')
-    return templates.TemplateResponse('splash.html', {'request': request, 'app_name': config.app_name,
-                                                      'login': config.auth.provider_object.login_html,
-                                                      'copyright': __copyright__, 'version': __version__})
 
 
 class AuthUI(_UI):
@@ -32,11 +29,11 @@ class AuthUI(_UI):
         self.login_templates = Jinja2Templates(directory=str(self.login_template_path.parent))
         self.user_templates = Jinja2Templates(directory=str(self.user_template_path.parent))
 
-    def _login(self):
+    def _login(self, request: Request):
         if not config.auth.enabled or config.auth.provider_object.check_state(request):
             # This is authenticated so go straight to the homepage
             return RedirectResponse('/')
-        return super()._login(app_name=self.config.app_name, 
+        return super()._login(app_name=self.config.app_name,
                               copyright=__copyright__,
                               version=__version__,
                               logo='<span class="oi oi-book splash-logo mb-4" title="Docserver" aria-hidden="true"></span>')

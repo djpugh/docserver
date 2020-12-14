@@ -10,8 +10,8 @@ from docserver.auth import authenticator
 from docserver.config import config
 from docserver.permissions.get import get_permissions_from_request
 from docserver.search.index import get_search_index_js
-from docserver.ui.templates.nav import nav
 from docserver.ui.jinja import Jinja2Templates
+from docserver.ui.templates.nav import nav
 
 
 templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserver.ui.templates', 'index.html')))

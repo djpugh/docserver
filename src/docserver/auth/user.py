@@ -1,6 +1,8 @@
+"""Authentication User object with db handling"""
+from typing import List
+
 from fastapi_aad_auth._base.state import User as _User
 from pydantic import BaseModel
-from typing import List
 
 from docserver.auth.abac import get_permissions
 from docserver.db import models as db_models
@@ -22,6 +24,7 @@ class User(_User):
             print(db_user.permissions)
             mapped_permissions += [str(u) for u in db_user.permissions if str(u) not in mapped_permissions]
         return mapped_permissions
+
 
 class APIUser(BaseModel):
     permissions: List[str] = []

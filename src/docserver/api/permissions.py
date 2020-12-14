@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, Depends
 
 from docserver.api import schemas
-from docserver.auth import authenticator, AuthenticationState
+from docserver.auth import AuthenticationState, authenticator
 from docserver.permissions import manage
 
 logger = logging.getLogger(__name__)

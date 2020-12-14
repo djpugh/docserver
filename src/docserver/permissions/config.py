@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 from fastapi_aad_auth.utilities import list_from_env
@@ -18,4 +17,3 @@ class PermissionsConfig(BaseSettings):
         env_file = '.env'
 
     _validate_admin_users = validator('admin_users', pre=True, always=True, allow_reuse=True)(list_from_env)
-    
