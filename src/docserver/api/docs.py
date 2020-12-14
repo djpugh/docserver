@@ -63,4 +63,4 @@ def upload_package(upload_id: str, request: Request, documentation: UploadFile =
         if result:
             return result
         else:
-            raise HTTPException(status_code=405, detail=f'Write Permission not available')
+            raise HTTPException(status_code=405, detail='Write Permission not available')
