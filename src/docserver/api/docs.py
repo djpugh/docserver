@@ -19,7 +19,7 @@ async def available_documentation(request: Request, state: AuthenticationState =
     """
     List available packages
     """
-    results = methods.get_available_docs(provided_permissions=state.permissions)
+    results = methods.get_available_docs(provided_permissions=state.user.permissions)
     logger.debug(schemas.ResponsePackage.fields)
     return results
 
@@ -30,7 +30,7 @@ async def available_versions(package_name: str, state: AuthenticationState = Dep
     List available versions of a package
     """
     package = schemas.Package(name=package_name)
-    return methods.get_versions(package, provided_permissions=state.permissions)
+    return methods.get_versions(package, provided_permissions=state.user.permissions)
 
 
 # Lets add the ability to upload a package
@@ -42,7 +42,7 @@ async def register_package_upload(package: schemas.CreatePackage, request: Reque
     Register a package upload
     """
     # We are going to return a redirect with an id that is encrypted based on a server secret key
-    methods.register_package(package, provided_permissions=state.permissions)
+    methods.register_package(package, provided_permissions=state.user.permissions)
     return f"Location: {request.url}/{package.serialize()}"
 
 
@@ -52,7 +52,7 @@ def upload_package(upload_id: str, request: Request, documentation: UploadFile =
     try:
         package_metadata = schemas.CreatePackage.from_serialized(upload_id)
         if os.path.splitext(documentation.filename)[-1] == '.zip':
-            slug = methods.save_documentation(documentation, package_metadata, provided_permissions=state.permissions)
+            slug = methods.save_documentation(documentation, package_metadata, provided_permissions=state.user.permissions)
             result = f"Location {request.url.scheme}://{request.url.hostname}/{slug}"
         else:
             raise HTTPException(status_code=401, detail=f'Incorrect filetype (must be zip archive) {documentation.filename}')

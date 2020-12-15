@@ -7,7 +7,7 @@ import click
 import requests
 
 PORT = os.environ.get('PORT', 8001)
-HOST = os.environ.get('HOST', '127.0.0.1')
+HOST = os.environ.get('HOST', 'localhost')
 USERNAME = os.environ.get('USERNAME')
 API_TOKEN = os.environ.get('API_TOKEN')
 SPECIAL_PERMISSION = "com.special/read"
@@ -21,7 +21,9 @@ def test(port, host):
     base_url = f'{method}://{host}:{port}'
     r = requests.get(f'{base_url}/api/auth/token/upload', headers={'Authorization': f'Bearer {API_TOKEN}'})
     r.raise_for_status()
+    print(r.content)
     token = r.json()['access_token']
+    token = API_TOKEN
     with tempfile.TemporaryDirectory() as td:
         fname = os.path.join(td, 'index.html')
         file = open(fname, 'w')

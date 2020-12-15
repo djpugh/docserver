@@ -11,8 +11,10 @@ from itsdangerous import URLSafeSerializer
 from pkg_resources import parse_version, resource_filename
 from pydantic import BaseSettings, DirectoryPath, Field, SecretStr, validator
 
+from docserver.auth.providers.upload import UploadBearerConfig
 from docserver.db.config import DBConfig
 from docserver.permissions.config import PermissionsConfig
+
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +67,11 @@ class AuthConfig(_AuthConfig):
         json_encoders = {
             type: lambda v: f'{v.__module__}:{v.__name__}'
         }
+
+    @validator('providers', always=True)
+    def _validate_providers_upload(cls, value, values):
+        value.append(UploadBearerConfig(_env_file=cls.Config.env_file))
+        return value
 
     @validator('routing', always=True, pre=True, allow_reuse=True)
     def _fastapi_0_2_0(cls, value):
@@ -125,6 +132,15 @@ class AppConfig(BaseSettings):
     def _validate_auth_app_name(cls, value, values):
         app_name = values.get('app_name', cls.__fields__['app_name'].default)
         value.login_ui.app_name = app_name
+        return value
+
+    @validator('auth', always=True, allow_reuse=True)
+    def _validate_auth_permission_route(cls, value, values):
+        permissions = values['permissions']
+        default_write_permission = permissions.default_write_permission
+        bearer_providers = [u for u in value.providers if isinstance(u, UploadBearerConfig)]
+        if bearer_providers:
+            bearer_providers[0].default_write_permission = default_write_permission
         return value
 
     @validator('logo', always=True)
