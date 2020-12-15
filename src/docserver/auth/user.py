@@ -39,6 +39,8 @@ class User(_User):
         logger.debug(f'{self.name}: combined permissions {mapped_permissions}')
         return list(set(mapped_permissions))
 
+# TODO: Check How this works with state/user
+
 
 class APIUser(BaseModel):
 
