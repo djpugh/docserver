@@ -34,7 +34,11 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 async def authentication_exception_handler(request: Request, exc: AuthenticationError) -> RedirectResponse:
-    return RedirectResponse(f'/splash?error={urllib.parse.quote(exc.args[0])}')
+    url = f'/login?error={urllib.parse.quote(exc.args[0])}'
+    redirect = ''
+    if len(exc.args) > 1:
+        redirect = f'&redirect={urllib.parse.quote(exc.args[1])}'
+    return RedirectResponse(f'{url}{redirect}')
 
 
 async def permission_exception_handler(request: Request, exc: PermissionError) -> JSONResponse:

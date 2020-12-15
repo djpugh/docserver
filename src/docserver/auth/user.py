@@ -1,11 +1,15 @@
 """Authentication User object with db handling"""
-from typing import List
+import logging
+from typing import List, Optional
 
 from fastapi_aad_auth._base.state import User as _User
 from pydantic import BaseModel
 
+from docserver import db
 from docserver.auth.abac import get_permissions
-from docserver.db import models as db_models
+
+
+logger = logging.getLogger(__name__)
 
 
 class User(_User):
@@ -13,15 +17,15 @@ class User(_User):
     name: str
     email: str
     username: str
-    roles: List[str] = []
-    groups: List[str] = []
+    roles: Optional[List[str]] = None
+    groups: Optional[List[str]] = None
 
     @property
     def permissions(self):
         mapped_permissions = get_permissions(self)
-        db_user = db_models.User.read_unique(params=dict(username=self.username))
+        db_user = db.models.User.read_unique(params=dict(username=self.username))
         if db_user:
-            print(db_user.permissions)
+            logger.debug(f'User: {self.name}; permissions: {db_user.permissions}')
             mapped_permissions += [str(u) for u in db_user.permissions if str(u) not in mapped_permissions]
         return mapped_permissions
 

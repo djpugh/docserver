@@ -1,4 +1,6 @@
-from docserver import __version__
+from docserver._version import get_versions
+
+__version__ = get_versions()['version']
 
 if 'untagged' in __version__ or 'unknown':
     api_version = 0

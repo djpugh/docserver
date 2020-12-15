@@ -1,5 +1,5 @@
 fastapi==0.62.0
-fastapi_aad_auth>=0.1.9
+fastapi_aad_auth>=0.1.11
 aiofiles
 itsdangerous
 sqlalchemy

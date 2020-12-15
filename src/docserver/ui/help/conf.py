@@ -242,6 +242,8 @@ html_last_updated_fmt = '%b %d, %Y (version '+str(__version__)+')'
 htmlhelp_basename = 'docserverdoc'
 
 
+html_context = {'project_logo': config.logo}
+
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {  # The paper size ('letterpaper' or 'a4paper').

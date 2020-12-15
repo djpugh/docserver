@@ -1,0 +1,20 @@
+{% extends "fastapi_aad_auth.ui:user.html" %}
+
+{% block CSS %}
+        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/static/css/docserver.css">
+        <link href="/static/css/open-iconic-bootstrap.css" rel="stylesheet">
+        {% block PageStyles %}
+        {% endblock PageStyles %}
+{% endblock CSS %}
+{% block HeadScripts %}
+        {{ super() }}
+        <script type="text/javascript" src="https://unpkg.com/popper.js"></script>
+{% endblock HeadScripts %}
+
+{% block Nav %}
+{{ nav | safe }}
+{% endblock Nav%}
+
+{% block ContentHeader %}
+{% endblock ContentHeader %}

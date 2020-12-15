@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from starlette.requests import Request
 
 from docserver.api import schemas
-from docserver.auth import AuthenticationState, authenticator
+from docserver.auth.authenticator import AuthenticationState, authenticator
 from docserver.auth.user import APIUser
 from docserver.config import config
 

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block headscripts %}
+{% block HeadScripts %}
         {{ super() }}
         <script type="text/javascript" src="https://unpkg.com/popper.js"></script>
-{% endblock headscripts %}
+{% endblock HeadScripts %}
 {% block Container %}
 <div class="row">
     {% for package in packages %}

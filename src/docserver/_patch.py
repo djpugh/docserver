@@ -3,7 +3,11 @@ from fastapi.openapi.docs import get_redoc_html as _get_redoc_html
 from fastapi.openapi.docs import get_swagger_ui_html as _get_swagger_ui_html
 from starlette.responses import HTMLResponse
 
+from docserver import config
 from docserver.ui.templates.nav import nav
+
+
+# TODO: check if this has been updated
 
 
 def get_swagger_ui_html(*args, **kwargs) -> HTMLResponse:
@@ -26,10 +30,8 @@ def wrap_response(response: HTMLResponse) -> HTMLResponse:
     """
     head, body = html.split('</head>')
     head += '\n' + css
-    print(css)
     body = body.split('<body>')[-1]
-    body = nav() + '\n' + body
-    print(body)
+    body = nav(config.config.logo) + '\n' + body
     html = f'{head}\n</head>\n<body>{body}'
     return HTMLResponse(html)
 

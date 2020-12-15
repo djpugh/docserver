@@ -2,20 +2,20 @@ import os
 from pathlib import Path
 from typing import Any, Dict
 
+from fastapi_aad_auth import Authenticator, Config
 from fastapi_aad_auth.ui import UI as _UI
+from fastapi_aad_auth.ui.jinja import Jinja2Templates
 from pkg_resources import resource_filename
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
-from docserver import __copyright__, __version__, auth, config
-from docserver.ui.jinja import Jinja2Templates
 
 templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserver.ui.templates', 'index.html')))
 
 
 class AuthUI(_UI):
 
-    def __init__(self, config: 'config.Config', authenticator: 'auth.Authenticator', base_context: Dict[str, Any] = None):
+    def __init__(self, config: Config, authenticator: Authenticator, base_context: Dict[str, Any] = None):
         """Initialise the UI based on the provided configuration.
 
         Keyword Args:
@@ -30,10 +30,7 @@ class AuthUI(_UI):
         self.user_templates = Jinja2Templates(directory=str(self.user_template_path.parent))
 
     def _login(self, request: Request):
-        if not config.auth.enabled or config.auth.provider_object.check_state(request):
+        if not self.config.enabled or self._authenticator.auth_backend.is_authenticated(request):
             # This is authenticated so go straight to the homepage
             return RedirectResponse('/')
-        return super()._login(app_name=self.config.app_name,
-                              copyright=__copyright__,
-                              version=__version__,
-                              logo='<span class="oi oi-book splash-logo mb-4" title="Docserver" aria-hidden="true"></span>')
+        return super()._login(request)
