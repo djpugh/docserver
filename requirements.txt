@@ -1,5 +1,6 @@
 fastapi==0.62.0
 fastapi_aad_auth>=0.1.11
+pydantic[dotenv]>=1.7.3
 aiofiles
 itsdangerous
 sqlalchemy
