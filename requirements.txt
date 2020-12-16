@@ -9,6 +9,6 @@ python-multipart
 requests
 sphinx
 beautifulsoup4
-msal==1.0.0
+msal==1.8.0
 psycopg2-binary
 sphinx_github_changelog
