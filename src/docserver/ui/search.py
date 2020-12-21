@@ -8,7 +8,6 @@ from starlette.routing import Route
 
 import docserver.application_methods as methods
 from docserver.auth.authenticator import authenticator
-from docserver.config import config
 from docserver.permissions.get import get_permissions_from_request
 from docserver.search.index import get_search_index_js
 from docserver.ui.context import get_base_context

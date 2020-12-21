@@ -31,7 +31,6 @@ class AuthUI(_UI):
         global_base_context = get_base_context()
         global_base_context.update(base_context)
 
-
         super().__init__(config, authenticator, global_base_context)
 
         self.login_template_path = Path(self.config.login_ui.template_file)
