@@ -264,7 +264,6 @@ jobs:
       - name: Load Container
         run: |
           docker load -i container/docserver.edge.docker.tar.gz
-          docker tag docserver:edge
 
       - name: Get the version
         id: get_version
