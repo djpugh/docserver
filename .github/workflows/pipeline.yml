@@ -241,10 +241,10 @@ jobs:
       - codeql-analyze
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.py }}
+      - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.py }}
+          python-version: 3.8
       - name: Download build
         uses: actions/download-artifact@v2
         with:
