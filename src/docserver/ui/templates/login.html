@@ -1,4 +1,4 @@
-{% extends "fastapi_aad_auth.ui:login.html" %}
+{% extends layout_template if defined else "fastapi_aad_auth.ui:login.html" %}
 
 {% block CSS %}
         <link href="/static/css/open-iconic-bootstrap.css" rel="stylesheet">

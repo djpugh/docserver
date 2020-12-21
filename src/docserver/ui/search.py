@@ -11,7 +11,7 @@ from docserver.auth.authenticator import authenticator
 from docserver.config import config
 from docserver.permissions.get import get_permissions_from_request
 from docserver.search.index import get_search_index_js
-from docserver.ui.templates.nav import nav
+from docserver.ui.context import get_base_context
 
 
 templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserver.ui.templates', 'index.html')))
@@ -27,8 +27,9 @@ async def search_index(request: Request, *args, **kwargs):
 @authenticator.auth_required()
 async def search(request: Request, *args, **kwargs):
     packages = methods.get_available_docs(provided_permissions=get_permissions_from_request(request))
-    return templates.TemplateResponse('search.html', {'request': request, 'packages': packages,
-                                                      'app_name': config.app_name, 'nav': nav(config.logo)})
+    context = get_base_context()
+    context.update({'request': request, 'packages': packages})
+    return templates.TemplateResponse('search.html', context)
 
 
 routes = [Route("/searchindex.js", endpoint=search_index, methods=['GET']),

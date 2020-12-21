@@ -40,7 +40,7 @@ $(document).ready(function() {
           var item_tags = ""
           for (var tagIdx in store[ref].tags){
             var tag = store[ref].tags[tagIdx]
-            item_tags +='<a href=/search?q=tags:'+tag+'><span class="badge badge-info ml-1">'+tag+'</span></a>'
+            item_tags +='<a href=/search?q=tags:'+tag+'><span class="badge badge-tag ml-1">'+tag+'</span></a>'
           }
           if (store[ref].repository.startsWith('http')){
               var repo_tag = '<a href="'+
@@ -53,15 +53,15 @@ $(document).ready(function() {
             '<div class="row">'+
             '<div class="col-xl-10 result">'+
             '<div class="results-header">'+
-            '<h3 style="display: inline">'+
+            '<h4 style="display: inline">'+
             '<a href="' +
             store[ref].link +
             '" class="page_name">' +
             store[ref].title +
-            '</a></h3>' +
+            '</a></h4>' +
             '  <a href="' +
             store[ref].root_url +
-            '"><span class="badge badge-secondary ml-2">' +
+            '"><span class="badge badge-success ml-2">' +
             store[ref].name +
             " (" +
             store[ref].version +

@@ -53,7 +53,7 @@ class Package(BaseModel):
     description: str = None
     permissions: PermissionCollection = PermissionCollection()
 
-    @validator('tags', pre=True, always=True)
+    @validator('tags', pre=True, always=True, each_item=True)
     def validate_tags(cls, tag):
         logger.debug(tag)
         if not isinstance(tag, (str, list)):

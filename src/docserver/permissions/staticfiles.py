@@ -43,7 +43,7 @@ class DBPermissionsCheck(LoggedInPermissionsCheck):
         logger.debug(f'Module name: {name}')
         logger.debug(f'Provided permissions: {provided_permissions}')
         package = Package.read_unique(params={'name': name}, db=self.session_maker())
-        if package and package.is_authorised('read', provided_permissions):
+        if package and package.is_authorised(provided_permissions, 'read'):
             return AuthenticationOptions.authenticated
         else:
             return AuthenticationOptions.not_allowed

@@ -1,6 +1,6 @@
 """Authentication User object with db handling"""
 import logging
-from typing import List, Optional
+from typing import List
 
 from fastapi_aad_auth._base.state import User as _User
 from pydantic import BaseModel
@@ -13,12 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class User(_User):
-
-    name: str
-    email: str
-    username: str
-    roles: Optional[List[str]] = None
-    groups: Optional[List[str]] = None
 
     @property
     def permissions(self):

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 import uuid
 
-from authlib.jose import errors as jwt
+from authlib.jose import jwt
 from fastapi_aad_auth._base.provider import Provider
 from fastapi_aad_auth._base.validators import TokenValidator
 from fastapi_aad_auth.utilities import DeprecatableFieldsMixin, expand_doc
@@ -26,11 +26,12 @@ class UploadBearerTokenValidator(TokenValidator):
     """Validator for Bearer token based authentication."""
 
     def __init__(self, token_secret: str, default_write_permission: str = PERMISSIONS_DEFAULTS['write'], token_lifetime: int = _DEFAULT_LIFETIME):
+        super().__init__('', '', '')
         self._default_write_permission = default_write_permission
         self._token_lifetime = token_lifetime
         self._token_secret = token_secret
 
-    def get_token(self, scopes=None):
+    def create_token(self, scopes=None):
         if not scopes:
             scopes = [f'{self._default_write_permission}/write']
         now = datetime.now(timezone.utc)
@@ -69,8 +70,8 @@ class UploadBearerProvider(Provider):
     def get_routes(self, *args, **kwargs):
         return []
 
-    def get_token(self, scopes):
-        return self.validators[0].get_token(scopes)
+    def create_token(self, scopes):
+        return self.validators[0].create_token(scopes)
 
     @classmethod
     def from_config(cls, session_validator, config, provider_config, user_klass: Optional[type] = None):
@@ -89,7 +90,7 @@ class UploadBearerProvider(Provider):
         if token_secret is not None:
             token_secret = token_secret.get_secret_value()  # type: ignore
 
-        return cls(token_secret, default_write_permission=provider_config.default_write_permission,
+        return cls(token_secret=token_secret, default_write_permission=provider_config.default_write_permission,
                    token_lifetime=provider_config.token_lifetime)
 
     def get_login_button(self, *args, **kwargs):
@@ -101,7 +102,7 @@ class UploadBearerConfig(BaseSettings):
     token_secret: SecretStr = Field(str(uuid.uuid4()))
     token_lifetime: int = Field(_DEFAULT_LIFETIME)
     default_write_permission: str = Field(PERMISSIONS_DEFAULTS['write'])
-    _provider_klass: type = Field(PrivateAttr(UploadBearerProvider))
+    _provider_klass: type = PrivateAttr(UploadBearerProvider)
 
 
 entrypoint = (UploadBearerConfig, UploadBearerProvider)

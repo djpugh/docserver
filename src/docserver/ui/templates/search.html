@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends layout_template if defined else "base.html" %}
 
 {% block Container %}
   <div id="fallback" class="alert alert-warning">
@@ -25,4 +25,4 @@
   <div id="search-results" class="mt-4">
     <ul id="results"></ul>
   </div>
-{% endblock Container %}  
+{% endblock Container %}

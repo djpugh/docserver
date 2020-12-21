@@ -4,6 +4,7 @@ import typing
 from starlette.requests import Request
 from starlette.types import Scope
 
+from docserver.auth.authenticator import authenticator
 from docserver.config import config
 
 
@@ -15,7 +16,8 @@ def get_permissions_from_request(request: typing.Union[Request, Scope]):
     if config.auth.enabled:
         try:
             if isinstance(request, Request):
-                permissions = request.auth.scopes
+                auth_state = authenticator.auth_backend.check(request)
+                permissions = auth_state.user.permissions
             else:
                 permissions = request['auth'].scopes
         except AttributeError:

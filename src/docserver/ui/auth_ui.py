@@ -9,6 +9,9 @@ from pkg_resources import resource_filename
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
+from docserver._copyright import get_copyright
+from docserver.ui.context import get_base_context
+
 
 templates = Jinja2Templates(directory=os.path.dirname(resource_filename('docserver.ui.templates', 'index.html')))
 
@@ -23,7 +26,14 @@ class AuthUI(_UI):
             authenticator (fastapi_aad_auth.auth.Authenticator): The authenticator object
             base_context (Dict[str, Any]): Add the authentication to the router
         """
-        super().__init__(config, authenticator, base_context)
+        if base_context is None:
+            base_context = {}
+        global_base_context = get_base_context()
+        global_base_context.update(base_context)
+
+
+        super().__init__(config, authenticator, global_base_context)
+
         self.login_template_path = Path(self.config.login_ui.template_file)
         self.user_template_path = Path(self.config.login_ui.user_template_file)
         self.login_templates = Jinja2Templates(directory=str(self.login_template_path.parent))
@@ -33,4 +43,5 @@ class AuthUI(_UI):
         if not self.config.enabled or self._authenticator.auth_backend.is_authenticated(request):
             # This is authenticated so go straight to the homepage
             return RedirectResponse('/')
-        return super()._login(request)
+        explanation = f'Built from <a href="https://github.com/djpugh/docserver">docserver</a> ({self._base_context["version"]})'
+        return super()._login(request, copyright=get_copyright(), explanation=explanation)

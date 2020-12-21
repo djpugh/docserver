@@ -122,10 +122,6 @@ class Package(Model):
         params_dict = self.__class__.get_write_params_dict(params, db=db)
         return super(Package, self).update(params_dict, db=db, **kwargs)
 
-    @property
-    def html_tags(self):
-        return '\n'.join([f'<a href=/search?q=tags:{u.name}><span class="badge badge-info">{u.name}</span></a>' for u in self.tags])
-
     @classmethod
     def _update_query_with_permissions_check(cls, query, provided_permissions: dict = None,
                                              check_scopes: Union[List, str] = 'read'):
