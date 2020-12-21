@@ -263,10 +263,8 @@ jobs:
 
       - name: Load Container
         run: |
-          ls -l
-          ls -l container
-          docker load -i container/docserver.edge.tar.gz
-          docker tag docserver:edge $docserver:latest
+          docker load -i container/docserver.edge.docker.tar.gz
+          docker tag docserver:edge
 
       - name: Get the version
         id: get_version
@@ -286,7 +284,7 @@ jobs:
         run: |
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
           docker images
-          docker tag docserver:latest $DOCKER_USERNAME/docserver:latest
+          docker tag docserver:edge $DOCKER_USERNAME/docserver:latest
           docker push $DOCKER_USERNAME/docserver:latest
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -297,9 +295,9 @@ jobs:
         run: |
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
           docker images
-          docker tag docserver:latest $DOCKER_USERNAME/docserver:$TAG
+          docker tag docserver:edge $DOCKER_USERNAME/docserver:$TAG
           docker push $DOCKER_USERNAME/docserver:$TAG
-          docker tag docserver:latest $DOCKER_USERNAME/docserver:stable
+          docker tag docserver:edge $DOCKER_USERNAME/docserver:stable
           docker push $DOCKER_USERNAME/docserver:stable
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
