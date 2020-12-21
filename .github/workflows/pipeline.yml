@@ -263,6 +263,8 @@ jobs:
 
       - name: Load Container
         run: |
+          ls -l
+          ls -l container
           docker load -i container/docserver.edge.tar.gz
           docker tag docserver:edge $docserver:latest
 
