@@ -99,8 +99,8 @@ class UploadBearerProvider(Provider):
 
 @expand_doc
 class UploadBearerConfig(BaseSettings):
-    token_secret: SecretStr = Field(str(uuid.uuid4()))
-    token_lifetime: int = Field(_DEFAULT_LIFETIME)
+    token_secret: SecretStr = Field(str(uuid.uuid4()), env='DOCSERVER_UPLOAD_TOKEN_SECRET')
+    token_lifetime: int = Field(_DEFAULT_LIFETIME, env='DOCSERVER_UPLOAD_TOKEN_LIFETIME')
     default_write_permission: str = Field(PERMISSIONS_DEFAULTS['write'])
     _provider_klass: type = PrivateAttr(UploadBearerProvider)
 
