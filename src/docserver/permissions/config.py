@@ -18,5 +18,5 @@ class PermissionsConfig(BaseSettings):
     @validator('admin_users', pre=True, always=True)
     def _validate_admin_users(cls, value):
         if value is None:
-            value = ''
+            value = []
         return value
