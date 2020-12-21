@@ -136,11 +136,12 @@ class AppConfig(BaseSettings):
 
     @validator('auth', always=True, allow_reuse=True)
     def _validate_auth_permission_route(cls, value, values):
-        permissions = values['permissions']
-        default_write_permission = permissions.default_write_permission
-        bearer_providers = [u for u in value.providers if isinstance(u, UploadBearerConfig)]
-        if bearer_providers:
-            bearer_providers[0].default_write_permission = default_write_permission
+        permissions = values.get('permissions', None)
+        if permissions:
+            default_write_permission = permissions.default_write_permission
+            bearer_providers = [u for u in value.providers if isinstance(u, UploadBearerConfig)]
+            if bearer_providers:
+                bearer_providers[0].default_write_permission = default_write_permission
         return value
 
     @validator('logo', always=True)
