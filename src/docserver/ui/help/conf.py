@@ -13,9 +13,10 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+from pathlib import Path
 import datetime
 
-# import guzzle_sphinx_theme
+from pkg_resources import resource_filename
 
 from docserver import __copyright__, __version__
 from docserver.config import config
@@ -57,7 +58,7 @@ extlinks = {
     "pypi": ("https://pypi.org/project/%s", ""),
 }
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ['_templates', str(Path(resource_filename('docserver.ui.templates.components', 'nav.jinja')).parent.absolute())]
 
 # The suffix of source filenames.
 source_suffix = '.rst'

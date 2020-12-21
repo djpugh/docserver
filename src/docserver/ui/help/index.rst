@@ -9,6 +9,7 @@ Overview
 
    Usage <usage>
    Uploading docs <uploading>
+   Changelog <changelog>
 
 
 DocServer provides a documentation server to serve versioned static html sites. There is an `api <uploading.html>`_ for
