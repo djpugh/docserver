@@ -1,6 +1,6 @@
 fastapi==0.63.0
-fastapi_aad_auth>=0.1.18
-pydantic[dotenv,email]>=1.7.3
+fastapi_aad_auth==0.1.18
+pydantic[dotenv,email]==1.7.3
 aiofiles
 itsdangerous
 sqlalchemy
