@@ -12,5 +12,5 @@ def delete_package(package: schemas.Package, provided_permissions=None):
     db = config.db.local_session()
     packages = db_models.Package.read(db, package)
     for package in packages:
-        if package.is_authorised('delete', provided_permissions):
+        if package.is_authorised(provided_permissions, 'delete'):
             db.delete(package)

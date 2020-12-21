@@ -15,7 +15,7 @@ def get_available_docs(provided_permissions=None):
     filtered_packages = []
     for package in packages:
         logger.debug(f'{package}, {package.permissions}, {provided_permissions}')
-        if package.is_authorised('read', provided_permissions):  # This will return true if auth is disabled
+        if package.is_authorised(provided_permissions, 'read'):  # This will return true if auth is disabled
             filtered_packages.append(package)
     for package in filtered_packages:
         if package.description is None:
@@ -27,6 +27,6 @@ def get_available_docs(provided_permissions=None):
 
 def get_versions(package: schemas.Package, provided_permissions=None):
     db_package = db_models.Package.read_unique(package=package)
-    if not db_package.is_authorised('read', provided_permissions):
+    if not db_package.is_authorised(provided_permissions, 'read'):
         raise PermissionError('Missing read permission for package')
     return ['latest'] + db_package.sorted_versions

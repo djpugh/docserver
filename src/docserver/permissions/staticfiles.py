@@ -2,6 +2,7 @@ import logging
 import os
 import typing
 
+from fastapi_aad_auth._base.state import AuthenticationError, AuthenticationOptions
 from starlette.responses import PlainTextResponse, Response
 from starlette.staticfiles import StaticFiles
 from starlette.types import Scope
@@ -15,24 +16,37 @@ logger = logging.getLogger(__name__)
 
 class PermissionsCheck:
     def is_authorised(self, provided_permissions, path):
-        return True
+        return AuthenticationOptions.authenticated
 
 
-class DBPermissionsCheck(PermissionsCheck):
+class LoggedInPermissionsCheck(PermissionsCheck):
+
+    def is_authorised(self, provided_permissions, path):
+        logger.debug(f'Provided permissions: {provided_permissions}')
+        if 'authenticated' in provided_permissions:
+            return AuthenticationOptions.authenticated
+        else:
+            return AuthenticationOptions.unauthenticated
+
+
+class DBPermissionsCheck(LoggedInPermissionsCheck):
 
     def __init__(self, session_maker):
         self.session_maker = session_maker
 
     def is_authorised(self, provided_permissions, path):
+        result = super().is_authorised(provided_permissions, path)
+        if result == AuthenticationOptions.unauthenticated:
+            return result
         logger.debug(f'Checking {path}')
         name = os.path.normpath(path).split(os.path.sep)[0]
         logger.debug(f'Module name: {name}')
         logger.debug(f'Provided permissions: {provided_permissions}')
         package = Package.read_unique(params={'name': name}, db=self.session_maker())
-        if package and package.is_authorised('read', provided_permissions):
-            return True
+        if package and package.is_authorised(provided_permissions, 'read'):
+            return AuthenticationOptions.authenticated
         else:
-            return False
+            return AuthenticationOptions.not_allowed
 
 
 class PermissionedStaticFiles(StaticFiles):
@@ -53,6 +67,9 @@ class PermissionedStaticFiles(StaticFiles):
         Returns an HTTP response, given the incoming path, method and request headers.
         """
         provided_permissions = get_permissions_from_request(scope)
-        if not self.permissions_check.is_authorised(provided_permissions, path):
+        result = self.permissions_check.is_authorised(provided_permissions, path)
+        if result == AuthenticationOptions.not_allowed:
             return PlainTextResponse("Unauthorised", status_code=405)
+        elif result == AuthenticationOptions.unauthenticated:
+            raise AuthenticationError('Login Required', scope['root_path'])
         return await super().get_response(path, scope)

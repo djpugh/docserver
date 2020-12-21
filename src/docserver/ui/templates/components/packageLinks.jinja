@@ -1,0 +1,31 @@
+{% macro repoLink(package_repository=None) -%}
+  {% if 'dev.azure.com' in package_repository %}
+     {% set logo = "/static/icons/azure_devops.png" -%}
+  {% elif 'github.com' in package_repository %}
+    {% set logo = "/static/icons/github.png" -%}
+  {% elif 'gitlab.com' in package_repository %}
+    {% set logo = "/static/icons/gitlab.png" -%}
+  {% else %}
+    {% set logo = "/static/icons/git.png" -%}
+  {% endif %}
+  {% if package_repository %}
+  <a href="{{ package_repository }}" class="card-link"><img src="{{ logo }}" class="img-fluid card-link" alt="{{package_repository}}"></a>
+  {% else %}
+  <img src="{{ logo }}" class="img-fluid card-link card-link-disabled" alt="No Repository Provided" disabled>
+  {% endif %}
+{%- endmacro %}
+
+
+{% macro docsLink(package_name) -%}
+  {% if package_name %}
+  <a href="/packages/{{ package_name }}/latest/" class="card-link"><span class="oi oi-document card-link"></span></a>
+  {% else %}
+  <span class="oi oi-document card-link card-link-disabled" disabled></span>
+  {% endif %}
+{%- endmacro %}
+
+{% macro tags(package_tags) -%}
+    {% for tag in package_tags %}
+      <a href=/search?q=tags:{{ tag.name }}><span class="badge badge-tag">{{ tag.name }}</span></a>
+    {% endfor %}
+{%- endmacro %}

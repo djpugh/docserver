@@ -168,7 +168,7 @@ html_theme = 'pyramid'
 #     'globaltoc_collapse': False,
 #     # If True, show hidden TOC entries
 #     'globaltoc_includehidden': False,
-    
+
 # }
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -241,6 +241,8 @@ html_last_updated_fmt = '%b %d, %Y (version '+str(__version__)+')'
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'docserverdoc'
 
+
+html_context = {'project_logo': config.logo, 'app_name': config.app_name, 'auth': config.auth.enabled}
 
 # -- Options for LaTeX output ---------------------------------------------
 

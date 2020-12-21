@@ -1,6 +1,6 @@
-{% extends "base.html" %}
+{% extends layout_template if defined else "base.html" %}
 
-{% block content %}
+{% block Container %}
   <div id="fallback" class="alert alert-warning">
   <script type="text/javascript">$('#fallback').hide();</script>
   <p>
@@ -25,4 +25,4 @@
   <div id="search-results" class="mt-4">
     <ul id="results"></ul>
   </div>
-{% endblock content %}
+{% endblock Container %}

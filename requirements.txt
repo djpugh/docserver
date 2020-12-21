@@ -1,4 +1,6 @@
 fastapi==0.62.0
+fastapi_aad_auth>=0.1.18
+pydantic[dotenv,email]>=1.7.3
 aiofiles
 itsdangerous
 sqlalchemy
@@ -9,6 +11,6 @@ python-multipart
 requests
 sphinx
 beautifulsoup4
-msal==1.0.0
 psycopg2-binary
 sphinx_github_changelog
+ruamel.yaml

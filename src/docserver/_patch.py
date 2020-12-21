@@ -1,9 +1,20 @@
 from fastapi import applications
 from fastapi.openapi.docs import get_redoc_html as _get_redoc_html
 from fastapi.openapi.docs import get_swagger_ui_html as _get_swagger_ui_html
+from fastapi_aad_auth.ui.jinja import Jinja2Templates
 from starlette.responses import HTMLResponse
 
-from docserver.ui.templates.nav import nav
+from docserver import config
+
+
+# TODO: check if this has been updated
+
+_JINJA_ENV = Jinja2Templates('').env
+
+
+def nav(config):
+    template = _JINJA_ENV.from_string('{% from "docserver.ui.templates.components:nav.jinja" import nav %}\n{{ nav(project_logo, app_name, links, auth) }}')
+    return template.render(project_logo=config.logo, app_name=config.app_name, links=[], auth=config.auth.enabled)
 
 
 def get_swagger_ui_html(*args, **kwargs) -> HTMLResponse:
@@ -26,10 +37,8 @@ def wrap_response(response: HTMLResponse) -> HTMLResponse:
     """
     head, body = html.split('</head>')
     head += '\n' + css
-    print(css)
     body = body.split('<body>')[-1]
-    body = nav() + '\n' + body
-    print(body)
+    body = nav(config.config) + '\n' + body
     html = f'{head}\n</head>\n<body>{body}'
     return HTMLResponse(html)
 

@@ -1,11 +1,12 @@
+from datetime import datetime
 import fnmatch
 import logging
 import os
-from typing import List
+from typing import List, Optional
 
 from pkg_resources import parse_version
 from pkg_resources.extern.packaging.version import LegacyVersion
-from pydantic import BaseModel, UrlStr, validator
+from pydantic import AnyUrl, BaseModel, validator
 from werkzeug.utils import secure_filename
 
 from docserver.config import config
@@ -31,8 +32,11 @@ class PermissionCollection(BaseModel):
 
     def check(self, operation, provided_scopes):
         scope = getattr(self, f'{operation}_permission').split('/')[0]
-        is_more_powerful_scope = any([fnmatch.fnmatch(scope, u) for u in provided_scopes])
-        return scope in provided_scopes or is_more_powerful_scope
+        logger.debug(f'Checking if more powerful scope than {scope} in {provided_scopes}')
+        is_more_powerful_scope = any([fnmatch.fnmatch(scope, u.split('/')[0]) for u in provided_scopes if u.endswith(operation)])
+        logger.debug(f'More powerful scope {is_more_powerful_scope}')
+        logger.debug(f'Checking {scope} in {provided_scopes}')
+        return f'{scope}/{operation}' in provided_scopes or is_more_powerful_scope
 
     @validator('read_permission', 'write_permission', 'delete_permission', pre=True, always=True)
     def validate_permissions(cls, permission):
@@ -44,17 +48,26 @@ class PermissionCollection(BaseModel):
 
 class Package(BaseModel):
     name: str
-    repository: UrlStr
+    repository: AnyUrl
     tags: List[str]
     description: str = None
     permissions: PermissionCollection = PermissionCollection()
 
-    @validator('tags', pre=True, always=True)
+    @validator('tags', pre=True, always=True, each_item=True)
     def validate_tags(cls, tag):
-        if not isinstance(tag, str):
+        logger.debug(tag)
+        if not isinstance(tag, (str, list)):
             return str(tag.name)
         else:
             return tag
+
+    def check_permissions(self, provided_permissions: list, *operations):
+        # Handle this through API
+        logger.debug(f'Checking {provided_permissions} for {operations}')
+        result = False
+        for operation in operations:
+            result |= self.permissions.check(operation, provided_permissions)
+        return result
 
 
 class CreatePackage(Package):
@@ -101,10 +114,6 @@ class CreatePackage(Package):
     def __repr__(self):
         return f'CreatePackage ({self.dict()})'
 
-    def check_permissions(self, operation, provided_permissions: list):
-        # Handle this through API
-        self.permissions.check(operation, provided_permissions)
-
 
 class ResponsePackage(Package):
     versions: List[Version] = None
@@ -114,9 +123,14 @@ class ResponsePackage(Package):
 
 
 class TokenResponse(BaseModel):
-    access_token: str
+    access_token: Optional[str] = None
     token_type: str = "Bearer"
-    expires_in: int
+    expires_at: Optional[datetime] = None
+
+    @validator('expires_at', pre=True)
+    def _validate_expires_at(cls, value):
+        print(value)
+        return value
 
 
 class PermissionManagement(BaseModel):
@@ -125,11 +139,11 @@ class PermissionManagement(BaseModel):
 
 
 class UserResponse(BaseModel):
-    name: str
-    email: str
-    username: str
-    roles: List[str] = []
-    groups: List[str] = []
+    name: Optional[str] = None
+    email: Optional[str] = None
+    username: Optional[str] = None
+    roles: Optional[List[str]] = None
+    groups: Optional[List[str]] = None
     permissions: List[str] = []
 
     class Config:

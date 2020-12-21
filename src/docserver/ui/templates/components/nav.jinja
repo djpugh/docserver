@@ -1,5 +1,6 @@
+{% macro nav(project_logo, project, links=[], auth=True) -%}
 <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <a class="navbar-brand" href="/"><span class="oi oi-book navbar-logo mr-2" title="{{ project }}" aria-hidden="true"></span> {{ project }}</a>
+    <a class="navbar-brand" href="/">{{ project_logo | safe }} {{ project }}</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -9,7 +10,11 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav mr-auto">
-
+                    {% for item in links %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{item.link}}">{{item.name}}</a>
+                    </li>
+                    {% endfor %}
                 </ul>
                 <ul class="nav navbar-nav">
                     <form class="form-inline my-2 my-md-0 mr-2" action="/search">
@@ -33,6 +38,7 @@
                         <a class="nav-link" href="/api/docs">API</a>
                     </li>
                 </ul>
+                {% if auth %}
                 <ul class="nav navbar-nav">
                     <li id="me" class="nav-item">
                         <a class="nav-link" href="/me">
@@ -47,6 +53,8 @@
                         </a>
                     </li>
                 </ul>
+                {% endif %}
             </div>
     </div>
 </nav>
+{%- endmacro %}

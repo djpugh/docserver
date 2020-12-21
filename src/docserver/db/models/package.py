@@ -122,10 +122,6 @@ class Package(Model):
         params_dict = self.__class__.get_write_params_dict(params, db=db)
         return super(Package, self).update(params_dict, db=db, **kwargs)
 
-    @property
-    def html_tags(self):
-        return '\n'.join([f'<a href=/search?q=tags:{u.name}><span class="badge badge-info">{u.name}</span></a>' for u in self.tags])
-
     @classmethod
     def _update_query_with_permissions_check(cls, query, provided_permissions: dict = None,
                                              check_scopes: Union[List, str] = 'read'):
@@ -142,10 +138,13 @@ class Package(Model):
         else:
             return query
 
-    def is_authorised(self, operation, provided_permissions=None):
-        if isinstance(provided_permissions, dict):
-            provided_permissions = provided_permissions.get(operation, [])
-        return self.permissions.check(operation, provided_permissions)
+    def is_authorised(self, provided_permissions=None, *operations):
+        result = False
+        for operation in operations:
+            if isinstance(provided_permissions, dict):
+                provided_permissions = provided_permissions.get(operation, [])
+            result |= self.permissions.check(operation, provided_permissions)
+        return result
 
     @classmethod
     def update_or_create(cls, params: Union[dict, schemas.BaseModel], db: Session = None, **kwargs):
@@ -155,7 +154,7 @@ class Package(Model):
         provided_permissions = kwargs.pop('provided_permissions', None)
         result = cls.read_unique(db=db, params=cls._get_unique_params(params.dict()))
         if result:
-            if not result.is_authorised('write', provided_permissions=provided_permissions):
+            if not result.is_authorised(provided_permissions, 'write'):
                 raise PermissionError('Unauthorised')
             result.update(params, db=db, **kwargs)
             cls.logger.debug(f'{cls.__name__} found with {params}')

@@ -32,3 +32,5 @@ docker-build
 docker-html-help
 Pipfile
 test.zip
+.env
+.vscode

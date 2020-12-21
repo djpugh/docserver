@@ -1,0 +1,27 @@
+{% extends layout_template if defined else "fastapi_aad_auth.ui:login.html" %}
+
+{% block CSS %}
+        <link href="/static/css/open-iconic-bootstrap.css" rel="stylesheet">
+        {{ super() }}
+{% endblock CSS %}
+{% block HeadScripts %}
+        <script type="text/javascript" src="/static/js/lunr.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+{% endblock HeadScripts %}
+{% block ContentHeader %}
+    <h1 class="h1">
+    {% if logo %}
+        {{logo | safe }}
+    {% endif %}
+    {% if appname %}
+        {{appname}}
+    {% endif %}
+    </h1>
+{% endblock ContentHeader %}
+{% block BodyScripts %}
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="/static/js/bootstrap.min.js"></script>
+        <script src="/searchindex.js"></script>
+        <script src="/static/js/search.js"></script>
+{% endblock BodyScripts %}

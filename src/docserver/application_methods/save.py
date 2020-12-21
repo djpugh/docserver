@@ -30,7 +30,7 @@ def save_documentation(documentation, package: schemas.CreatePackage, provided_p
                 if not db_package:
                     raise ValueError('No package found')
                 logger.debug(f'Checking permissions for {db_package}')
-                if not db_package.is_authorised('write', provided_permissions):
+                if not db_package.is_authorised(provided_permissions, 'write'):
                     raise PermissionError
                 logger.debug(f'Creating version information for {db_package}')
                 document_version = db_models.DocumentationVersion.update_or_create(db=db, package=package,

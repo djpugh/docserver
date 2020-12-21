@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends
-from fastapi.security import HTTPAuthorizationCredentials
-import pkg_resources
 
-from docserver import __version__
-from docserver.api.auth import auth_scheme
-API_VERSION = pkg_resources.parse_version(__version__).base_version.split('.')[0]
+from docserver._version import get_versions
+from docserver.auth.authenticator import AuthenticationState, authenticator
 
+__version__ = get_versions()['version']
 
 router = APIRouter()
 
@@ -19,7 +17,7 @@ async def health_check():
 
 
 @router.get('/version')
-async def get_version(token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
+async def get_version(state: AuthenticationState = Depends(authenticator.auth_backend.requires_auth(allow_session=True))):
     """
     Get the docserver version
     """

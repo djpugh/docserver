@@ -23,3 +23,45 @@ padding-top: .25rem;
 padding-bottom: .25rem;
 
 }
+.badge-tag{
+  background-color: #91a9c0;
+  color: #fff
+}
+
+.card-link:hover{
+  filter: none;
+}
+
+.card-link{
+  max-height: 2.2em;
+  filter: invert(35%);
+  color: #000;
+  outline: none;
+   /* sepia(0%) saturate(159%) hue-rotate(179deg) brightness(102%) contrast(86%); */
+}
+
+.card-link + .card-link {
+  margin-left: 0.5rem;
+}
+
+span.card-link{
+  font-size: 2em;
+}
+
+img.card-link{
+  vertical-align: top;
+}
+
+.card-link-disabled{
+  filter: invert(69%);
+}
+
+.card-link-disabled:hover{
+  filter: invert(69%);
+}
+
+.excerpt{
+  margin-left: 2rem;
+  font-weight: lighter;
+  color: #888;
+}
