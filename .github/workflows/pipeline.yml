@@ -148,6 +148,8 @@ jobs:
       matrix:
         os:
           - ubuntu
+        py:
+          - 3.8
     steps:
       - uses: actions/checkout@v2
         with:
