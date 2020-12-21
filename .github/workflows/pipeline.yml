@@ -270,7 +270,7 @@ jobs:
         id: get_version
         run: echo ::set-output name=VERSION::$(python setup.py --version)
 
-        - name: Publish Edge
+      - name: Publish Edge
         run: |
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
           docker images
