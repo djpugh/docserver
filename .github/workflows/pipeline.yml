@@ -179,13 +179,21 @@ jobs:
           TAG: edge
 
       - name: Save Container
+<<<<<<< Updated upstream
         run: docker save docserver:edge -o docserver.edge.docker.tar.gz
+=======
+        run: docker save docserver:edge -o docserver.edge.tar.gz
+>>>>>>> Stashed changes
 
       - name: Store container
         uses: actions/upload-artifact@v2
         with:
           name: container
+<<<<<<< Updated upstream
           path: docserver.edge.docker.tar.gz
+=======
+          path: docserver.edge.tar.gz
+>>>>>>> Stashed changes
 
   # docs:
   #   if: (github.event_name == 'pull_request' && contains(github.base_ref, 'main')) || (github.event_name == 'push' && (startsWith(github.ref, 'refs/tags') || endsWith(github.ref, 'main'))) || (github.event_name == 'release')
@@ -259,12 +267,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: container
-          path: docserver.edge.docker.tar.gz
+          path: container
 
       - name: Load Container
         run: |
-          docker load -i docserver.edge.docker.tar.gz
-          docker tag docserver:edge docserver:latest
+          docker load -i container/docserver.edge.tar.gz
+          docker tag docserver:edge $docserver:latest
 
       - name: Get the version
         id: get_version
