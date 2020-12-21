@@ -178,6 +178,15 @@ jobs:
         env:
           TAG: edge
 
+      - name: Save Container
+        run: docker save docserver:edge -o docserver.edge.docker.tar.gz
+
+      - name: Store container
+        uses: actions/upload-artifact@v2
+        with:
+          name: container
+          path: docserver.edge.docker.tar.gz
+
   # docs:
   #   if: (github.event_name == 'pull_request' && contains(github.base_ref, 'main')) || (github.event_name == 'push' && (startsWith(github.ref, 'refs/tags') || endsWith(github.ref, 'main'))) || (github.event_name == 'release')
   #   name: Build docs
@@ -245,24 +254,21 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.py }}
+
       - name: Download build
         uses: actions/download-artifact@v2
         with:
-          name: build
-          path: dist
-      - name: Install dependencies
+          name: container
+          path: docserver.edge.docker.tar.gz
+
+      - name: Load Container
         run: |
-          python -m pip install --upgrade pip
-          pip install tox
+          docker load -i docserver.edge.docker.tar.gz
+          docker tag docserver:edge docserver:latest
 
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::$(python setup.py --version)
-
-      - name: Build Container
-        run: tox -e build-docker
-        env:
-          TAG: latest
 
       - name: Publish Latest
         run: |

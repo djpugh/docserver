@@ -34,3 +34,4 @@ Pipfile
 test.zip
 .env
 .vscode
+*.docker.tar.gz
