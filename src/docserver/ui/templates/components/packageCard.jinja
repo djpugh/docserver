@@ -1,19 +1,22 @@
 {% from "docserver.ui.templates.components:packageLinks.jinja" import docsLink, repoLink, tags %}
 {% macro packageCard(package) -%}
-<div class="col-sm-6 col-12 col-md-4 col-lg-3 mx-2">
+<div class="d-flex align-items-stretch col-sm-6 col-12 col-md-4 col-lg-3 mx-2">
     <div class="card dropdown show" style="width: 18rem;">
       <div class="card-body">
         <h5 class="card-title">{{ package.name }}</h5>
         <h6 class="card-subtitle mb-2 text-muted">
           {{ tags(package.tags) }}
         </h6>
-        <p class="card-text">{{ package.description }}</p>
+        <p class="card-text">
+          {{ package.description }}
+        </p>
+      </div>
+      <div class="card-footer bg-white">
         <div class="row ml-2">
           {{ docsLink(package.name) }}
           {{ repoLink(package.repository) }}
         </div>
       </div>
-
       {% if package.versions | length > 1 %}
           <a class="card-footer text-muted text-center dropdown show btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <em>latest version:</em> {{ package.latest_version }}
@@ -25,12 +28,12 @@
                 <a class="dropdown-item text-muted" href="/packages/{{ package.name }}/{{ version.version }}">{{ version.version }}</a>
             {% endif %}
           {% endfor %}
+          </div>
       {% else %}
           <div class="card-footer text-muted text-center dropdown show btn" role="button">
             <em>latest version:</em> {{ package.latest_version }}
           </div>
       {% endif %}
-      </div>
     </div>
 </div>
 {%- endmacro %}

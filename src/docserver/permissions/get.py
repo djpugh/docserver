@@ -24,3 +24,7 @@ def get_permissions_from_request(request: typing.Union[Request, Scope]):
             logger.exception(f'Error extracting permissions from request {request}')
         logger.debug(f'Identified permissions {permissions}')
     return permissions
+
+
+def is_admin(permissions):
+    return any([u.split('/')[1] == 'admin' for u in permissions])

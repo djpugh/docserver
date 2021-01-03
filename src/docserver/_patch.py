@@ -13,7 +13,7 @@ _JINJA_ENV = Jinja2Templates('').env
 
 
 def nav(config):
-    template = _JINJA_ENV.from_string('{% from "docserver.ui.templates.components:nav.jinja" import nav %}\n{{ nav(project_logo, app_name, links, auth) }}')
+    template = _JINJA_ENV.from_string('{% from "docserver.ui.templates.components:nav.jinja" import nav %}\n{{ nav(None, project_logo, app_name, links, auth) }}')
     return template.render(project_logo=config.logo, app_name=config.app_name, links=[], auth=config.auth.enabled)
 
 

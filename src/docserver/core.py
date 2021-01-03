@@ -27,6 +27,7 @@ AUTH_ENTRYPOINT = 'docserver.auth.backends'
 __version__ = get_versions()['version']
 
 logging.basicConfig(level='DEBUG')
+logging.info(f'Running docserver version {__version__}')
 logging.info(f'Config:\n{yaml.round_trip_dump(json.loads(config.json()))}')
 
 app = FastAPI(title='Documentation Server',

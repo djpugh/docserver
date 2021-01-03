@@ -14,7 +14,7 @@
 {% endblock HeadScripts %}
 
 {% block Nav %}
-{{ nav(project_logo, app_name, links, auth) | safe }}
+{{ nav(request, project_logo, app_name, links, auth) | safe }}
 {% endblock Nav%}
 
 {% block ContentHeader %}
