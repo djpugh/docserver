@@ -25,13 +25,18 @@ class User(_User):
             logger.debug(f'{self.name}: db updated permissions {mapped_permissions}')
         logger.debug(f'{self.name} - checking for admin permissions')
         admin_permissions = []
+        is_admin = False
         for permission in mapped_permissions:
             if permission.endswith('/admin'):
+                is_admin = True
                 logger.debug(f'{self.name} - admin ({permission}) - adding read, write, delete permissions')
                 admin_permissions += [permission.replace('/admin', '/read'), permission.replace('/admin', '/write'), permission.replace('/admin', '/delete')]
         mapped_permissions += admin_permissions
+        if is_admin:
+            mapped_permissions += ['admin']
         logger.debug(f'{self.name}: combined permissions {mapped_permissions}')
         return list(set(mapped_permissions))
+
 
 # TODO: Check How this works with state/user
 

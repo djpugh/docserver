@@ -33,7 +33,7 @@ padding-bottom: .25rem;
 }
 
 .card-link{
-  max-height: 2.2em;
+  max-height: 1.6em;
   filter: invert(35%);
   color: #000;
   outline: none;
@@ -45,7 +45,7 @@ padding-bottom: .25rem;
 }
 
 span.card-link{
-  font-size: 2em;
+  font-size: 1.6em;
 }
 
 img.card-link{

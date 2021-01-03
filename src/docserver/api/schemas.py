@@ -33,7 +33,8 @@ class PermissionCollection(BaseModel):
     def check(self, operation, provided_scopes):
         scope = getattr(self, f'{operation}_permission').split('/')[0]
         logger.debug(f'Checking if more powerful scope than {scope} in {provided_scopes}')
-        is_more_powerful_scope = any([fnmatch.fnmatch(scope, u.split('/')[0]) for u in provided_scopes if u.endswith(operation)])
+        # We will drop 'authenticated' and 'admin'
+        is_more_powerful_scope = any([fnmatch.fnmatch(scope, u.split('/')[0]) for u in provided_scopes if u.endswith(operation) and '/' in u])
         logger.debug(f'More powerful scope {is_more_powerful_scope}')
         logger.debug(f'Checking {scope} in {provided_scopes}')
         return f'{scope}/{operation}' in provided_scopes or is_more_powerful_scope

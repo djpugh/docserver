@@ -1,4 +1,4 @@
-{% macro nav(project_logo, project, links=[], auth=True) -%}
+{% macro nav(request, project_logo, project, links=[], auth=True) -%}
 <nav class="navbar navbar-expand navbar-dark bg-dark">
     <a class="navbar-brand" href="/">{{ project_logo | safe }} {{ project }}</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,7 +17,7 @@
                     {% endfor %}
                 </ul>
                 <ul class="nav navbar-nav">
-                    <form class="form-inline my-2 my-md-0 mr-2" action="/search">
+                    <form class="form-inline my-2 my-md-0 mr-2 ml-2" action="/search">
                        <div class="input-group">
                            <input id="search" class="form-control" name="q" type="text" placeholder="Search">
                            <!--Search button-->
@@ -28,6 +28,14 @@
                            </div>
                        </div>
                     </form>
+                    {% if (request and auth and "admin" in request.auth.scopes) or not auth %}
+                    <li class="nav-item">
+                        <a class="nav-link">
+                            <span class="nav-link oi oi-cloud-upload" title="Upload" aria-hidden="true" data-toggle="modal" data-target="#uploadModal">
+                            </span>
+                        </a>
+                    </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="/help">
                             <span class="oi oi-question-mark" title="Help" aria-hidden="true">

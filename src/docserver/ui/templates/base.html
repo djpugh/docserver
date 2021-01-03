@@ -14,9 +14,69 @@
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 {% endblock HeadScripts %}
 {% block Nav %}
-        {{ nav(project_logo, app_name, links, auth) | safe }}
+        {{ nav(request, project_logo, app_name, links, auth) | safe }}
 {% endblock Nav %}
 {% block Content %}
+    {% block UploadModal %}
+    <!-- Upload modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog">
+        <form class="was-validated" action="/ui-upload" method=POST enctype=multipart/form-data>
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title">Upload Documentation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="form-group">
+                            <label for="packageName">Package Name</label>
+                            <input type="text" class="form-control" name="packageName" id="packageName" aria-describedby="packageNameHelp" placeholder="Enter text" required>
+                            <small id="packageNameHelp" class="form-text text-muted">This is the name of the package.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="repositoryUrl">Repository URL</label>
+                            <input type="text" pattern="(https?)://.*" class="form-control" name="repositoryUrl" id="repositoryUrl" aria-describedby="repositoryUrlHelp" placeholder="Enter text" required>
+                            <small id="repositoryUrlHelp" class="form-text text-muted">The URL of the package repository.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="tags">Package Tags</label>
+                            <input type="text" class="form-control" name="tags" id="tags" aria-describedby="tagsHelp" placeholder="Enter text">
+                            <small id="tagsHelp" class="form-text text-muted">Tags separated by semi-colon (;).</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="tags">Decscription</label>
+                            <textarea class="form-control" name="description" id="description" rows="3" aria-describedby="descriptionHelp" placeholder="Enter text"></textarea>
+                            <small id="descriptionHelp" class="form-text text-muted">Package Description/Summary</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="version">Version</label>
+                            <input type="text" pattern="^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$" class="form-control" name="version" id="version" aria-describedby="textHelp" placeholder="Enter text" required>
+                            <small id="versionHelp" class="form-text text-muted">Package Version</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="permission">Permission</label>
+                            <input type="text" class="form-control" pattern="^(?!.*[.*]{2})[a-z0-9*_:-]+(?:\.[a-z0-9*_:-]*)*$" name="permission" id="permission" aria-describedby="permissionHelp" placeholder="Enter text" required>
+                            <small id="permissionHelp" class="form-text text-muted">Package Access Permission</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="zipfile">Zipfile</label>
+                            <input type="file" class="form-control" name="zipfile" id="zipfile" aria-describedby="zipfileHelp" placeholder="Choose zipfile" pattern="^.*\.(zip|ZIP)$" required>
+                            <small id="zipfileHelp" class="form-text text-muted">Zipfile containing the documentation</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            </div>
+        </form>
+    </div>
+    {% endblock UploadModal %}
         <div class='container'>
             {% block Container %}
             {% endblock Container %}
