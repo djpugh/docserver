@@ -8,8 +8,97 @@
 {% block Container %}
 <div class="row">
   {% for package in packages %}
-    {{ packageCard(package) }}
+    {{ packageCard(request, package) }}
   {% endfor %}
 </div>
+{% block DeletePackageModal %}
+<!-- Delete Package modal -->
+<div class="modal fade" id="deletePackageModal" tabindex="-1" role="dialog">
+    <form action="/_delete/package" method=POST>
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Delete Package?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <input type="text" class="form-control" name="packageName" id="deletePackage_PackageName" required hidden>
+            <div class="modal-footer">
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+        </div>
+    </form>
+</div>
+{% endblock DeletePackageModal %}
+{% block DeleteVersionModal %}
+<!-- Delete version modal -->
+<div class="modal fade" id="deleteVersionModal" tabindex="-1" role="dialog">
+    <form action="/_delete/version" method=POST>
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Delete Version?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <input type="text" class="form-control" name="packageName" id="deleteVersion_PackageName" required hidden>
+            <input type="text" class="form-control" name="version" id="deleteVersion_Version" required hidden>
+            <div class="modal-footer">
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+        </div>
+    </form>
+</div>
+{% endblock DeleteVersionModal %}
+{% block ModalScripts %}
+<script>
+  $('#deletePackageModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    console.log(button)
+    var package = button.data('package') // Extract info from data-* attributes
+    console.log(package)
+    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    var modal = $(this)
+    modal.find('.modal-title').text('Delete package: ' + package + '?')
+    $('#deletePackage_PackageName').val(package)
+  })
+  $('#uploadModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var packageName = button.data('packagename') // Extract info from data-* attributes
+    var repositoryUrl = button.data('repositoryurl') // Extract info from data-* attributes
+    var tags = button.data('tags') // Extract info from data-* attributes
+    var description = button.data('description') // Extract info from data-* attributes
+    var permission = button.data('permission') // Extract info from data-* attributes
+    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    $('#packageName').val(packageName)
+    $('#repositoryUrl').val(repositoryUrl)
+    $('#tags').val(tags)
+    $('#description').val(description)
+    $('#permission').val(permission)
+  })
+  $('#deleteVersionModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    console.log(button)
+    var package = button.data('package') // Extract info from data-* attributes
+    var version = button.data('version') // Extract info from data-* attributes
+    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    console.log(package)
+    console.log(version)
+    var modal = $(this)
+    modal.find('.modal-title').text('Delete documentation version: ' + version + ' of ' + package + '?')
+    $('#deleteVersion_PackageName').val(package)
+    $('#deleteVersion_Version').val(package)
+  })
+</script>
+{% endblock ModalScripts %}
 {% endblock Container %}
 

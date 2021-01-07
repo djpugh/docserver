@@ -51,7 +51,7 @@ def save_index(package, index):
         json.dump(index, f)
 
 
-def build_index(package: schemas.CreatePackage):
+def build_index(package: schemas.PackageDocumentationVersion):
     url = f'{config.upload.package_url_slug}/{package.name}/{package.version}'
     index = {}
     base_dir = os.path.join(package.get_dir(), package.version)

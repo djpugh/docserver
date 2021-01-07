@@ -65,3 +65,19 @@ img.card-link{
   font-weight: lighter;
   color: #888;
 }
+
+span.card-action{
+  font-size: 1.2em;
+}
+
+img.card-action{
+  vertical-align: top;
+}
+
+.card-action-disabled{
+  filter: invert(69%);
+}
+
+.card-action-disabled:hover{
+  filter: invert(69%);
+}

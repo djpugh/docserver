@@ -7,7 +7,7 @@ from docserver.db import models as db_models
 logger = logging.getLogger(__name__)
 
 
-def register_package(package: schemas.CreatePackage, provided_permissions=None):
+def register_package(package: schemas.PackageDocumentationVersion, provided_permissions=None):
     logger.debug(f'Registering {package}')
     # Check we have write permissions on the package
     if package.check_permissions(provided_permissions, 'write'):

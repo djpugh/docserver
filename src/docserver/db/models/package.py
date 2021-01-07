@@ -21,11 +21,13 @@ class Package(Model):
         secondary=association_table,
         back_populates="packages")
 
-    versions = relationship("DocumentationVersion", lazy='joined')
+    versions = relationship("DocumentationVersion", lazy='joined',
+                            cascade = "all, delete, delete-orphan")
     repository = Column(String(300), unique=True, nullable=False)
     description = Column(String(800), nullable=True)
     # Permission mappings
     permission_collection_id = Column(Integer, ForeignKey('permissioncollection.id'))
+    permissions = relationship(PermissionCollection, backref="packages", lazy="joined")
 
     def __repr__(self):
         tags = []
@@ -45,6 +47,11 @@ class Package(Model):
             return versions[0]
         else:
             return ''
+
+    def get_version(self, requested_version):
+        versions = [u for u in self.versions if u.version == requested_version]
+        if versions:
+            return versions[0]
 
     @staticmethod
     def create_tags(package: schemas.Package, db: Session = None):

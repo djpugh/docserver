@@ -5,7 +5,7 @@ from docserver.api import schemas
 from docserver.config import config
 
 
-def save_docs(package: schemas.CreatePackage, zipfile: str, ):
+def save_docs(package: schemas.PackageDocumentationVersion, zipfile: str, ):
     # Need to have write permissions for the package
     path = make_path(package.get_path())
     zf = ZipFile(zipfile)

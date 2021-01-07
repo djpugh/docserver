@@ -37,7 +37,7 @@ async def available_versions(package_name: str, state: AuthenticationState = Dep
 
 
 @router.post('/upload', response_model=str, status_code=200)
-async def register_package_upload(package: schemas.CreatePackage, request: Request, state: AuthenticationState = Depends(authenticator.auth_backend.requires_auth())):
+async def register_package_upload(package: schemas.PackageDocumentationVersion, request: Request, state: AuthenticationState = Depends(authenticator.auth_backend.requires_auth())):
     """
     Register a package upload
     """
@@ -50,7 +50,7 @@ async def register_package_upload(package: schemas.CreatePackage, request: Reque
 def upload_package(upload_id: str, request: Request, documentation: UploadFile = File(...), state: AuthenticationState = Depends(authenticator.auth_backend.requires_auth())):
     result = None
     try:
-        package_metadata = schemas.CreatePackage.from_serialized(upload_id)
+        package_metadata = schemas.PackageDocumentationVersion.from_serialized(upload_id)
         if os.path.splitext(documentation.filename)[-1] == '.zip':
             slug = methods.save_documentation(documentation, package_metadata, provided_permissions=state.user.permissions)
             result = f"Location {request.url.scheme}://{request.url.hostname}/{slug}"
@@ -61,5 +61,18 @@ def upload_package(upload_id: str, request: Request, documentation: UploadFile =
     except PermissionError:
         if result:
             return result
+        else:
+            raise HTTPException(status_code=405, detail='Write Permission not available')
+
+
+@router.delete('{package_name}/{version}', status_code=200)
+def delete_documentation_version(package_name: str, version: str, request: Request, state: AuthenticationState = Depends(authenticator.auth_backend.requires_auth())):
+    documentation_version = schemas.PackageDocumentationVersion(name=package_name, version=version)
+    result = None
+    try:
+        deleted = methods.delete_version(documentation_version, provided_permissions=state.user.permissions)
+    except PermissionError:
+        if result:
+            return {'Deleted': deleted}
         else:
             raise HTTPException(status_code=405, detail='Write Permission not available')

@@ -1,7 +1,7 @@
 {% from "docserver.ui.templates.components:packageLinks.jinja" import docsLink, repoLink, tags %}
-{% macro packageCard(package) -%}
-<div class="d-flex align-items-stretch col-sm-6 col-12 col-md-4 col-lg-3 mx-2">
-    <div class="card dropdown show" style="width: 18rem;">
+{% macro packageCard(request, package) -%}
+<div class="d-flex align-items-stretch col-sm-6 col-12 col-md-3 col-lg-2 mx-1">
+    <div class="card my-1 dropdown show" style="width: 18rem;">
       <div class="card-body">
         <h5 class="card-title">{{ package.name }}</h5>
         <h6 class="card-subtitle mb-2 text-muted">
@@ -12,9 +12,30 @@
         </p>
       </div>
       <div class="card-footer bg-white">
-        <div class="row ml-2">
+        <div class="row ml-2 align-items-center">
           {{ docsLink(package.name) }}
           {{ repoLink(package.repository) }}
+          <div class="ml-auto mr-2">
+            {% if (request and auth and package.check_permissions(request.auth.scopes, 'write', 'admin')) or not auth %}
+              <span class="card-action oi oi-cloud-upload text-muted" title="Upload" aria-hidden="true"
+                data-toggle="modal"
+                data-target="#uploadModal"
+                data-packageName="{{package.name}}"
+                data-repositoryUrl="{{package.repository}}"
+                data-tags="{{ package.tags | map(attribute='name') | join(';')}}"
+                data-permission="{{package.permissions.read_permission.scope}}"
+                {% if package.description %}
+                data-description="{{package.description}}"
+                {% else %}
+                data-description=""
+                {% endif %}
+                >
+              </span>
+            {% endif %}
+            {% if (request and auth and package.check_permissions(request.auth.scopes, 'delete', 'admin')) or not auth %}
+              <span class="card-action oi oi-trash text-muted ml-1" title="Delete" aria-hidden="true" data-toggle="modal" data-target="#deletePackageModal" data-package="{{package.name}}"></span>
+            {% endif %}
+          </div>
         </div>
       </div>
       {% if package.versions | length > 1 %}
@@ -22,16 +43,31 @@
             <em>latest version:</em> {{ package.latest_version }}
           </a>
           <div class="card-footer footer-menu dropdown-menu" aria-labelledby="{{package.name}}">
-          <a class="dropdown-item text-muted" href="/packages/{{ package.name }}/latest/">{{ package.latest_version }}</a>
+          <li class="dropdown-item text-muted">
+            <a class="text-muted" href="/packages/{{ package.name }}/latest/">{{ package.latest_version }}</a>
+          {% if (request and auth and package.check_permissions(request.auth.scopes, 'delete', 'admin')) or not auth %}
+            <span class="float-right mr-2 card-action oi oi-trash" title="Delete" aria-hidden="true" data-toggle="modal" data-target="#deleteVersionModal" data-package="{{package.name}}" data-version="{{package.latest_version}}"></span>
+          {% endif %}
+          </li>
           {% for version in package.versions %}
             {% if version.version != package.latest_version %}
-                <a class="dropdown-item text-muted" href="/packages/{{ package.name }}/{{ version.version }}">{{ version.version }}</a>
+              <li class="dropdown-item text-muted">
+                <a class="text-muted" href="/packages/{{ package.name }}/{{ version.version }}">{{ version.version }}</a>
+                {% if (request and auth and package.check_permissions(request.auth.scopes, 'delete', 'admin')) or not auth %}
+                  <span class="float-right mr-2 card-action oi oi-trash" title="Delete" aria-hidden="true" data-toggle="modal" data-target="#deleteVersionModal" data-package="{{package.name}}" data-version="{{version.version}}"></span>
+                {% endif %}
+              </li>
             {% endif %}
           {% endfor %}
           </div>
       {% else %}
           <div class="card-footer text-muted text-center dropdown show btn" role="button">
+            <a class="text-muted" href="/packages/{{ package.name }}/latest/">
             <em>latest version:</em> {{ package.latest_version }}
+            </a>
+            {% if (request and auth and package.check_permissions(request.auth.scopes, 'delete', 'admin')) or not auth %}
+              <span class="float-right mr-2 card-action oi oi-trash" title="Delete" aria-hidden="true" data-toggle="modal" data-target="#deleteVersionModal" data-package="{{package.name}}" data-version="{{package.latest_version}}"></span>
+            {% endif %}
           </div>
       {% endif %}
     </div>

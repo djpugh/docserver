@@ -8,9 +8,27 @@ from docserver.db import models as db_models
 logger = logging.getLogger(__name__)
 
 
-def delete_package(package: schemas.Package, provided_permissions=None):
+def delete_package(package: schemas.BasePackage, provided_permissions=None):
     db = config.db.local_session()
     packages = db_models.Package.read(db, package)
     for package in packages:
         if package.is_authorised(provided_permissions, 'delete'):
+            # TODO: Delete all the versions (and from storage)
             db.delete(package)
+
+
+def delete_version(documentation_version: schemas.BasePackageVersion, provided_permissions=None):
+    db = config.db.local_session()
+    packages = db_models.Package.read(db, documentation_version)
+    deleted = []
+    for package in packages:
+        package_version = package.get_version(documentation_version.version)
+        if package_version and package.is_authorised(provided_permissions, 'delete'):
+            # TODO: Delete the version (from storage)
+            db.delete(package_version)
+            deleted.append(f'{package.name}-{package_version.version}')
+        db.refresh(package)
+        if not package.versions:
+            db.delete(package)
+            deleted.append(f'{package.name}')
+    return deleted

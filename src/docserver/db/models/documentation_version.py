@@ -16,10 +16,10 @@ class DocumentationVersion(Model):
     id = Column(Integer, primary_key=True)
     url = Column(String(200), unique=True, nullable=False)
     version = Column(String(20), nullable=False)
-    package = Column(Integer, ForeignKey('package.id'))
+    package = Column(Integer, ForeignKey('package.id', ondelete="CASCADE"))
 
     @classmethod
-    def create(cls, package: schemas.CreatePackage, params: dict, zipfile: str, db_package: Package, db: Session = None):
+    def create(cls, package: schemas.PackageDocumentationVersion, params: dict, zipfile: str, db_package: Package, db: Session = None):
         # Need to have write permissions for the package
         if db is None:
             db = config.db.local_session()
@@ -30,11 +30,11 @@ class DocumentationVersion(Model):
         return db_documentation_version
 
     @classmethod
-    def update_or_create(cls, package: schemas.CreatePackage, zipfile: str, db_package, db: Session = None, **kwargs):
+    def update_or_create(cls, package: schemas.PackageDocumentationVersion, zipfile: str, db_package, db: Session = None, **kwargs):
         if db is None:
             db = config.db.local_session()
         provided_permissions = kwargs.pop('provided_permissions', None)
-        url = f'{config.upload.package_url_slug}/{package.name}/{package.version}'
+        url = f'{config.upload.package_url_slug}/{package.name.replace(" ", "-")}/{package.version}'
         params = dict(version=package.version,
                       package=db_package.id,
                       url=url)

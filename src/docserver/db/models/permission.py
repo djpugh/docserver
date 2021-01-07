@@ -29,7 +29,6 @@ class Permission(Model):
 class PermissionCollection(Model):
 
     id = Column(Integer, primary_key=True)
-    packages = relationship("Package", backref="permissions")
 
     def check(self, operation, provided_permissions):
         if provided_permissions is None:

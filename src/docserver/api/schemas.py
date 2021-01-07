@@ -46,9 +46,11 @@ class PermissionCollection(BaseModel):
         else:
             return permission
 
-
-class Package(BaseModel):
+class BasePackage(BaseModel):
     name: str
+
+
+class Package(BasePackage):
     repository: AnyUrl
     tags: List[str]
     description: str = None
@@ -71,11 +73,8 @@ class Package(BaseModel):
         return result
 
 
-class CreatePackage(Package):
+class BasePackageVersion(BasePackage):
     version: str = None
-
-    class Config:
-        orm_mode = True
 
     @validator('version', always=True, pre=True)
     def validate_semantic_version(cls, version):
@@ -93,12 +92,22 @@ class CreatePackage(Package):
             raise ValueError('Parsed version {parsed_version} is not a clean semantic version')
         return str(parsed_version)
 
+
+class PackageDocumentationVersion(BasePackageVersion, Package):
+
+    class Config:
+        orm_mode = True
+
+    @property
+    def route_name(self):
+        return self.name.replace(' ', '-')
+
     def get_path(self):
-        return os.path.join(secure_filename(self.name),
+        return os.path.join(secure_filename(self.route_name),
                             secure_filename(self.version))
 
     def get_dir(self):
-        return os.path.join(config.upload.docs_dir, secure_filename(self.name))
+        return os.path.join(config.upload.docs_dir, secure_filename(self.route_name))
 
     def serialize(self):
         params = self.dict()
@@ -113,7 +122,7 @@ class CreatePackage(Package):
         return x
 
     def __repr__(self):
-        return f'CreatePackage ({self.dict()})'
+        return f'PackageDocumentationVersion ({self.dict()})'
 
 
 class ResponsePackage(Package):
