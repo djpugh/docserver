@@ -3,7 +3,6 @@ import logging
 from docserver.api import schemas
 from docserver.config import config
 from docserver.db import models as db_models
-from docserver.storage import filesystem
 
 
 logger = logging.getLogger(__name__)
@@ -18,6 +17,7 @@ def delete_package(package: schemas.BasePackage, provided_permissions=None):
             package.delete(db=db)
             deleted.append(package.name)
     return deleted
+
 
 def delete_version(documentation_version: schemas.BasePackageVersion, provided_permissions=None):
     db = config.db.local_session()

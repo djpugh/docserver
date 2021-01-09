@@ -46,6 +46,7 @@ class PermissionCollection(BaseModel):
         else:
             return permission
 
+
 class BasePackage(BaseModel):
     name: str
 

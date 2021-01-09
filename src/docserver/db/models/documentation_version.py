@@ -9,7 +9,7 @@ from docserver.config import config
 from docserver.db.models.base import Model
 from docserver.db.models.package import Package
 from docserver.search.index import build_index, save_index
-from docserver.storage.filesystem import save_docs, delete_docs
+from docserver.storage.filesystem import delete_docs, save_docs
 
 
 class DocumentationVersion(Model):

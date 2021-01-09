@@ -23,12 +23,15 @@ class Package(Model):
         back_populates="packages")
 
     versions = relationship("DocumentationVersion", lazy='joined',
-                            cascade = "all, delete, delete-orphan", backref='package_')
+                            cascade="all, delete, delete-orphan",
+                            backref='package_')
     repository = Column(String(300), unique=True, nullable=False)
     description = Column(String(800), nullable=True)
     # Permission mappings
     permission_collection_id = Column(Integer, ForeignKey('permissioncollection.id'))
-    permissions = relationship(PermissionCollection, backref="packages", lazy="joined")
+    permissions = relationship(PermissionCollection,
+                               backref="packages",
+                               lazy="joined")
 
     def __repr__(self):
         tags = []

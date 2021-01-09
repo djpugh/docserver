@@ -3,7 +3,6 @@ import shutil
 from zipfile import ZipFile
 
 from docserver.api import schemas
-from docserver.config import config
 
 
 def save_docs(package: schemas.PackageDocumentationVersion, zipfile: str, ):
