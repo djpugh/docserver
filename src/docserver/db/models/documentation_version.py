@@ -9,17 +9,17 @@ from docserver.config import config
 from docserver.db.models.base import Model
 from docserver.db.models.package import Package
 from docserver.search.index import build_index, save_index
-from docserver.storage.filesystem import save_docs
+from docserver.storage.filesystem import delete_docs, save_docs
 
 
 class DocumentationVersion(Model):
     id = Column(Integer, primary_key=True)
     url = Column(String(200), unique=True, nullable=False)
     version = Column(String(20), nullable=False)
-    package = Column(Integer, ForeignKey('package.id'))
+    package = Column(Integer, ForeignKey('package.id', ondelete="CASCADE"))
 
     @classmethod
-    def create(cls, package: schemas.CreatePackage, params: dict, zipfile: str, db_package: Package, db: Session = None):
+    def create(cls, package: schemas.PackageDocumentationVersion, params: dict, zipfile: str, db_package: Package, db: Session = None):
         # Need to have write permissions for the package
         if db is None:
             db = config.db.local_session()
@@ -29,12 +29,19 @@ class DocumentationVersion(Model):
         db_documentation_version.update_latest(db_package, package)
         return db_documentation_version
 
+    def delete(self, db: Session = None):
+        if db is None:
+            db = config.db.local_session()
+        version = schemas.BasePackageVersion(name=self.package_.name, version=self.version)
+        delete_docs(version.get_path())
+        super().delete(db)
+
     @classmethod
-    def update_or_create(cls, package: schemas.CreatePackage, zipfile: str, db_package, db: Session = None, **kwargs):
+    def update_or_create(cls, package: schemas.PackageDocumentationVersion, zipfile: str, db_package, db: Session = None, **kwargs):
         if db is None:
             db = config.db.local_session()
         provided_permissions = kwargs.pop('provided_permissions', None)
-        url = f'{config.upload.package_url_slug}/{package.name}/{package.version}'
+        url = f'{config.upload.package_url_slug}/{package.name.replace(" ", "-")}/{package.version}'
         params = dict(version=package.version,
                       package=db_package.id,
                       url=url)

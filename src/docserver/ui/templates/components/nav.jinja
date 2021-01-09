@@ -29,11 +29,9 @@
                        </div>
                     </form>
                     {% if (request and auth and "admin" in request.auth.scopes) or not auth %}
-                    <li class="nav-item">
-                        <a class="nav-link">
-                            <span class="nav-link oi oi-cloud-upload" title="Upload" aria-hidden="true" data-toggle="modal" data-target="#uploadModal">
-                            </span>
-                        </a>
+                    <li class="nav-item align-self-center">
+                        <span class="nav-link oi oi-cloud-upload" title="Upload" aria-hidden="true" data-toggle="modal" data-target="#uploadModal">
+                        </span>
                     </li>
                     {% endif %}
                     <li class="nav-item">

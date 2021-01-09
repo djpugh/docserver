@@ -47,8 +47,18 @@ class PermissionCollection(BaseModel):
             return permission
 
 
-class Package(BaseModel):
+class BasePackage(BaseModel):
     name: str
+
+    @property
+    def route_name(self):
+        return self.name.replace(' ', '-')
+
+    def get_dir(self):
+        return os.path.join(config.upload.docs_dir, secure_filename(self.route_name))
+
+
+class Package(BasePackage):
     repository: AnyUrl
     tags: List[str]
     description: str = None
@@ -71,11 +81,8 @@ class Package(BaseModel):
         return result
 
 
-class CreatePackage(Package):
+class BasePackageVersion(BasePackage):
     version: str = None
-
-    class Config:
-        orm_mode = True
 
     @validator('version', always=True, pre=True)
     def validate_semantic_version(cls, version):
@@ -94,11 +101,14 @@ class CreatePackage(Package):
         return str(parsed_version)
 
     def get_path(self):
-        return os.path.join(secure_filename(self.name),
+        return os.path.join(self.get_dir(),
                             secure_filename(self.version))
 
-    def get_dir(self):
-        return os.path.join(config.upload.docs_dir, secure_filename(self.name))
+
+class PackageDocumentationVersion(BasePackageVersion, Package):
+
+    class Config:
+        orm_mode = True
 
     def serialize(self):
         params = self.dict()
@@ -113,7 +123,7 @@ class CreatePackage(Package):
         return x
 
     def __repr__(self):
-        return f'CreatePackage ({self.dict()})'
+        return f'PackageDocumentationVersion ({self.dict()})'
 
 
 class ResponsePackage(Package):

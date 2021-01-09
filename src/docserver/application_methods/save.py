@@ -12,7 +12,7 @@ from docserver.db import models as db_models
 logger = logging.getLogger(__name__)
 
 
-def save_documentation(documentation, package: schemas.CreatePackage, provided_permissions=None):
+def save_documentation(documentation, package: schemas.PackageDocumentationVersion, provided_permissions=None):
     result = None
     logger.debug(f'Saving docs for {package}')
     try:

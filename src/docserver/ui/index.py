@@ -31,8 +31,6 @@ async def index(request: Request, *args, **kwargs):
 
 @authenticator.auth_required()
 async def upload(request: Request, *args, **kwargs):
-    if 'admin' in request.auth.scopes:
-        pass
     form_data = await request.form()
     logger.info(f'Processing form data {form_data}')
     if not form_data:
@@ -40,21 +38,46 @@ async def upload(request: Request, *args, **kwargs):
     documentation = form_data['zipfile']
     if Path(documentation.filename).suffix.lower() != '.zip':
         raise HTTPException(status_code=401, detail=f'Incorrect filetype (must be zip archive) {documentation.filename}')
-    create_package = schemas.CreatePackage(name=form_data['packageName'],
-                                           repository=form_data['repositoryUrl'].replace(' ', '%20'),
-                                           tags=form_data['tags'].split(';'),
-                                           description=form_data['description'],
-                                           version=form_data['version'],
-                                           permissions=schemas.PermissionCollection(read_permission=form_data['permission'],
-                                                                                    write_permission=form_data['permission'],
-                                                                                    admin_permission=form_data['permission'])
-                                           )
+    create_package = schemas.PackageDocumentationVersion(name=form_data['packageName'],
+                                                         repository=form_data['repositoryUrl'].replace(' ', '%20'),
+                                                         tags=form_data['tags'].split(';'),
+                                                         description=form_data['description'],
+                                                         version=form_data['version'],
+                                                         permissions=schemas.PermissionCollection(read_permission=form_data['permission'],
+                                                                                                  write_permission=form_data['permission'],
+                                                                                                  admin_permission=form_data['permission'])
+                                                         )
     methods.register_package(create_package, provided_permissions=request.auth.scopes)
     slug = methods.save_documentation(documentation, create_package, provided_permissions=request.auth.scopes)
     logger.info(f'Slug: {slug}')
     return RedirectResponse(url=slug, status_code=303)
 
 
+@authenticator.auth_required()
+async def delete_version(request: Request, *args, **kwargs):
+    form_data = await request.form()
+    logger.info(f'Processing form data {form_data}')
+    if not form_data:
+        return RedirectResponse('/')
+    documentation_version = schemas.BasePackageVersion(name=form_data['packageName'],
+                                                       version=form_data['version'])
+    methods.delete_version(documentation_version, provided_permissions=request.auth.scopes)
+    return RedirectResponse(url='/', status_code=303)
+
+
+@authenticator.auth_required()
+async def delete_package(request: Request, *args, **kwargs):
+    form_data = await request.form()
+    logger.info(f'Processing form data {form_data}')
+    if not form_data:
+        return RedirectResponse('/')
+    package = schemas.BasePackage(name=form_data['packageName'])
+    methods.delete_package(package, provided_permissions=request.auth.scopes)
+    return RedirectResponse(url='/', status_code=303)
+
+
 routes = [Route("/", endpoint=index, methods=['GET', 'POST']),
           Route("/packages/", endpoint=index, methods=['GET']),
-          Route("/ui-upload", endpoint=upload, methods=['POST'])]
+          Route("/_upload", endpoint=upload, methods=['POST']),
+          Route("/_delete/package", endpoint=delete_package, methods=['POST']),
+          Route("/_delete/version", endpoint=delete_version, methods=['POST'])]

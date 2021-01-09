@@ -9,6 +9,7 @@ from docserver.config import config
 from docserver.db.models.base import Model
 from docserver.db.models.permission import PermissionCollection
 from docserver.db.models.tag import association_table, Tag
+from docserver.storage.filesystem import delete_docs
 
 # TODO fix tag updating (by id not by obj) - try except somewhere in this
 
@@ -21,11 +22,16 @@ class Package(Model):
         secondary=association_table,
         back_populates="packages")
 
-    versions = relationship("DocumentationVersion", lazy='joined')
+    versions = relationship("DocumentationVersion", lazy='joined',
+                            cascade="all, delete, delete-orphan",
+                            backref='package_')
     repository = Column(String(300), unique=True, nullable=False)
     description = Column(String(800), nullable=True)
     # Permission mappings
     permission_collection_id = Column(Integer, ForeignKey('permissioncollection.id'))
+    permissions = relationship(PermissionCollection,
+                               backref="packages",
+                               lazy="joined")
 
     def __repr__(self):
         tags = []
@@ -45,6 +51,11 @@ class Package(Model):
             return versions[0]
         else:
             return ''
+
+    def get_version(self, requested_version):
+        versions = [u for u in self.versions if u.version == requested_version]
+        if versions:
+            return versions[0]
 
     @staticmethod
     def create_tags(package: schemas.Package, db: Session = None):
@@ -75,6 +86,14 @@ class Package(Model):
         obj = super(Package, cls).create(db=db, params=params_dict)
         cls.logger.debug(f'Created {obj} with {obj.permissions}')
         return obj
+
+    def delete(self, db: Session = None):
+        if db is None:
+            db = config.db.local_session()
+        for documentation_version in self.versions:
+            documentation_version.delete(db=db)
+        delete_docs(schemas.BasePackage(name=self.name).get_dir())
+        super().delete(db)
 
     @classmethod
     def get_read_params_dict(cls, params, db: Session = None):
