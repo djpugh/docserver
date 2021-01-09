@@ -59,25 +59,20 @@
 {% block ModalScripts %}
 <script>
   $('#deletePackageModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget) // Button that triggered the modal
-    console.log(button)
-    var package = button.data('package') // Extract info from data-* attributes
-    console.log(package)
-    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    var obj = $(event.relatedTarget)
+    console.log(obj)
+    var package = obj.data('package')
     var modal = $(this)
     modal.find('.modal-title').text('Delete package: ' + package + '?')
     $('#deletePackage_PackageName').val(package)
   })
   $('#uploadModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget) // Button that triggered the modal
-    var packageName = button.data('packagename') // Extract info from data-* attributes
-    var repositoryUrl = button.data('repositoryurl') // Extract info from data-* attributes
-    var tags = button.data('tags') // Extract info from data-* attributes
-    var description = button.data('description') // Extract info from data-* attributes
-    var permission = button.data('permission') // Extract info from data-* attributes
-    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    var obj = $(event.relatedTarget)
+    var packageName = obj.data('packagename')
+    var repositoryUrl = obj.data('repositoryurl')
+    var tags = obj.data('tags')
+    var description = obj.data('description')
+    var permission = obj.data('permission')
     $('#packageName').val(packageName)
     $('#repositoryUrl').val(repositoryUrl)
     $('#tags').val(tags)
@@ -85,18 +80,14 @@
     $('#permission').val(permission)
   })
   $('#deleteVersionModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget) // Button that triggered the modal
-    console.log(button)
-    var package = button.data('package') // Extract info from data-* attributes
-    var version = button.data('version') // Extract info from data-* attributes
-    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-    console.log(package)
-    console.log(version)
+    var obj = $(event.relatedTarget)
+    console.log(obj)
+    var package = obj.data('package')
+    var version = obj.data('version')
     var modal = $(this)
     modal.find('.modal-title').text('Delete documentation version: ' + version + ' of ' + package + '?')
     $('#deleteVersion_PackageName').val(package)
-    $('#deleteVersion_Version').val(package)
+    $('#deleteVersion_Version').val(version)
   })
 </script>
 {% endblock ModalScripts %}

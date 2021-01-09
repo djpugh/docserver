@@ -81,3 +81,7 @@ img.card-action{
 .card-action-disabled:hover{
   filter: invert(69%);
 }
+
+.card-footer{
+  background-color: rgba(240, 240, 240, 1);
+}
