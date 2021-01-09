@@ -71,6 +71,10 @@ class CustomBase:
         compare_params = {column: params[column] for column in unique_columns if column in params.keys()}
         return compare_params
 
+    def delete(self, db: Session = None):
+        db.delete(self)
+        db.commit()
+
     def update(self, params: dict, db: Session = None, **kwargs):
         if db is None:
             db = config.db.local_session()

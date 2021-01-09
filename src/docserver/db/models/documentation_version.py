@@ -9,7 +9,7 @@ from docserver.config import config
 from docserver.db.models.base import Model
 from docserver.db.models.package import Package
 from docserver.search.index import build_index, save_index
-from docserver.storage.filesystem import save_docs
+from docserver.storage.filesystem import save_docs, delete_docs
 
 
 class DocumentationVersion(Model):
@@ -28,6 +28,13 @@ class DocumentationVersion(Model):
         db_documentation_version = super(DocumentationVersion, cls).create(params, db=db)
         db_documentation_version.update_latest(db_package, package)
         return db_documentation_version
+
+    def delete(self, db: Session = None):
+        if db is None:
+            db = config.db.local_session()
+        version = schemas.BasePackageVersion(name=self.package_.name, version=self.version)
+        delete_docs(version.get_path())
+        super().delete(db)
 
     @classmethod
     def update_or_create(cls, package: schemas.PackageDocumentationVersion, zipfile: str, db_package, db: Session = None, **kwargs):

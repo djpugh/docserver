@@ -60,7 +60,7 @@ async def delete_version(request: Request, *args, **kwargs):
     if not form_data:
         return RedirectResponse('/')
     documentation_version = schemas.BasePackageVersion(name=form_data['packageName'],
-                                                                version=form_data['version'])
+                                                       version=form_data['version'])
     methods.delete_version(documentation_version, provided_permissions=request.auth.scopes)
     return RedirectResponse(url='/', status_code=303)
 

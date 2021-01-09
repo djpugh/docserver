@@ -49,6 +49,13 @@ class PermissionCollection(BaseModel):
 class BasePackage(BaseModel):
     name: str
 
+    @property
+    def route_name(self):
+        return self.name.replace(' ', '-')
+
+    def get_dir(self):
+        return os.path.join(config.upload.docs_dir, secure_filename(self.route_name))
+
 
 class Package(BasePackage):
     repository: AnyUrl
@@ -92,22 +99,15 @@ class BasePackageVersion(BasePackage):
             raise ValueError('Parsed version {parsed_version} is not a clean semantic version')
         return str(parsed_version)
 
+    def get_path(self):
+        return os.path.join(self.get_dir(),
+                            secure_filename(self.version))
+
 
 class PackageDocumentationVersion(BasePackageVersion, Package):
 
     class Config:
         orm_mode = True
-
-    @property
-    def route_name(self):
-        return self.name.replace(' ', '-')
-
-    def get_path(self):
-        return os.path.join(secure_filename(self.route_name),
-                            secure_filename(self.version))
-
-    def get_dir(self):
-        return os.path.join(config.upload.docs_dir, secure_filename(self.route_name))
 
     def serialize(self):
         params = self.dict()

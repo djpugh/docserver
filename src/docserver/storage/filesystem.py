@@ -1,4 +1,5 @@
 import os
+import shutil
 from zipfile import ZipFile
 
 from docserver.api import schemas
@@ -15,7 +16,12 @@ def save_docs(package: schemas.PackageDocumentationVersion, zipfile: str, ):
 
 
 def make_path(path):
-    required_dir = os.path.join(config.upload.docs_dir, path)
-    if not os.path.exists(required_dir):
-        os.makedirs(required_dir)
-    return required_dir
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
+
+
+def delete_docs(path):
+    if os.path.exists(path):
+        # Delete everything underneath that dir
+        shutil.rmtree(path)
