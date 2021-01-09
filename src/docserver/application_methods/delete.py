@@ -26,7 +26,6 @@ def delete_version(documentation_version: schemas.BasePackageVersion, provided_p
     for package in packages:
         package_version = package.get_version(documentation_version.version)
         if package_version and package.is_authorised(provided_permissions, 'delete'):
-            # TODO: Delete the version (from storage)
             package_version.delete(db=db)
             deleted.append(f'{package.name}-{package_version.version}')
         db.refresh(package)
