@@ -67,12 +67,22 @@ def upload_package(upload_id: str, request: Request, documentation: UploadFile =
 
 @router.delete('{package_name}/{version}', status_code=200)
 def delete_documentation_version(package_name: str, version: str, request: Request, state: AuthenticationState = Depends(authenticator.auth_backend.requires_auth())):
-    documentation_version = schemas.PackageDocumentationVersion(name=package_name, version=version)
-    result = None
+    documentation_version = schemas.BasePackageVersion(name=package_name, version=version)
+    deleted = None
     try:
         deleted = methods.delete_version(documentation_version, provided_permissions=state.user.permissions)
     except PermissionError:
-        if result:
-            return {'Deleted': deleted}
-        else:
-            raise HTTPException(status_code=405, detail='Write Permission not available')
+        raise HTTPException(status_code=405, detail='Delete Permission not available')
+    if deleted:
+        return {'Deleted': deleted}
+
+@router.delete('{package_name}', status_code=200)
+def delete_documentation_version(package_name: str, request: Request, state: AuthenticationState = Depends(authenticator.auth_backend.requires_auth())):
+    package = schemas.BasePackage(name=package_name)
+    deleted = None
+    try:
+        deleted = methods.delete_package(package, provided_permissions=state.user.permissions)
+    except PermissionError:
+        raise HTTPException(status_code=405, detail='Delete Permission not available')
+    if deleted:
+        return {'Deleted': deleted}

@@ -12,10 +12,12 @@ logger = logging.getLogger(__name__)
 def delete_package(package: schemas.BasePackage, provided_permissions=None):
     db = config.db.local_session()
     packages = db_models.Package.read(params=package.dict(), db=db)
+    deleted = []
     for package in packages:
         if package.is_authorised(provided_permissions, 'delete'):
             package.delete(db=db)
-
+            deleted.append(package.name)
+    return deleted
 
 def delete_version(documentation_version: schemas.BasePackageVersion, provided_permissions=None):
     db = config.db.local_session()
@@ -30,5 +32,5 @@ def delete_version(documentation_version: schemas.BasePackageVersion, provided_p
         db.refresh(package)
         if not package.versions:
             package.delete(db=db)
-            deleted.append(f'{package.name}')
+            deleted.append(package.name)
     return deleted
