@@ -24,7 +24,7 @@ async def available_documentation(request: Request, state: AuthenticationState =
     return results
 
 
-@router.get('/{package}/versions', response_model=List[schemas.Version])
+@router.get('/{package_name}/versions', response_model=List[schemas.Version])
 async def available_versions(package_name: str, state: AuthenticationState = Depends(authenticator.auth_backend.requires_auth())):
     """
     List available versions of a package
