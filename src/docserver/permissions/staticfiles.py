@@ -44,9 +44,11 @@ class DBPermissionsCheck(LoggedInPermissionsCheck):
         logger.debug(f'Provided permissions: {provided_permissions}')
         package = Package.read_unique(params={'name': name}, db=self.session_maker())
         if package and package.is_authorised(provided_permissions, 'read'):
+            logger.debug('Package exists and user authorised')
             return AuthenticationOptions.authenticated
-        else:
-            return AuthenticationOptions.not_allowed
+        elif not package:
+            logger.debug("Package doesn't exist")
+        return AuthenticationOptions.not_allowed
 
 
 class PermissionedStaticFiles(StaticFiles):
@@ -72,4 +74,7 @@ class PermissionedStaticFiles(StaticFiles):
             return PlainTextResponse("Unauthorised", status_code=405)
         elif result == AuthenticationOptions.unauthenticated:
             raise AuthenticationError('Login Required', scope['root_path'])
-        return await super().get_response(path, scope)
+        logger.debug(f'Getting package from {path}')
+        response = await super().get_response(path, scope)
+        logger.debug(f'Found {response}')
+        return response
