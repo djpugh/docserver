@@ -20,7 +20,6 @@ async def available_documentation(request: Request, state: AuthenticationState =
     List available packages
     """
     results = methods.get_available_docs(provided_permissions=state.user.permissions)
-    logger.debug(schemas.ResponsePackage.fields)
     return results
 
 
@@ -29,8 +28,8 @@ async def available_versions(package_name: str, state: AuthenticationState = Dep
     """
     List available versions of a package
     """
-    package = schemas.Package(name=package_name)
-    return methods.get_versions(package, provided_permissions=state.user.permissions)
+    package = schemas.BasePackage(name=package_name)
+    return [schemas.Version(version=v) for v in methods.get_versions(package, provided_permissions=state.user.permissions)]
 
 
 # Lets add the ability to upload a package

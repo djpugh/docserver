@@ -26,7 +26,7 @@ def get_available_docs(provided_permissions=None):
 
 
 def get_versions(package: schemas.Package, provided_permissions=None):
-    db_package = db_models.Package.read_unique(package=package)
+    db_package = db_models.Package.read_unique(params=package.dict())
     if not db_package.is_authorised(provided_permissions, 'read'):
         raise PermissionError('Missing read permission for package')
     return ['latest'] + db_package.sorted_versions

@@ -1,4 +1,9 @@
-feature: ['feature/*', 'feat/*']
-fix: fix/*
-chore: ['chore/*', 'renovate/*']
-fixed-branch: fixed-branch-name
+feature:
+  - feature/*
+  - feat/*
+fix:
+  - fix/*
+chore:
+  - chore/*
+  - renovate/*
+  - maintenance/*
