@@ -186,10 +186,8 @@ jobs:
 
       - name: Prep Artifacts
         run: |
-          mkdir docker/dist
-          cp -r dist/ docker/dist/
-          mkdir docker/html-help
-          cp -r html-help docker/html-help/
+          cp -r dist/ docker/
+          cp -r html-help docker/
 
       - name: Build Container
         run: docker build -t docserver:edge .
