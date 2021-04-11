@@ -174,8 +174,25 @@ jobs:
           path: |
             dist/*
 
+      - name: Build help
+        run: tox -e build-help -vvv
+
+      - name: Store help artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: help
+          path: |
+            html-help/*
+
+      - name: Prep Artifacts
+        run: |
+          mkdir docker-build
+          cp dist/*.whl docker/dist/
+          mkdir docker-html-help
+          cp html-help docker/html-help/
+
       - name: Build Container
-        run: tox -e build-docker
+        run: docker build -t docserver:{env:VERSION:{env:TAG:latest}} .
         env:
           TAG: edge
           SPHINX_GITHUB_CHANGELOG_TOKEN: ${{ secrets.GITHUB_TOKEN }}

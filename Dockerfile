@@ -16,6 +16,6 @@ ENV DOCSERVER_HELP_DIR=/data/www/help
 
 CMD ["/start.sh"]
 
-COPY docker-html-help /data/www/help
-COPY docker-build /dist
+COPY docker/html-help /data/www/help
+COPY docker/dist /dist
 RUN pip install /dist/$(ls -t /dist | head -n1) # pip install the latest created file in dist folder. this should be the wheel file.
