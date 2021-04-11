@@ -192,9 +192,8 @@ jobs:
           cp -r html-help docker/html-help/
 
       - name: Build Container
-        run: docker build -t docserver:{env:VERSION:{env:TAG:latest}} .
+        run: docker build -t docserver:edge .
         env:
-          TAG: edge
           SPHINX_GITHUB_CHANGELOG_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Save Container
