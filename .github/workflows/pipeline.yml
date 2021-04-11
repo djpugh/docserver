@@ -186,10 +186,10 @@ jobs:
 
       - name: Prep Artifacts
         run: |
-          mkdir docker-build
-          cp dist/*.whl docker/dist/
-          mkdir docker-html-help
-          cp html-help docker/html-help/
+          mkdir docker/dist
+          cp -r dist/ docker/dist/
+          mkdir docker/html-help
+          cp -r html-help docker/html-help/
 
       - name: Build Container
         run: docker build -t docserver:{env:VERSION:{env:TAG:latest}} .
