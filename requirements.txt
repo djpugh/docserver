@@ -1,4 +1,4 @@
-fastapi==0.63.0
+fastapi==0.65.2
 fastapi_aad_auth==0.1.20
 pydantic[dotenv,email]==1.8.2
 aiofiles
