@@ -168,7 +168,7 @@ jobs:
         run: tox -e build-package -vvv
 
       - name: Store build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: build
           path: |
@@ -178,7 +178,7 @@ jobs:
         run: tox -e build-help -vvv
 
       - name: Store help artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: help
           path: |
@@ -198,7 +198,7 @@ jobs:
         run: docker save docserver:edge -o ./docserver.edge.docker.tar.gz
 
       - name: Store container
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: container
           path: ./docserver.edge.docker.tar.gz
