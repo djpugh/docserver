@@ -242,7 +242,7 @@ jobs:
       - sonarcloud
     steps:
       - name: automerge
-        uses: "pascalgn/automerge-action@v0.12.0"
+        uses: "pascalgn/automerge-action@v0.16.2"
         with:
           args: "--trace"
         env:
